@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vendor Dashboard | UNICAL Market</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+
+    <style>
+        .header-top-flex { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .page-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; }
+        
+        /* State Containers */
+        #loading-state { text-align: center; padding: 100px 20px; color: #94a3b8; }
+        #not-vendor-state, #pending-state { display: none; text-align: center; padding: 60px 20px; background: white; margin: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .state-icon { font-size: 50px; margin-bottom: 15px; color: #cbd5e1; }
+        .state-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin-bottom: 10px; }
+        .state-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; }
+        
+        .action-btn { background: var(--brand-color); color: white; border: none; padding: 14px 20px; border-radius: 12px; font-weight: 800; width: 100%; cursor: pointer; text-decoration: none; display: inline-block; box-sizing: border-box; transition: 0.2s; }
+        .action-btn:active { transform: scale(0.98); }
+
+        /* Dashboard State */
+        #dashboard-state { display: none; padding: 20px; }
+        .dash-card { background: linear-gradient(135deg, #1e293b, #0f172a); color: white; padding: 25px 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .dash-name { font-size: 20px; font-weight: 800; margin-bottom: 5px; }
+        .dash-slots { font-size: 13px; color: #94a3b8; }
+        .slot-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-top: 10px; overflow: hidden; }
+        .slot-fill { height: 100%; background: #38bdf8; border-radius: 3px; width: 0%; transition: 0.5s; }
+
+        .form-card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 30px; border: 1px solid #f1f5f9; }
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 12px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
+        .form-input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; background: #f8fafc; outline: none; box-sizing: border-box; transition: 0.2s; }
+        .form-input:focus { border-color: #2d8eff; background: white; }
+
+        /* 🚀 INVENTORY GRID STYLES */
+        .inventory-header { font-size: 18px; font-weight: 800; color: var(--text-main); margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        .inventory-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .inv-card { background: white; border-radius: 16px; padding: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; position: relative; }
+        .inv-img { width: 100%; height: 130px; object-fit: cover; border-radius: 10px; background: #eee; margin-bottom: 10px; }
+        .inv-price { font-size: 15px; font-weight: 800; color: #2d8eff; margin-bottom: 4px; }
+        .inv-title { font-size: 12px; font-weight: 600; color: var(--text-main); line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 10px; }
+        
+        .inv-actions { display: flex; gap: 5px; }
+        .inv-btn { flex: 1; padding: 8px; border: none; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; color: white; transition: 0.2s; }
+        .btn-edit { background: #0f172a; }
+        .btn-delete { background: #ef4444; }
+        .btn-sold { background: #f59e0b; width: 100%; margin-top: 5px; }
+        .btn-active { background: #10b981; width: 100%; margin-top: 5px; }
+        
+        .status-badge { position: absolute; top: 15px; left: 15px; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 8px; color: white; }
+        .badge-sold { background: #ef4444; }
+        .badge-active { background: #10b981; }
+
+        /* 🚀 EDIT MODAL */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-body { background: white; width: 100%; max-width: 400px; border-radius: 20px; padding: 25px; position: relative; animation: slideUp 0.3s; max-height: 85vh; overflow-y: auto; }
+        @keyframes slideUp { from {transform: translateY(20px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #94a3b8; cursor: pointer; background: none; border: none; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="header">
+            <div class="header-top-flex">
+                <a href="../index.html" class="back-btn" style="color: var(--text-main); font-size: 20px;"><i class="fas fa-arrow-left"></i></a>
+                <h1 class="page-title">Vendor Area</h1>
+            </div>
+        </div>
+
+        <div class="content-area" style="padding: 0 0 90px 0;">
+            
+            <div id="loading-state">
+                <i class="fas fa-circle-notch fa-spin" style="font-size: 40px; margin-bottom: 15px; color: var(--brand-color);"></i>
+                <p>Verifying clearance...</p>
+            </div>
+
+            <div id="not-vendor-state">
+                <i class="fas fa-store-slash state-icon"></i>
+                <h2 class="state-title">Become a Seller</h2>
+                <p class="state-desc">You need a verified vendor account to post items, food, or services to the marketplace.</p>
+                <a href="../vendor-reg/index.html" class="action-btn">Register as Vendor</a>
+            </div>
+
+            <div id="pending-state">
+                <i class="fas fa-clock state-icon" style="color: #f59e0b;"></i>
+                <h2 class="state-title">Application Pending</h2>
+                <p class="state-desc">Your vendor application is currently under review by the admins. You will be able to post items once approved.</p>
+                <a href="../index.html" class="action-btn" style="background: #f1f5f9; color: var(--text-main);">Back to Home</a>
+            </div>
+
+            <div id="dashboard-state">
+                <div class="dash-card">
+                    <div class="dash-name" id="dash-business-name">Store Name</div>
+                    <div class="dash-slots"><span id="dash-used">0</span> of <span id="dash-max">5</span> Item Slots Used</div>
+                    <div class="slot-bar"><div class="slot-fill" id="dash-slot-bar"></div></div>
+                </div>
+
+                <div class="form-card">
+                    <h3 style="margin: 0 0 20px; font-size: 16px;"><i class="fas fa-plus-circle" style="color: #2d8eff;"></i> Post New Item</h3>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Item Name</label>
+                        <input type="text" id="p-name" class="form-input" placeholder="e.g. iPhone 13 Pro">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Price (₦)</label>
+                        <input type="number" id="p-price" class="form-input" placeholder="e.g. 450000">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select id="p-cat" class="form-input" style="background: white;">
+                            <option value="Phones">Phones</option>
+                            <option value="Laptops">Laptops</option>
+                            <option value="Fashion">Fashion</option>
+                            <option value="Food">Food</option>
+                            <option value="Services">Services</option>
+                            <option value="Books">Books/PDFs</option>
+                            <option value="Others">Others</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea id="p-desc" class="form-input" style="height: 80px; resize: none;" placeholder="Details about the item..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Photos (Up to 5)</label>
+                        <input type="file" id="p-files" class="form-input" accept="image/*" multiple style="background: white;">
+                    </div>
+
+                    <button class="action-btn" id="post-btn" onclick="postItem()">Upload Item</button>
+                </div>
+
+                <div class="inventory-header">My Live Inventory</div>
+                <div id="inventory-list" class="inventory-grid">
+                    <p style="grid-column: span 2; text-align: center; color: #94a3b8; font-size: 13px; padding: 20px;">Loading your items...</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="editModal" class="modal-overlay">
+            <div class="modal-body">
+                <button class="close-btn" onclick="document.getElementById('editModal').style.display='none'">&times;</button>
+                <h3 style="margin: 0 0 20px; font-size: 18px;">Edit Item</h3>
+                
+                <input type="hidden" id="edit-id">
+                
+                <div class="form-group"><label class="form-label">Item Name</label><input type="text" id="edit-name" class="form-input"></div>
+                <div class="form-group"><label class="form-label">Price (₦)</label><input type="number" id="edit-price" class="form-input"></div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select id="edit-cat" class="form-input">
+                        <option value="Phones">Phones</option>
+                        <option value="Laptops">Laptops</option>
+                        <option value="Fashion">Fashion</option>
+                        <option value="Food">Food</option>
+                        <option value="Services">Services</option>
+                        <option value="Books">Books/PDFs</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+                <div class="form-group"><label class="form-label">Description</label><textarea id="edit-desc" class="form-input" style="height: 80px; resize: none;"></textarea></div>
+                <div class="form-group">
+                    <label class="form-label">Update Photos <span style="font-weight:normal; color:#2d8eff;">(Leave blank to keep old images)</span></label>
+                    <input type="file" id="edit-files" class="form-input" accept="image/*" multiple>
+                </div>
+                
+                <button class="action-btn" id="save-edit-btn" onclick="saveEditedItem()">Save Changes</button>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <a href="../index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')"><i class="fas fa-comment-dots"></i><span>Messages</span></a>
+            <div class="nav-fab"><i class="fas fa-plus"></i></div>
+            <a href="#" class="nav-item" onclick="requireLogin('../saved/index.html')"><i class="fas fa-heart"></i><span>Saved</span></a>
+            <a href="../account/index.html" class="nav-item"><i class="fas fa-user"></i><span>Account</span></a>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const CLOUD_NAME = "dj6yl36fq"; 
+
+        let currentUser = null;
+        let myVendorData = null;
+        let myProducts = [];
+        let currentItemCount = 0;
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { window.location.href = "../login/index.html"; return; }
+            currentUser = session.user;
+            checkVendorStatus();
+        });
+
+        async function requireLogin(targetUrl) { window.location.href = targetUrl; }
+
+        async function checkVendorStatus() {
+            try {
+                const { data, error } = await supabaseClient.from('vendors').select('*').eq('profile_id', currentUser.id).single();
+                document.getElementById('loading-state').style.display = 'none';
+
+                if (!data) { document.getElementById('not-vendor-state').style.display = 'block'; } 
+                else if (data.is_active === false) { document.getElementById('pending-state').style.display = 'block'; } 
+                else {
+                    myVendorData = data;
+                    document.getElementById('dashboard-state').style.display = 'block';
+                    document.getElementById('dash-business-name').innerText = data.business_name;
+                    document.getElementById('dash-max').innerText = data.max_items;
+                    loadMyInventory(); // 🚀 LOAD THEIR ITEMS
+                }
+            } catch (error) {
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('not-vendor-state').style.display = 'block';
+            }
+        }
+
+        // 🚀 1. FETCH AND RENDER INVENTORY
+        async function loadMyInventory() {
+            const grid = document.getElementById('inventory-list');
+            try {
+                const { data, error } = await supabaseClient
+                    .from('products')
+                    .select('*')
+                    .eq('vendor_id', myVendorData.id)
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+                myProducts = data;
+                
+                // Update Slot Tracker
+                currentItemCount = data.length;
+                document.getElementById('dash-used').innerText = currentItemCount;
+                const percentage = (currentItemCount / myVendorData.max_items) * 100;
+                document.getElementById('dash-slot-bar').style.width = `${Math.min(percentage, 100)}%`;
+                if(currentItemCount >= myVendorData.max_items) document.getElementById('dash-slot-bar').style.background = '#ef4444';
+
+                // Render Grid
+                if (data.length === 0) {
+                    grid.innerHTML = `<p style="grid-column: span 2; text-align: center; color: #94a3b8; font-size: 13px; padding: 20px;">You haven't posted any items yet.</p>`;
+                    return;
+                }
+
+                grid.innerHTML = "";
+                data.forEach(p => {
+                    const imgUrl = (p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/300';
+                    const fPrice = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(p.price);
+                    const isSold = p.status === 'Sold';
+                    
+                    const badge = isSold 
+                        ? `<div class="status-badge badge-sold">SOLD OUT</div>` 
+                        : `<div class="status-badge badge-active">ACTIVE</div>`;
+                        
+                    const toggleBtn = isSold
+                        ? `<button class="inv-btn btn-active" onclick="toggleStatus('${p.id}', 'Active')"><i class="fas fa-check"></i> Mark Active</button>`
+                        : `<button class="inv-btn btn-sold" onclick="toggleStatus('${p.id}', 'Sold')"><i class="fas fa-times-circle"></i> Mark Sold</button>`;
+
+                    // Clean strings for javascript functions
+                    const safeName = p.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    const safeDesc = p.description.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+                    grid.innerHTML += `
+                        <div class="inv-card" style="opacity: ${isSold ? '0.7' : '1'}">
+                            ${badge}
+                            <img src="${imgUrl}" class="inv-img" onerror="this.src='https://via.placeholder.com/300'">
+                            <div class="inv-price">${fPrice}</div>
+                            <div class="inv-title">${p.name}</div>
+                            
+                            <div class="inv-actions">
+                                <button class="inv-btn btn-edit" onclick="openEditModal('${p.id}', '${safeName}', ${p.price}, '${p.category}', '${safeDesc}')"><i class="fas fa-pen"></i></button>
+                                <button class="inv-btn btn-delete" onclick="deleteItem('${p.id}')"><i class="fas fa-trash"></i></button>
+                            </div>
+                            ${toggleBtn}
+                        </div>
+                    `;
+                });
+
+            } catch (error) { console.error("Error loading inventory", error); }
+        }
+
+        // 🚀 2. POST NEW ITEM
+        async function postItem() {
+            if (currentItemCount >= myVendorData.max_items) return alert(`Limit reached! You can only post ${myVendorData.max_items} items.`);
+
+            const btn = document.getElementById('post-btn');
+            const name = document.getElementById('p-name').value.trim();
+            const price = document.getElementById('p-price').value;
+            const desc = document.getElementById('p-desc').value.trim();
+            const cat = document.getElementById('p-cat').value;
+            const files = document.getElementById('p-files').files;
+
+            if (!name || !price || !desc) return alert("Please fill all details.");
+            if (files.length === 0) return alert("Select at least 1 photo.");
+            if (files.length > 5) return alert("Max 5 photos allowed.");
+
+            btn.innerText = "Uploading Photos..."; btn.disabled = true;
+
+            try {
+                let imageUrls = [];
+                for (let i = 0; i < files.length; i++) {
+                    const formData = new FormData(); formData.append('file', files[i]); formData.append('upload_preset', 'unical_products');
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
+                    const data = await res.json(); if(data.secure_url) imageUrls.push(data.secure_url);
+                }
+
+                btn.innerText = "Saving to Market...";
+                const { error } = await supabaseClient.from('products').insert([{
+                    vendor_id: myVendorData.id, name: name, price: parseFloat(price),
+                    description: desc, category: cat, image_urls: imageUrls, status: 'Active'
+                }]);
+
+                if (error) throw error;
+
+                // 🚀 RESET FORM & REFRESH GRID WITHOUT LEAVING PAGE!
+                document.getElementById('p-name').value = '';
+                document.getElementById('p-price').value = '';
+                document.getElementById('p-desc').value = '';
+                document.getElementById('p-files').value = '';
+                
+                alert("Item posted successfully!");
+                loadMyInventory(); 
+
+            } catch (error) { alert("Failed to post item."); console.error(error); } 
+            finally { btn.innerText = "Upload Item"; btn.disabled = false; }
+        }
+
+        // 🚀 3. DELETE ITEM
+        async function deleteItem(id) {
+            if(!confirm("Are you sure you want to delete this item? You will get 1 slot back.")) return;
+            try {
+                await supabaseClient.from('products').delete().eq('id', id);
+                loadMyInventory(); // Refresh automatically
+            } catch (error) { alert("Failed to delete."); }
+        }
+
+        // 🚀 4. TOGGLE STATUS (Active <-> Sold)
+        async function toggleStatus(id, newStatus) {
+            try {
+                await supabaseClient.from('products').update({ status: newStatus }).eq('id', id);
+                loadMyInventory(); // Refresh automatically
+            } catch (error) { alert("Failed to update status."); }
+        }
+
+        // 🚀 5. EDIT LOGIC
+        window.openEditModal = function(id, name, price, cat, desc) {
+            document.getElementById('edit-id').value = id;
+            document.getElementById('edit-name').value = name;
+            document.getElementById('edit-price').value = price;
+            document.getElementById('edit-cat').value = cat;
+            document.getElementById('edit-desc').value = desc;
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        window.saveEditedItem = async function() {
+            const id = document.getElementById('edit-id').value;
+            const btn = document.getElementById('save-edit-btn');
+            const name = document.getElementById('edit-name').value.trim();
+            const price = document.getElementById('edit-price').value;
+            const cat = document.getElementById('edit-cat').value;
+            const desc = document.getElementById('edit-desc').value.trim();
+            const files = document.getElementById('edit-files').files;
+
+            if(!name || !price || !desc) return alert("Fill all details.");
+            if (files.length > 5) return alert("Max 5 photos allowed.");
+
+            btn.innerText = "Saving changes..."; btn.disabled = true;
+
+            try {
+                const updateData = { name, price: parseFloat(price), category: cat, description: desc };
+
+                // Only upload and overwrite images if they selected new ones
+                if (files.length > 0) {
+                    btn.innerText = "Uploading new photos...";
+                    let imageUrls = [];
+                    for (let i = 0; i < files.length; i++) {
+                        const formData = new FormData(); formData.append('file', files[i]); formData.append('upload_preset', 'unical_products');
+                        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
+                        const data = await res.json(); if(data.secure_url) imageUrls.push(data.secure_url);
+                    }
+                    updateData.image_urls = imageUrls;
+                }
+
+                await supabaseClient.from('products').update(updateData).eq('id', id);
+                
+                document.getElementById('editModal').style.display = 'none';
+                loadMyInventory(); // Refresh automatically
+                
+            } catch(e) { alert("Update failed."); } 
+            finally { btn.innerText = "Save Changes"; btn.disabled = false; }
+        }
+    </script>
+</body>
+</html>

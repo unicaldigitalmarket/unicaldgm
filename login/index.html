@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UNICAL Market | Authentication</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+        /* 🚀 Reset for perfect mobile sizing */
+        * { box-sizing: border-box; }
+
+        :root {
+            --brand-color: #2b2b2b; 
+            --brand-bg: #f8fafc;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        /* 🚀 Desktop Background & Centering */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #e0e0e0; 
+            margin: 0; padding: 0; 
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        /* 🚀 The Mobile Native App Wrapper */
+        .app-container {
+            background: var(--brand-bg);
+            width: 100%;
+            max-width: 480px;
+            min-height: 100vh;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 20px; position: relative;
+        }
+
+        /* The White Form Card inside the App */
+        .auth-card {
+            background: white; width: 100%; padding: 40px 30px;
+            border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.04);
+        }
+
+        .back-link { display: inline-block; color: var(--text-muted); text-decoration: none; font-size: 14px; margin-bottom: 20px; font-weight: 600; }
+        .auth-title { text-align: center; font-size: 24px; font-weight: 800; margin: 0 0 5px; }
+        .auth-subtitle { text-align: center; font-size: 14px; color: var(--text-muted); margin: 0 0 25px; }
+
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+        .form-input {
+            width: 100%; padding: 12px 14px; border: 2px solid #e2e8f0;
+            border-radius: 10px; font-size: 14px; font-family: 'Inter', sans-serif;
+            outline: none; transition: 0.2s; background: #fff;
+        }
+        .form-input:focus { border-color: var(--brand-color); }
+
+        .auth-btn {
+            width: 100%; background: var(--brand-color); color: white; border: none;
+            padding: 15px; border-radius: 12px; font-size: 16px; font-weight: 800;
+            cursor: pointer; margin-top: 10px; transition: 0.2s;
+        }
+        .auth-btn:active { transform: scale(0.98); }
+        .auth-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .auth-switch { text-align: center; margin-top: 25px; font-size: 14px; color: var(--text-muted); }
+        .auth-switch span { color: var(--brand-color); font-weight: 600; cursor: pointer; text-decoration: underline; }
+
+        .forgot-password { display: block; text-align: right; font-size: 12px; color: var(--brand-color); font-weight: 600; cursor: pointer; margin-top: -10px; margin-bottom: 15px; }
+
+        .message-box { padding: 12px; border-radius: 8px; font-size: 13px; text-align: center; margin-bottom: 20px; display: none; }
+        .error-msg { color: #ef4444; background: #fef2f2; border: 1px solid #fca5a5; }
+        .success-msg { color: #059669; background: #d1fae5; border: 1px solid #6ee7b7; }
+
+        .signup-only { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="auth-card">
+            <a href="../" class="back-link">← Back to Market</a>
+            
+            <h1 class="auth-title" id="page-title">Welcome Back</h1>
+            <p class="auth-subtitle" id="page-subtitle">Sign in to your student account</p>
+
+            <div class="message-box" id="msg-box"></div>
+
+            <form id="auth-form" onsubmit="processAuth(event)">
+                
+                <div class="form-group signup-only">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" id="name" class="form-input" placeholder="e.g. John Doe">
+                </div>
+
+                <div class="form-group signup-only">
+                    <label class="form-label">Phone Number</label>
+                    <input type="tel" id="phone" class="form-input" placeholder="e.g. 08012345678">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email Address *</label>
+                    <input type="email" id="email" class="form-input" placeholder="student@unical.edu.ng" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password *</label>
+                    <input type="password" id="password" class="form-input" placeholder="••••••••" required>
+                </div>
+
+                <span class="forgot-password" id="forgot-btn" onclick="recoverPassword()">Forgot Password?</span>
+
+                <button type="submit" class="auth-btn" id="submit-btn">Sign In</button>
+            </form>
+
+            <div class="auth-switch" id="switch-text">
+                Don't have an account? <span onclick="switchView()">Create one</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
+        
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let isSignUpMode = false;
+
+        function displayMessage(text, isError) {
+            const msgBox = document.getElementById('msg-box');
+            msgBox.innerText = text;
+            msgBox.className = isError ? 'message-box error-msg' : 'message-box success-msg';
+            msgBox.style.display = 'block';
+        }
+
+        window.switchView = function() {
+            isSignUpMode = !isSignUpMode;
+            document.getElementById('msg-box').style.display = 'none';
+
+            const signupFields = document.querySelectorAll('.signup-only');
+
+            if (isSignUpMode) {
+                document.getElementById('page-title').innerText = "Create Account";
+                document.getElementById('page-subtitle').innerText = "Join UNICAL Digital Market";
+                document.getElementById('submit-btn').innerText = "Sign Up";
+                document.getElementById('forgot-btn').style.display = "none";
+                document.getElementById('switch-text').innerHTML = `Already have an account? <span onclick="switchView()">Sign In</span>`;
+                
+                signupFields.forEach(f => f.style.display = "block");
+                document.getElementById('name').required = true;
+                document.getElementById('phone').required = true;
+            } else {
+                document.getElementById('page-title').innerText = "Welcome Back";
+                document.getElementById('page-subtitle').innerText = "Sign in to your student account";
+                document.getElementById('submit-btn').innerText = "Sign In";
+                document.getElementById('forgot-btn').style.display = "block";
+                document.getElementById('switch-text').innerHTML = `Don't have an account? <span onclick="switchView()">Create one</span>`;
+                
+                signupFields.forEach(f => f.style.display = "none");
+                document.getElementById('name').required = false;
+                document.getElementById('phone').required = false;
+            }
+        };
+
+        window.processAuth = async function(event) {
+            event.preventDefault(); 
+            
+            const emailVal = document.getElementById('email').value.trim();
+            const passwordVal = document.getElementById('password').value;
+            const nameVal = document.getElementById('name').value.trim();
+            const phoneVal = document.getElementById('phone').value.trim();
+            const btn = document.getElementById('submit-btn');
+
+            document.getElementById('msg-box').style.display = 'none';
+            btn.disabled = true;
+            btn.innerText = "Processing...";
+
+            try {
+                if (isSignUpMode) {
+                    const { data, error } = await supabaseClient.auth.signUp({
+                        email: emailVal,
+                        password: passwordVal,
+                        options: {
+                            data: {
+                                full_name: nameVal,
+                                phone: phoneVal
+                            }
+                        }
+                    });
+
+                    if (error) throw error;
+                    
+                    displayMessage("Success! Redirecting...", false);
+                    setTimeout(() => { window.location.href = "../"; }, 1000);
+
+                } else {
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({
+                        email: emailVal,
+                        password: passwordVal
+                    });
+
+                    if (error) throw error;
+                    
+                    window.location.href = "../";
+                }
+            } catch (error) {
+                console.error("Auth Error:", error);
+                displayMessage(error.message, true);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = isSignUpMode ? "Sign Up" : "Sign In";
+            }
+        };
+
+       window.recoverPassword = async function() {
+            const emailVal = document.getElementById('email').value.trim();
+            if (!emailVal) {
+                displayMessage("Please type your email in the box first, then click Forgot Password.", true);
+                return;
+            }
+
+            document.getElementById('msg-box').style.display = 'none';
+            const btn = document.getElementById('submit-btn');
+            btn.innerText = "Sending Link...";
+            btn.disabled = true;
+
+            try {
+                // 🚀 THE FIX: Point exactly to your new folder
+                // window.location.origin automatically detects if you are testing on localhost or live on unicaldgm.com.ng!
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(emailVal, {
+                    redirectTo: window.location.origin + '/reset-password/'
+                });
+
+                if (error) throw error;
+                displayMessage("Reset link sent! Please check your email inbox.", false);
+            } catch (error) {
+                displayMessage(error.message, true);
+            } finally {
+                btn.innerText = "Sign In";
+                btn.disabled = false;
+            }
+        };
+    </script>
+</body>
+</html>

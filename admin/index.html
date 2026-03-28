@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Command Center | UNICAL Market</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background-color: #f1f5f9; color: #1e293b; padding-bottom: 50px; }
+        
+        /* HEADER */
+        .admin-header {
+            background: #0f172a; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100;
+        }
+        .admin-header h3 { margin: 0; font-size: 18px; font-weight: 800; }
+        .admin-subtitle { font-size: 10px; color: #38bdf8; letter-spacing: 1px; text-transform: uppercase; font-weight: 800; }
+        .exit-btn { color: white; text-decoration: none; border: 1px solid rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+
+        #security-check { height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .spinner { font-size: 40px; color: #38bdf8; margin-bottom: 15px; animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .container { max-width: 1000px; margin: 20px auto; padding: 0 20px; display: none; }
+        .section-title { font-size: 18px; font-weight: 800; margin: 20px 0 15px; color: #334155; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+
+        /* DASHBOARD GRID */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+        .admin-card { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; display: flex; flex-direction: column; }
+        
+        /* Card Colors */
+        .card-yellow { border-left: 5px solid #eab308; }
+        .card-purple { border-left: 5px solid #a855f7; }
+        .card-blue { border-left: 5px solid #3b82f6; }
+        .card-red { border-left: 5px solid #ef4444; }
+        .card-green { border-left: 5px solid #10b981; }
+
+        .card-icon { font-size: 30px; margin-bottom: 15px; }
+        .card-title { font-size: 16px; font-weight: 800; margin-bottom: 10px; }
+        .card-desc { font-size: 13px; color: #64748b; margin-bottom: 20px; flex-grow: 1; }
+
+        .open-modal-btn { background: #0f172a; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.2s; width: 100%; }
+        .open-modal-btn:active { transform: scale(0.98); }
+
+        /* MODALS */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-body { background: #f8fafc; width: 100%; max-width: 600px; max-height: 85vh; border-radius: 20px; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header { background: white; padding: 20px; border-radius: 20px 20px 0 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; flex-shrink: 0; }
+        .modal-header h2 { font-size: 18px; margin: 0; color: #0f172a; }
+        .close-btn { background: none; border: none; font-size: 24px; color: #94a3b8; cursor: pointer; }
+        .modal-content-scroll { padding: 20px; overflow-y: auto; flex-grow: 1; }
+
+        /* FORMS & LIST ITEMS */
+        .admin-input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: white; outline: none; margin-bottom: 15px; }
+        .search-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        .search-group .admin-input { margin-bottom: 0; }
+        
+        .list-item { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0; }
+        .item-title { font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 5px; }
+        .item-meta { font-size: 12px; color: #64748b; margin-bottom: 8px; }
+        .item-data-box { background: #f1f5f9; padding: 10px; border-radius: 8px; font-size: 12px; color: #334155; margin-bottom: 10px; }
+        .item-data-box a { color: #3b82f6; text-decoration: none; font-weight: 800; }
+        
+        .action-row { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; border-top: 1px solid #f1f5f9; padding-top: 10px; }
+        .action-btn { padding: 8px 16px; border: none; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; }
+        .btn-approve { background: #10b981; color: white; }
+        .btn-edit { background: #eab308; color: white; }
+        .btn-delete { background: #ef4444; color: white; }
+        .btn-suspend { background: #ef4444; color: white; }
+        .btn-unsuspend { background: #3b82f6; color: white; }
+        .btn-primary { background: #0f172a; color: white; }
+
+        .slots-input-group { display: flex; align-items: center; gap: 10px; }
+        .slots-input { width: 80px; padding: 8px; border: 1px solid #cbd5e1; border-radius: 8px; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-header">
+        <div><h3>⚡ Super Admin</h3><div class="admin-subtitle">Command Center</div></div>
+        <a href="../index.html" class="exit-btn">Exit</a>
+    </div>
+
+    <div id="security-check">
+        <i class="fas fa-circle-notch spinner"></i><div style="font-weight: 800; color: #475569;">Verifying Clearance...</div>
+    </div>
+
+    <div id="admin-content" class="container">
+        <h4 class="section-title">Store Approvals & Limits</h4>
+        <div class="dashboard-grid">
+            
+            <div class="admin-card card-blue">
+                <i class="fas fa-clipboard-check card-icon" style="color: #3b82f6;"></i>
+                <div class="card-title">Vendor Approvals</div>
+                <div class="card-desc">Review new store applications, check payment receipts and ID cards, and approve them.</div>
+                <button class="open-modal-btn" style="background: #3b82f6;" onclick="openModal('approvalModal', loadApprovals)">Review Pending</button>
+            </div>
+
+            <div class="admin-card card-green">
+                <i class="fas fa-layer-group card-icon" style="color: #10b981;"></i>
+                <div class="card-title">Vendor Slots Manager</div>
+                <div class="card-desc">Upgrade or downgrade the maximum number of items a specific vendor can post.</div>
+                <button class="open-modal-btn" style="background: #10b981;" onclick="openModal('slotsModal', () => { document.getElementById('slots-results').innerHTML=''; document.getElementById('slots-search').value=''; })">Manage Slots</button>
+            </div>
+        </div>
+
+        <h4 class="section-title">Moderation & Content</h4>
+        <div class="dashboard-grid">
+
+            <div class="admin-card card-red">
+                <i class="fas fa-user-slash card-icon" style="color: #ef4444;"></i>
+                <div class="card-title">Vendor Control</div>
+                <div class="card-desc">Suspend fraudulent vendors. Their profiles and all their items will vanish from the site.</div>
+                <button class="open-modal-btn" style="background: #ef4444;" onclick="openModal('controlModal', () => { document.getElementById('control-results').innerHTML=''; document.getElementById('control-search').value=''; })">Open Control</button>
+            </div>
+
+            <div class="admin-card card-yellow">
+                <i class="fas fa-star card-icon" style="color: #eab308;"></i>
+                <div class="card-title">Review Manager</div>
+                <div class="card-desc">Approve pending student reviews to make them visible on the home page, or delete spam.</div>
+                <button class="open-modal-btn" style="background: #eab308;" onclick="openModal('reviewModal', loadAdminReviews)">Open Manager</button>
+            </div>
+
+            <div class="admin-card card-purple">
+                <i class="fas fa-newspaper card-icon" style="color: #a855f7;"></i>
+                <div class="card-title">Blog & News Manager</div>
+                <div class="card-desc">Write, edit, and publish campus news and updates directly to the marketplace.</div>
+                <button class="open-modal-btn" style="background: #a855f7;" onclick="openModal('blogModal', loadAdminBlogs)">Open Manager</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="approvalModal" class="modal-overlay">
+        <div class="modal-body">
+            <div class="modal-header"><h2>📋 Pending Approvals</h2><button class="close-btn" onclick="closeModal('approvalModal')">&times;</button></div>
+            <div class="modal-content-scroll" id="approval-list"></div>
+        </div>
+    </div>
+
+    <div id="controlModal" class="modal-overlay">
+        <div class="modal-body">
+            <div class="modal-header"><h2>🚫 Vendor Control</h2><button class="close-btn" onclick="closeModal('controlModal')">&times;</button></div>
+            <div class="modal-content-scroll">
+                <div class="search-group">
+                    <input type="text" id="control-search" class="admin-input" placeholder="Search by Business Name or Email...">
+                    <button class="action-btn btn-primary" onclick="searchVendors('control')">Search</button>
+                </div>
+                <div id="control-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="slotsModal" class="modal-overlay">
+        <div class="modal-body">
+            <div class="modal-header"><h2>📦 Item Slots Manager</h2><button class="close-btn" onclick="closeModal('slotsModal')">&times;</button></div>
+            <div class="modal-content-scroll">
+                <div class="search-group">
+                    <input type="text" id="slots-search" class="admin-input" placeholder="Search by Business Name or Email...">
+                    <button class="action-btn btn-primary" onclick="searchVendors('slots')">Search</button>
+                </div>
+                <div id="slots-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="reviewModal" class="modal-overlay"><div class="modal-body"><div class="modal-header"><h2>⭐ Review Approvals</h2><button class="close-btn" onclick="closeModal('reviewModal')">&times;</button></div><div class="modal-content-scroll" id="modal-reviews-list"></div></div></div>
+    
+    <div id="blogModal" class="modal-overlay"><div class="modal-body"><div class="modal-header"><h2>📰 Blog Manager</h2><button class="close-btn" onclick="closeModal('blogModal')">&times;</button></div><div class="modal-content-scroll"><div style="background:white; padding:20px; border-radius:12px; margin-bottom:20px;"><h3 style="margin-bottom: 15px;" id="blogFormTitle">Create New Post</h3><input type="hidden" id="editBlogId"><input type="text" id="blogTitle" class="admin-input" placeholder="Post Title"><select id="blogCategory" class="admin-input"><option value="News">News</option><option value="Academics">Academics</option><option value="Gossip">Gossip</option><option value="Events">Events</option></select><textarea id="blogSnippet" class="admin-input" placeholder="Short Snippet" style="height: 60px;"></textarea><textarea id="blogContent" class="admin-input" placeholder="Full article content..." style="height: 150px;"></textarea><input type="file" id="blogImage" class="admin-input" accept="image/*"><button class="action-btn btn-primary" id="saveBlogBtn" style="width:100%; padding:14px;" onclick="saveBlog()">Publish Post</button><button class="action-btn btn-delete" id="cancelEditBtn" style="width: 100%; margin-top: 10px; display: none;" onclick="resetBlogForm()">Cancel Edit</button></div><div id="modal-blogs-list"></div></div></div></div>
+
+   <script>
+        const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const CLOUD_NAME = "dj6yl36fq"; 
+
+        // ==========================================
+        // 0. STRICT SECURITY CLEARANCE
+        // ==========================================
+        document.addEventListener("DOMContentLoaded", async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { window.location.href = "../login/index.html"; return; }
+            
+            const { data } = await supabaseClient.from('admin_users').select('*').eq('email', session.user.email).single();
+            if (data) {
+                setTimeout(() => { 
+                    document.getElementById('security-check').style.display = 'none'; 
+                    document.getElementById('admin-content').style.display = 'block'; 
+                }, 800); 
+            } else {
+                document.body.innerHTML = `<h2 style='text-align:center; margin-top:100px; color:#ef4444;'>⛔ ACCESS DENIED</h2>`;
+                setTimeout(() => { window.location.href = "../index.html"; }, 2000);
+            }
+        });
+
+        // MODAL CONTROLS
+        window.openModal = function(id, fetchFunc) { 
+            document.getElementById(id).style.display = 'flex'; 
+            document.body.style.overflow = 'hidden'; 
+            if(fetchFunc) fetchFunc(); 
+        }
+        window.closeModal = function(id) { 
+            document.getElementById(id).style.display = 'none'; 
+            document.body.style.overflow = 'auto'; 
+        }
+
+        // ==========================================
+        // 1. VENDOR APPROVALS MODULE
+        // ==========================================
+        window.loadApprovals = async function() {
+            const list = document.getElementById('approval-list');
+            list.innerHTML = '<p style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading pending applications...</p>';
+            try {
+                const { data, error } = await supabaseClient.from('vendors').select('*').eq('is_active', false);
+                if (error) throw error;
+                
+                const pending = data.filter(v => v.is_suspended !== true);
+
+                if (pending.length === 0) { list.innerHTML = "<p style='text-align:center; color:#94a3b8; margin-top:20px;'>No pending applications.</p>"; return; }
+
+                list.innerHTML = "";
+                pending.forEach(v => {
+                    const userEmail = v.email || 'No email attached';
+                    
+                    list.innerHTML += `
+                        <div class="list-item" style="border-left: 4px solid #3b82f6;">
+                            <div class="item-title">${v.business_name}</div>
+                            <div class="item-meta"><i class="fas fa-envelope"></i> ${userEmail} | <i class="fas fa-phone"></i> ${v.whatsapp_number || 'N/A'}</div>
+                            
+                            <div class="item-data-box">
+                                <b>Plan:</b> ${v.subscription_plan}<br>
+                                <b>Categories:</b> ${v.categories}<br>
+                                <b>Requested Slots:</b> ${v.max_items}
+                            </div>
+                            
+                            <div style="display:flex; gap:15px; font-size:12px; margin-bottom:10px;">
+                                <a href="${v.receipt_url}" target="_blank" style="color:#10b981; font-weight:bold;"><i class="fas fa-file-invoice-dollar"></i> View Receipt</a>
+                                <a href="${v.student_id_url}" target="_blank" style="color:#8b5cf6; font-weight:bold;"><i class="fas fa-id-badge"></i> View ID Card</a>
+                            </div>
+
+                            <div class="action-row">
+                                <button class="action-btn btn-approve" onclick="approveVendor('${v.id}')">Approve Vendor</button>
+                            </div>
+                        </div>`;
+                });
+            } catch (error) { 
+                console.error("APPROVALS ERROR:", error);
+                list.innerHTML = "<p style='color:red; text-align:center;'>Failed to load. Check console for details.</p>"; 
+            }
+        }
+
+        // 🚀 THE FIX: Attached securely to window object!
+        window.approveVendor = async function(id) {
+            if(!confirm("Approve this vendor? They will immediately get access to their dashboard.")) return;
+            try {
+                await supabaseClient.from('vendors').update({ is_active: true, is_suspended: false }).eq('id', id);
+                alert("Vendor Approved!");
+                loadApprovals(); // Refresh list automatically
+            } catch(e) { 
+                console.error(e);
+                alert("Failed to approve."); 
+            }
+        }
+
+        // ==========================================
+        // 2 & 3. VENDOR SEARCH (For Control & Slots)
+        // ==========================================
+        window.searchVendors = async function(mode) {
+            const query = document.getElementById(`${mode}-search`).value.toLowerCase().trim();
+            const results = document.getElementById(`${mode}-results`);
+            if(!query) return;
+
+            results.innerHTML = '<p style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Searching...</p>';
+            
+            try {
+                const { data, error } = await supabaseClient.from('vendors').select('*');
+                if (error) throw error;
+
+                const matches = data.filter(v => {
+                    const nameMatch = v.business_name && v.business_name.toLowerCase().includes(query);
+                    const emailMatch = v.email && v.email.toLowerCase().includes(query);
+                    return nameMatch || emailMatch;
+                });
+
+                if (matches.length === 0) { results.innerHTML = "<p style='text-align:center; color:#ef4444;'>No vendor found.</p>"; return; }
+
+                results.innerHTML = "";
+                matches.forEach(v => {
+                    const userEmail = v.email || 'No email attached'; 
+                    
+                    if (mode === 'control') {
+                        const isSuspended = v.is_suspended === true;
+                        const borderColor = isSuspended ? '#ef4444' : '#10b981';
+                        const statusTxt = isSuspended ? '<span style="color:#ef4444; font-weight:bold;">SUSPENDED</span>' : '<span style="color:#10b981; font-weight:bold;">ACTIVE</span>';
+                        
+                        results.innerHTML += `
+                            <div class="list-item" style="border-left: 4px solid ${borderColor};">
+                                <div style="display:flex; justify-content:space-between;">
+                                    <div class="item-title">${v.business_name}</div>
+                                    <div>${statusTxt}</div>
+                                </div>
+                                <div class="item-meta">${userEmail}</div>
+                                <div class="action-row">
+                                    ${isSuspended 
+                                        ? `<button class="action-btn btn-unsuspend" onclick="toggleVendorSuspend('${v.id}', true)">Restore Vendor</button>` 
+                                        : `<button class="action-btn btn-suspend" onclick="toggleVendorSuspend('${v.id}', false)">Suspend Vendor</button>`
+                                    }
+                                </div>
+                            </div>`;
+                    } else if (mode === 'slots') {
+                        results.innerHTML += `
+                            <div class="list-item" style="border-left: 4px solid #10b981;">
+                                <div class="item-title">${v.business_name}</div>
+                                <div class="item-meta">${userEmail} | Plan: <b>${v.subscription_plan || 'N/A'}</b></div>
+                                <div class="action-row" style="justify-content: space-between; align-items: center;">
+                                    <span style="font-size:12px; font-weight:bold;">Current Limit:</span>
+                                    <div class="slots-input-group">
+                                        <input type="number" id="slot-val-${v.id}" class="slots-input" value="${v.max_items}">
+                                        <button class="action-btn btn-primary" onclick="updateVendorSlots('${v.id}')">Update</button>
+                                    </div>
+                                </div>
+                            </div>`;
+                    }
+                });
+
+            } catch(e) { 
+                console.error("SEARCH ERROR:", e);
+                results.innerHTML = "<p style='color:red;'>Search failed. Check console.</p>"; 
+            }
+        }
+
+        window.toggleVendorSuspend = async function(vendorId, isCurrentlySuspended) {
+            const actionStr = isCurrentlySuspended ? "RESTORE" : "SUSPEND";
+            if(!confirm(`Are you sure you want to ${actionStr} this vendor and all their items?`)) return;
+
+            try {
+                const newActive = isCurrentlySuspended ? true : false;
+                const newSuspend = isCurrentlySuspended ? false : true;
+                const newProductStatus = isCurrentlySuspended ? 'Active' : 'Suspended';
+
+                await supabaseClient.from('vendors').update({ is_active: newActive, is_suspended: newSuspend }).eq('id', vendorId);
+                await supabaseClient.from('products').update({ status: newProductStatus }).eq('vendor_id', vendorId);
+
+                alert(`Vendor successfully ${isCurrentlySuspended ? 'restored' : 'suspended'}.`);
+                searchVendors('control'); 
+            } catch(e) { alert("Action failed."); console.error(e); }
+        }
+
+        window.updateVendorSlots = async function(vendorId) {
+            const newSlots = document.getElementById(`slot-val-${vendorId}`).value;
+            if(!newSlots || newSlots < 0) return alert("Enter a valid number.");
+            
+            try {
+                await supabaseClient.from('vendors').update({ max_items: parseInt(newSlots) }).eq('id', vendorId);
+                alert("Vendor slots updated successfully!");
+            } catch(e) { alert("Failed to update slots."); }
+        }
+
+        // ==========================================
+        // 4. REVIEWS MODULE
+        // ==========================================
+        window.loadAdminReviews = async function() {
+            const list = document.getElementById('modal-reviews-list'); 
+            list.innerHTML = '<p style="text-align:center;">Loading reviews...</p>';
+            try {
+                const { data } = await supabaseClient.from('reviews').select('id, rating, review_text, status, profiles(full_name)').order('created_at', { ascending: false });
+                if (!data || data.length === 0) { list.innerHTML = "<p style='text-align:center;'>No reviews found.</p>"; return; }
+                list.innerHTML = "";
+                data.forEach(r => {
+                    const isPending = r.status === 'pending';
+                    const badge = isPending ? `<span class="status-badge status-pending">PENDING</span>` : `<span class="status-badge status-approved">LIVE</span>`;
+                    list.innerHTML += `
+                        <div class="list-item" style="${isPending ? 'border-left: 4px solid #f59e0b;' : 'border-left: 4px solid #10b981;'}">
+                            <div class="item-header">
+                                <div><div class="item-title">${r.profiles?.full_name||"Unknown User"}</div><div class="item-meta">${r.rating} Stars</div></div>
+                                ${badge}
+                            </div>
+                            <div style="font-size:13px; color:#475569; font-style:italic;">"${r.review_text}"</div>
+                            <div class="action-row">
+                                ${isPending ? `<button class="action-btn btn-approve" onclick="approveReview('${r.id}')">Approve</button>` : ''}
+                                <button class="action-btn btn-delete" onclick="deleteReview('${r.id}')">Delete</button>
+                            </div>
+                        </div>`;
+                });
+            } catch (e) { console.error(e); list.innerHTML = "<p>Error loading reviews.</p>"; }
+        }
+        
+        window.approveReview = async function(id) { 
+            if(confirm("Approve and make public?")){ 
+                await supabaseClient.from('reviews').update({ status: 'approved' }).eq('id', id); 
+                loadAdminReviews(); 
+            } 
+        }
+        window.deleteReview = async function(id) { 
+            if(confirm("Permanently delete?")){ 
+                await supabaseClient.from('reviews').delete().eq('id', id); 
+                loadAdminReviews(); 
+            } 
+        }
+
+        // ==========================================
+        // 5. BLOGS MODULE
+        // ==========================================
+        window.loadAdminBlogs = async function() {
+            const list = document.getElementById('modal-blogs-list'); 
+            list.innerHTML = '<p style="text-align:center;">Loading posts...</p>';
+            try {
+                const { data } = await supabaseClient.from('blogs').select('*').order('created_at', { ascending: false });
+                if (!data || data.length === 0) { list.innerHTML = "<p style='text-align:center;'>No posts yet.</p>"; return; }
+                
+                list.innerHTML = "";
+                data.forEach(b => {
+                    const sT = b.title.replace(/'/g, "\\'").replace(/"/g, '&quot;'); 
+                    const sS = b.snippet.replace(/'/g, "\\'").replace(/"/g, '&quot;'); 
+                    const sC = b.content.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    
+                    list.innerHTML += `
+                        <div class="list-item">
+                            <div style="display:flex; gap:15px;">
+                                <img src="${b.image_url||'https://via.placeholder.com/100'}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
+                                <div style="flex:1;">
+                                    <div class="item-title">${b.title}</div>
+                                    <div class="item-meta">${b.category} | 👁️ ${b.views || 0}</div>
+                                </div>
+                            </div>
+                            <div class="action-row">
+                                <button class="action-btn btn-edit" onclick="editBlog('${b.id}', '${sT}', '${b.category}', '${sS}', '${sC}')">Edit</button>
+                                <button class="action-btn btn-delete" onclick="deleteBlog('${b.id}')">Delete</button>
+                            </div>
+                        </div>`;
+                });
+            } catch (e) { console.error(e); }
+        }
+        
+        async function uploadBlogImage(file) {
+            const formData = new FormData(); 
+            formData.append('file', file); 
+            formData.append('upload_preset', 'unical_images');
+            
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
+            const data = await res.json(); 
+            if(!res.ok) throw new Error(data.error.message);
+            return data.secure_url;
+        }
+
+        window.saveBlog = async function() {
+            const id = document.getElementById('editBlogId').value; 
+            const btn = document.getElementById('saveBlogBtn');
+            const title = document.getElementById('blogTitle').value.trim(); 
+            const category = document.getElementById('blogCategory').value;
+            const snippet = document.getElementById('blogSnippet').value.trim(); 
+            const content = document.getElementById('blogContent').value.trim();
+            const fileInput = document.getElementById('blogImage');
+            const file = fileInput.files[0];
+
+            if(!title || !content || !snippet) return alert("Title, Snippet, and Content are required");
+            if(!id && !file) return alert("Upload a cover image for new posts.");
+
+            btn.innerText = "Processing..."; btn.disabled = true;
+
+            try {
+                let imgUrl = null; 
+                if(file) {
+                    btn.innerText = "Uploading Image...";
+                    imgUrl = await uploadBlogImage(file);
+                }
+                
+                const payload = { title, category, snippet, content }; 
+                if(imgUrl) payload.image_url = imgUrl;
+
+                if(id) {
+                    btn.innerText = "Updating...";
+                    await supabaseClient.from('blogs').update(payload).eq('id', id); 
+                    alert("Post Updated!");
+                } else {
+                    btn.innerText = "Publishing...";
+                    await supabaseClient.from('blogs').insert([payload]); 
+                    alert("Post Published!");
+                }
+                
+                resetBlogForm(); 
+                loadAdminBlogs(); 
+            } catch(e) { 
+                console.error(e); 
+                alert("Error saving post."); 
+            } finally { 
+                btn.innerText = "Publish Post"; 
+                btn.disabled = false; 
+            }
+        }
+
+        window.editBlog = function(id, t, c, s, cont) { 
+            document.getElementById('editBlogId').value = id; 
+            document.getElementById('blogTitle').value = t; 
+            document.getElementById('blogCategory').value = c || "News"; 
+            document.getElementById('blogSnippet').value = s; 
+            document.getElementById('blogContent').value = cont; 
+            
+            document.getElementById('blogFormTitle').innerText = "Edit Post";
+            document.getElementById('saveBlogBtn').innerText = "Update Post";
+            document.getElementById('cancelEditBtn').style.display = 'block'; 
+            
+            document.querySelector('#blogModal .modal-content-scroll').scrollTop = 0;
+        }
+
+        window.deleteBlog = async function(id) { 
+            if(confirm("Delete post permanently?")){ 
+                await supabaseClient.from('blogs').delete().eq('id', id); 
+                loadAdminBlogs(); 
+            } 
+        }
+
+        window.resetBlogForm = function() { 
+            document.getElementById('editBlogId').value = ""; 
+            document.getElementById('blogTitle').value = ""; 
+            document.getElementById('blogCategory').value = "News";
+            document.getElementById('blogSnippet').value = ""; 
+            document.getElementById('blogContent').value = ""; 
+            document.getElementById('blogImage').value = "";
+            
+            document.getElementById('blogFormTitle').innerText = "Create New Post";
+            document.getElementById('saveBlogBtn').innerText = "Publish Post";
+            document.getElementById('cancelEditBtn').style.display = 'none'; 
+        }
+    </script>
+</body>
+</html>

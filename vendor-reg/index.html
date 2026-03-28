@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vendor Registration | UNICAL Market</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+
+    <style>
+        .header-top-flex { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .page-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0; }
+        
+        .bank-card { background: #fff; border: 2px solid #38bdf8; padding: 20px; border-radius: 16px; text-align: center; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(56, 189, 248, 0.1); }
+        .bank-title { font-weight: 800; color: var(--text-main); font-size: 15px; margin-bottom: 5px; text-transform: uppercase; }
+        .acct-box { background: #f8fafc; padding: 15px; border-radius: 12px; margin: 10px 0; border: 1px dashed #cbd5e1; }
+        .acct-num { font-size: 24px; font-weight: 900; letter-spacing: 2px; color: #0f172a; display: block; }
+        .bank-name { font-size: 12px; color: var(--text-muted); font-weight: 800; }
+
+        .form-section-title { font-size: 14px; font-weight: 800; color: var(--brand-color); text-transform: uppercase; margin: 30px 0 15px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
+        .form-input { width: 100%; padding: 14px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px; background: white; outline: none; }
+        .form-input:focus { border-color: var(--brand-color); box-shadow: 0 0 0 3px rgba(43, 43, 43, 0.1); }
+
+        /* Custom Checkbox Grid */
+        .category-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .cat-label { display: block; text-align: center; padding: 10px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 12px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: 0.2s; }
+        .cat-checkbox:checked + .cat-label { background: var(--brand-color); color: white; border-color: var(--brand-color); }
+        .cat-checkbox { display: none; }
+
+        /* File Upload Box */
+        .file-upload-box { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 25px; text-align: center; cursor: pointer; background: #f8fafc; position: relative; }
+        .file-upload-box input { position: absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer; }
+        .file-upload-box.has-file { border-style: solid; border-color: #10b981; background: #ecfdf5; }
+
+        .submit-btn { background: var(--brand-color); color: white; width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="header">
+            <div class="header-top-flex">
+                <a href="../add-product/index.html" class="back-btn" style="color: var(--text-main); font-size: 20px;"><i class="fas fa-arrow-left"></i></a>
+                <h1 class="page-title">Vendor Application</h1>
+            </div>
+        </div>
+
+        <div class="content-area" style="padding: 20px 20px 90px;">
+            
+            <div class="bank-card">
+                <div class="bank-title">Payment Required</div>
+                <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 10px;">Make a transfer to the account below before filling the form.</p>
+                <div class="acct-box">
+                    <span class="acct-num">0123456789</span>
+                    <span class="bank-name">GTBank - UNICAL Digital Market</span>
+                </div>
+            </div>
+
+            <form id="regForm" onsubmit="submitRegistration(event)">
+                
+                <div class="form-section-title">Subscription Plan</div>
+                <div class="form-group">
+                    <select id="v-plan" class="form-input" required>
+                        <option value="" disabled selected>-- Choose a Plan --</option>
+                        <option value="Essential (₦2,000/month)">Essential - ₦2,000/month (5 Items)</option>
+                        <option value="Pro (₦3,500/month)">Pro - ₦3,500/month (15 Items)</option>
+                        <option value="Executive (₦5,000/month)">Executive - ₦5,000/month (Unlimited)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Upload Payment Receipt</label>
+                    <div class="file-upload-box" id="box-receipt">
+                        <i class="fas fa-receipt" style="font-size: 24px; color: #94a3b8; margin-bottom: 10px;"></i>
+                        <div id="lbl-receipt" style="font-size: 12px; font-weight: 600;">Tap to upload Receipt</div>
+                        <input type="file" id="f-receipt" accept="image/*" required onchange="updateFileLabel(this, 'lbl-receipt', 'box-receipt')">
+                    </div>
+                </div>
+
+                <div class="form-section-title">Business Profile</div>
+                
+                <div class="form-group">
+                    <label class="form-label">Business Name</label>
+                    <input type="text" id="v-name" class="form-input" placeholder="e.g. Tola Bakes" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">WhatsApp Number</label>
+                    <input type="tel" id="v-whatsapp" class="form-input" placeholder="e.g. 08012345678" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Location (Hostel / Off-Campus)</label>
+                    <input type="text" id="v-location" class="form-input" placeholder="e.g. Malabo Hall" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Business Description</label>
+                    <textarea id="v-desc" class="form-input" style="height:80px; resize: none;" placeholder="What do you sell?" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Categories (Select multiple)</label>
+                    <div class="category-grid">
+                        <label><input type="checkbox" class="cat-checkbox" value="Phones"><span class="cat-label">Phones</span></label>
+                        <label><input type="checkbox" class="cat-checkbox" value="Laptops"><span class="cat-label">Laptops</span></label>
+                        <label><input type="checkbox" class="cat-checkbox" value="Fashion"><span class="cat-label">Fashion</span></label>
+                        <label><input type="checkbox" class="cat-checkbox" value="Food"><span class="cat-label">Food</span></label>
+                        <label><input type="checkbox" class="cat-checkbox" value="Services"><span class="cat-label">Services</span></label>
+                        <label><input type="checkbox" class="cat-checkbox" value="Books"><span class="cat-label">Books</span></label>
+                    </div>
+                </div>
+
+                <div class="form-section-title">Identity & Branding</div>
+
+                <div class="form-group">
+                    <label class="form-label">Business Logo</label>
+                    <div class="file-upload-box" id="box-logo">
+                        <i class="fas fa-image" style="font-size: 24px; color: #94a3b8; margin-bottom: 10px;"></i>
+                        <div id="lbl-logo" style="font-size: 12px; font-weight: 600;">Tap to upload Logo</div>
+                        <input type="file" id="f-logo" accept="image/*" required onchange="updateFileLabel(this, 'lbl-logo', 'box-logo')">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Student ID Card (Kept Private)</label>
+                    <div class="file-upload-box" id="box-id">
+                        <i class="fas fa-id-card" style="font-size: 24px; color: #94a3b8; margin-bottom: 10px;"></i>
+                        <div id="lbl-id" style="font-size: 12px; font-weight: 600;">Tap to upload ID Card</div>
+                        <input type="file" id="f-id" accept="image/*" required onchange="updateFileLabel(this, 'lbl-id', 'box-id')">
+                    </div>
+                </div>
+
+                <button type="submit" id="submitBtn" class="submit-btn">Submit Application</button>
+            </form>
+        </div>
+    </div>
+
+   <script>
+        const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const CLOUD_NAME = "dj6yl36fq"; 
+
+        let currentUser = null;
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { window.location.href = "../login/index.html"; return; }
+            currentUser = session.user;
+        });
+
+        // Makes the upload boxes turn green when a file is selected
+        function updateFileLabel(input, labelId, boxId) {
+            if (input.files && input.files[0]) {
+                document.getElementById(labelId).innerText = "✅ " + input.files[0].name;
+                document.getElementById(boxId).classList.add('has-file');
+            }
+        }
+
+        // Reusable Cloudinary Uploader
+        async function uploadToCloudinary(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'unical_images'); // General image preset
+            
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error.message);
+            return data.secure_url;
+        }
+
+        async function submitRegistration(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            
+            // Gather checkboxes
+            const selectedCats = [];
+            document.querySelectorAll('.cat-checkbox:checked').forEach(c => selectedCats.push(c.value));
+            if(selectedCats.length === 0) return alert("Please select at least one category.");
+
+            btn.disabled = true;
+
+            try {
+                // 1. Upload Images
+                btn.innerText = "Uploading Receipt (1/3)...";
+                const receiptUrl = await uploadToCloudinary(document.getElementById('f-receipt').files[0]);
+
+                btn.innerText = "Uploading Logo (2/3)...";
+                const logoUrl = await uploadToCloudinary(document.getElementById('f-logo').files[0]);
+
+                btn.innerText = "Uploading ID (3/3)...";
+                const idUrl = await uploadToCloudinary(document.getElementById('f-id').files[0]);
+
+                // 2. Determine Max Items based on plan
+                const planStr = document.getElementById('v-plan').value;
+                let maxItems = 5;
+                if(planStr.includes("Pro")) maxItems = 15;
+                if(planStr.includes("Executive")) maxItems = 999;
+
+                // 3. Save to Supabase (Pending Status)
+                btn.innerText = "Submitting Application...";
+                
+                const { error } = await supabaseClient.from('vendors').insert([{
+                    profile_id: currentUser.id,
+                    email: currentUser.email, // 🚀 THE MAGIC FIX: Saves email directly!
+                    business_name: document.getElementById('v-name').value.trim(),
+                    whatsapp_number: document.getElementById('v-whatsapp').value.trim(),
+                    location: document.getElementById('v-location').value.trim(),
+                    description: document.getElementById('v-desc').value.trim(),
+                    subscription_plan: planStr,
+                    categories: selectedCats.join(", "),
+                    logo_url: logoUrl,
+                    receipt_url: receiptUrl,
+                    student_id_url: idUrl,
+                    max_items: maxItems,
+                    is_active: false, // PENDING APPROVAL!
+                    is_suspended: false
+                }]);
+
+                if (error) throw error;
+
+                alert("Application Submitted! You will be redirected to the dashboard to wait for approval.");
+                window.location.href = "../add-product/index.html";
+
+            } catch (error) {
+                console.error(error);
+                alert("Failed to submit. Please check your connection.");
+                btn.disabled = false;
+                btn.innerText = "Submit Application";
+            }
+            
+        }
+    </script>
+</body>
+</html>

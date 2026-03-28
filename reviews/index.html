@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Student Reviews | UNICAL Market</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+
+    <style>
+        /* --- REVIEW PAGE SPECIFIC STYLES --- */
+        .page-header-text { font-size: 24px; font-weight: 800; color: var(--text-main); margin-bottom: 5px; }
+        .page-subtext { color: var(--text-muted); font-size: 13px; margin-bottom: 20px; }
+
+        .write-btn {
+            background: var(--brand-color); color: white; border: none;
+            padding: 14px 20px; border-radius: 30px; font-weight: 800; font-size: 14px;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s; display: inline-flex; align-items: center; gap: 8px;
+            margin-bottom: 20px;
+        }
+        .write-btn:active { transform: scale(0.95); }
+
+        .filter-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 15px; scrollbar-width: none; }
+        .filter-scroll::-webkit-scrollbar { display: none; }
+        .filter-btn {
+            padding: 8px 16px; border: 1px solid #e2e8f0; background: white;
+            border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer;
+            white-space: nowrap; color: var(--text-muted); transition: all 0.2s;
+        }
+        .filter-btn.active { background: var(--brand-color); color: white; border-color: var(--brand-color); }
+
+        /* 🚀 THE FIX: Overriding the global slider constraints so it fills the screen width */
+        .review-card {
+            background: white; border-radius: 16px; padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;
+            margin-bottom: 15px; width: 100%; min-width: 100% !important; max-width: 100% !important;
+        }
+        .rev-header-flex { display: flex; justify-content: space-between; align-items: flex-start; }
+        .rev-user-info { display: flex; gap: 12px; }
+        .rev-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #eee; }
+        .rev-name { font-size: 14px; font-weight: 800; color: var(--text-main); }
+        .rev-stars { font-size: 10px; color: #f59e0b; margin: 3px 0; }
+        .rev-date { font-size: 11px; color: var(--text-muted); }
+        .rev-body { margin-top: 12px; font-size: 13px; line-height: 1.5; color: #475569; font-style: italic; }
+
+        .pending-badge { background: #fef3c7; color: #d97706; padding: 3px 8px; border-radius: 10px; font-size: 9px; font-weight: 800; margin-left: 5px; vertical-align: middle; }
+        .action-icon { font-size: 14px; color: #cbd5e1; cursor: pointer; margin-left: 10px; transition: 0.2s; }
+        .action-icon:hover { color: var(--brand-color); }
+        .action-delete:hover { color: #ef4444; }
+
+        .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* MODAL STYLES */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 2000;
+            justify-content: center; align-items: center;
+        }
+        .modal-content {
+            background: white; padding: 25px; border-radius: 24px; width: 90%; max-width: 400px;
+            position: relative; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #94a3b8; }
+        .star-selector { display: flex; justify-content: center; gap: 10px; margin: 20px 0; }
+        .star-selector i { font-size: 32px; color: #e2e8f0; cursor: pointer; transition: 0.2s; }
+        .star-selector i.active { color: #f59e0b; text-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
+        .modal-textarea {
+            width: 100%; height: 120px; padding: 15px; border: 2px solid #e2e8f0; border-radius: 12px;
+            outline: none; font-size: 14px; font-family: inherit; resize: none; margin-bottom: 15px;
+        }
+        .modal-textarea:focus { border-color: var(--brand-color); }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <div class="header" style="display: flex; align-items: center; gap: 15px; padding-bottom: 15px;">
+            <a href="../index.html" class="back-btn" style="color: var(--text-main); font-size: 20px;"><i class="fas fa-arrow-left"></i></a>
+            <h1 style="margin: 0; font-size: 18px; color: var(--text-main); font-weight: 800;">Reviews</h1>
+        </div>
+
+        <div class="content-area" style="padding: 0 20px 90px;">
+            
+            <h1 class="page-header-text">What Students Say</h1>
+            <p class="page-subtext">Real feedback from the UNICAL community.</p>
+
+            <button class="write-btn" onclick="openReviewModal()">
+                <i class="fas fa-pen"></i> Drop a Review
+            </button>
+
+            <div class="filter-scroll">
+                <button class="filter-btn active" onclick="filterReviews('all', this)">All</button>
+                <button class="filter-btn" onclick="filterReviews(5, this)">5 <i class="fas fa-star" style="color:#f59e0b;"></i></button>
+                <button class="filter-btn" onclick="filterReviews(4, this)">4 <i class="fas fa-star" style="color:#f59e0b;"></i></button>
+                <button class="filter-btn" onclick="filterReviews(3, this)">3 <i class="fas fa-star" style="color:#f59e0b;"></i></button>
+                <button class="filter-btn" onclick="filterReviews(2, this)">2 <i class="fas fa-star" style="color:#f59e0b;"></i></button>
+                <button class="filter-btn" onclick="filterReviews(1, this)">1 <i class="fas fa-star" style="color:#f59e0b;"></i></button>
+            </div>
+
+            <div id="reviews-container">
+                <div class="review-card">
+                    <div style="display:flex; gap:10px; margin-bottom:15px;">
+                        <div class="sk-shimmer" style="width:45px; height:45px; border-radius:50%;"></div>
+                        <div style="flex:1;">
+                            <div class="sk-shimmer" style="width:50%; height:12px; margin-bottom:8px;"></div>
+                            <div class="sk-shimmer" style="width:30%; height:10px;"></div>
+                        </div>
+                    </div>
+                    <div class="sk-shimmer" style="width:100%; height:12px; margin-bottom:8px;"></div>
+                    <div class="sk-shimmer" style="width:80%; height:12px;"></div>
+                </div>
+            </div>
+
+            <div style="background: #f1f5f9; text-align: center; padding: 30px 20px; border-radius: 20px; margin-top: 30px;">
+                <div style="font-size: 40px; margin-bottom: 10px;">✍️</div>
+                <h3 style="font-size: 16px; color: var(--text-main); margin-bottom: 5px;">Got scammed or served well?</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Keep the market safe by sharing your experience.</p>
+                <button class="write-btn" style="margin: 0;" onclick="openReviewModal()">Write a Review</button>
+            </div>
+
+        </div>
+
+        <div id="reviewModal" class="modal-overlay">
+            <div class="modal-content">
+                <span class="close-modal" onclick="closeReviewModal()">&times;</span>
+                <h3 id="modalTitle" style="text-align:center; color: var(--text-main); font-size: 18px;">Rate your experience</h3>
+                
+                <div class="star-selector" id="starInput">
+                    <i class="fas fa-star" data-val="1"></i>
+                    <i class="fas fa-star" data-val="2"></i>
+                    <i class="fas fa-star" data-val="3"></i>
+                    <i class="fas fa-star" data-val="4"></i>
+                    <i class="fas fa-star" data-val="5"></i>
+                </div>
+                
+                <textarea id="reviewText" class="modal-textarea" placeholder="Be honest. Did you get what you paid for?"></textarea>
+                <p id="reviewError" style="color:#ef4444; font-size:12px; text-align:center; display:none; font-weight: bold; margin-bottom: 10px;"></p>
+                
+                <button class="write-btn" id="submit-btn" style="width: 100%; justify-content: center; margin: 0;" onclick="submitReview()">Post Review</button>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <a href="../index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')"><i class="fas fa-comment-dots"></i><span>Messages</span></a>
+            <div class="nav-fab" onclick="requireLogin('../add-product/index.html')"><i class="fas fa-plus"></i></div>
+            <a href="#" class="nav-item" onclick="requireLogin('../saved/index.html')"><i class="fas fa-heart"></i><span>Saved</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../account/index.html')"><i class="fas fa-user"></i><span>Account</span></a>
+        </div>
+
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+        let allReviews = [];
+        let selectedRating = 0;
+        let editingReviewId = null;
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) currentUser = session.user;
+            fetchReviews();
+        });
+
+        async function requireLogin(targetUrl) {
+            if (currentUser) window.location.href = targetUrl;
+            else window.location.href = "../login/index.html";
+        }
+
+        function timeAgo(dateString) {
+            const seconds = Math.floor((new Date() - new Date(dateString)) / 1000);
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + " years ago";
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " months ago";
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + " days ago";
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " hours ago";
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " mins ago";
+            return "Just now";
+        }
+
+        async function fetchReviews() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('reviews')
+                    .select('id, rating, review_text, status, created_at, reviewer_id, profiles ( full_name, avatar_url )')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                allReviews = data.filter(r => r.status === 'approved' || (currentUser && r.reviewer_id === currentUser.id));
+                renderReviews(allReviews);
+            } catch (error) {
+                document.getElementById('reviews-container').innerHTML = `<p style="text-align:center; color:red;">Failed to load reviews.</p>`;
+            }
+        }
+
+        window.renderReviews = function(dataArray) {
+            const container = document.getElementById('reviews-container');
+            container.innerHTML = "";
+
+            if (dataArray.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:#94a3b8; padding: 30px;">No reviews found here.</p>`;
+                return;
+            }
+
+            dataArray.forEach(r => {
+                const starsHtml = '<i class="fas fa-star"></i>'.repeat(r.rating);
+                const isPending = r.status === 'pending' ? `<span class="pending-badge">PENDING</span>` : '';
+                
+                const authorName = r.profiles?.full_name || "UNICAL Student";
+                const authorImg = r.profiles?.avatar_url || "../img/person.png";
+                const dateText = timeAgo(r.created_at);
+
+                let actionHtml = "";
+                if (currentUser && r.reviewer_id === currentUser.id) {
+                    const safeText = r.review_text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    actionHtml = `
+                        <div>
+                            <i class="fas fa-edit action-icon" onclick="openEditModal('${r.id}', '${safeText}', ${r.rating})"></i>
+                            <i class="fas fa-trash action-icon action-delete" onclick="deleteReview('${r.id}')"></i>
+                        </div>
+                    `;
+                }
+
+                container.innerHTML += `
+                    <div class="review-card">
+                        <div class="rev-header-flex">
+                            <div class="rev-user-info">
+                                <img src="${authorImg}" class="rev-avatar" onerror="this.src='../img/person.png'">
+                                <div>
+                                    <div class="rev-name">${authorName} ${isPending}</div>
+                                    <div class="rev-stars">${starsHtml}</div>
+                                    <div class="rev-date">${dateText}</div>
+                                </div>
+                            </div>
+                            ${actionHtml}
+                        </div>
+                        <div class="rev-body">"${r.review_text}"</div>
+                    </div>
+                `;
+            });
+        }
+
+        window.filterReviews = function(rating, btnElement) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            if (rating === 'all') renderReviews(allReviews);
+            else renderReviews(allReviews.filter(r => r.rating === rating));
+        }
+
+        window.openReviewModal = function() {
+            if (!currentUser) { alert("Please log in to drop a review!"); window.location.href = "../login/index.html"; return; }
+            const myReviewCount = allReviews.filter(r => r.reviewer_id === currentUser.id).length;
+            if (!editingReviewId && myReviewCount >= 2) { alert("Max limit of 2 reviews reached."); return; }
+            document.getElementById('reviewModal').style.display = 'flex';
+        }
+
+        window.closeReviewModal = function() {
+            document.getElementById('reviewModal').style.display = 'none';
+            selectedRating = 0; editingReviewId = null; updateStars();
+            document.getElementById('reviewText').value = "";
+            document.getElementById('reviewError').style.display = 'none';
+            document.getElementById('modalTitle').innerText = "Rate your experience";
+        }
+
+        window.openEditModal = function(id, text, rating) {
+            editingReviewId = id;
+            document.getElementById('modalTitle').innerText = "Edit your review";
+            document.getElementById('reviewText').value = text;
+            selectedRating = rating;
+            updateStars();
+            document.getElementById('reviewModal').style.display = 'flex';
+        }
+
+        document.querySelectorAll('#starInput i').forEach(star => {
+            star.addEventListener('click', function() {
+                selectedRating = parseInt(this.getAttribute('data-val'));
+                updateStars();
+            });
+        });
+
+        function updateStars() {
+            document.querySelectorAll('#starInput i').forEach(star => {
+                const val = parseInt(star.getAttribute('data-val'));
+                star.className = val <= selectedRating ? 'fas fa-star active' : 'fas fa-star';
+            });
+        }
+
+        window.submitReview = async function() {
+            const text = document.getElementById('reviewText').value.trim();
+            const errorMsg = document.getElementById('reviewError');
+            
+            if (selectedRating === 0) { errorMsg.innerText = "Please select a star rating."; errorMsg.style.display = 'block'; return; }
+            if (text.length < 5) { errorMsg.innerText = "Review is too short."; errorMsg.style.display = 'block'; return; }
+
+            const btn = document.getElementById('submit-btn');
+            btn.innerText = "Posting..."; btn.disabled = true;
+
+            try {
+                if (editingReviewId) {
+                    await supabaseClient.from('reviews').update({ rating: selectedRating, review_text: text, status: 'pending' }).eq('id', editingReviewId);
+                    alert("Review updated! It is pending approval.");
+                } else {
+                    await supabaseClient.from('reviews').insert([{ reviewer_id: currentUser.id, rating: selectedRating, review_text: text, status: 'pending' }]);
+                    alert("Review posted! It will appear as 'PENDING' until approved.");
+                }
+                closeReviewModal(); fetchReviews();
+            } catch (error) { errorMsg.innerText = "Network error. Try again."; errorMsg.style.display = 'block'; } 
+            finally { btn.innerText = "Post Review"; btn.disabled = false; }
+        }
+
+        window.deleteReview = async function(id) {
+            if (!confirm("Delete this review forever?")) return;
+            try { await supabaseClient.from('reviews').delete().eq('id', id); fetchReviews(); } 
+            catch (error) { alert("Failed to delete review."); }
+        }
+    </script>
+</body>
+</html>

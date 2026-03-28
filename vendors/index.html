@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>All Vendors | UNICAL Market</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+
+    <style>
+        .header-top-flex { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .page-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; }
+        
+        .search-container { background: #f1f5f9; border-radius: 12px; display: flex; align-items: center; padding: 10px 15px; margin-bottom: 20px; }
+        .search-container input[type="search"] { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; color: var(--text-main); -webkit-appearance: none; }
+        
+        .vendor-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 20px; }
+        
+        .vendor-card {
+            background: white; border-radius: 16px; padding: 20px 15px; text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;
+            transition: transform 0.2s; display: flex; flex-direction: column; align-items: center;
+            height: 100%; justify-content: space-between; overflow: hidden; min-width: 0;
+        }
+        .vendor-card:active { transform: scale(0.98); }
+        
+        .vendor-logo {
+            width: 60px; height: 60px; border-radius: 50%; object-fit: cover;
+            border: 3px solid #f8fafc; background: #eee; margin-bottom: 10px; flex-shrink: 0;
+        }
+        
+        .vendor-info-wrapper { flex-grow: 1; width: 100%; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+        
+        .vendor-id { 
+            background: #f1f5f9; color: var(--text-muted); font-size: 10px; padding: 3px 8px; 
+            border-radius: 10px; font-family: monospace; font-weight: 800; margin-bottom: 8px; 
+            display: inline-block; align-self: center;
+        }
+        
+        .vendor-name { 
+            font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 4px; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; display: block;
+        }
+        
+        .vendor-desc { 
+            font-size: 11px; color: var(--text-muted); line-height: 1.4; 
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; 
+            overflow: hidden; margin-bottom: 12px; word-break: break-word;
+        }
+        
+        .visit-btn {
+            background: white; color: var(--brand-color); border: 2px solid var(--brand-color);
+            width: 100%; padding: 8px; border-radius: 20px; font-size: 12px; font-weight: 800;
+            cursor: pointer; transition: 0.2s; margin-top: auto;
+        }
+        .vendor-card:hover .visit-btn { background: var(--brand-color); color: white; }
+
+        .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        
+        .sk-card { background: white; border-radius: 16px; padding: 20px 15px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; }
+        .sk-avatar { width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px; flex-shrink: 0; }
+        .sk-line-1 { width: 40%; height: 12px; border-radius: 6px; margin-bottom: 10px; }
+        .sk-line-2 { width: 80%; height: 14px; border-radius: 6px; margin-bottom: 8px; }
+        .sk-line-3 { width: 90%; height: 10px; border-radius: 4px; margin-bottom: 15px; }
+        .sk-btn { width: 100%; height: 30px; border-radius: 20px; margin-top: auto; }
+
+        .end-message { text-align: center; padding: 30px 20px 40px; color: #94a3b8; font-size: 13px; font-weight: 600; display: none; }
+        .end-message i { font-size: 24px; color: #e2e8f0; margin-bottom: 8px; display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <div class="header">
+            <div class="header-top-flex">
+                <button onclick="window.history.back()" style="background:none; border:none; font-size:20px; color:var(--text-main); cursor:pointer;"><i class="fas fa-arrow-left"></i></button>
+                <h1 class="page-title">Verified Vendors</h1>
+            </div>
+            
+            <form class="search-container" action="#" onsubmit="return triggerSearch(event)">
+                <i class="fas fa-search" style="color: #94a3b8; margin-right: 10px;" onclick="triggerSearch(event)"></i>
+                <input type="search" id="vendor-search" placeholder="Search by name, ID, or category...">
+            </form>
+        </div>
+
+        <div class="content-area" style="padding: 0 0 90px 0;">
+            
+            <div class="vendor-grid" id="main-vendor-grid"></div>
+
+            <div class="vendor-grid" id="skeleton-loader" style="padding-top: 15px; display: none;">
+                <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div><div class="sk-shimmer sk-btn"></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div><div class="sk-shimmer sk-btn"></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div><div class="sk-shimmer sk-btn"></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div><div class="sk-shimmer sk-btn"></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div><div class="sk-shimmer sk-btn"></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div><div class="sk-shimmer sk-btn"></div></div>
+            </div>
+
+            <div id="scroll-sentinel" style="height: 1px; width: 100%;"></div>
+
+            <div class="end-message" id="end-message">
+                <i class="fas fa-check-circle"></i>
+                You've seen all verified vendors.
+            </div>
+
+        </div>
+
+        <div class="bottom-nav">
+            <a href="../index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')"><i class="fas fa-comment-dots"></i><span>Messages</span></a>
+            <div class="nav-fab" onclick="requireLogin('../add-product/index.html')"><i class="fas fa-plus"></i></div>
+            <a href="#" class="nav-item" onclick="requireLogin('../saved/index.html')"><i class="fas fa-heart"></i><span>Saved</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../account/index.html')"><i class="fas fa-user"></i><span>Account</span></a>
+        </div>
+
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let allVendors = [];
+        let currentDisplayList = [];
+        let vendorsLoaded = 0;
+        let isFetchingBatch = false;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchActiveVendors();
+        });
+
+        async function requireLogin(targetUrl) {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) window.location.href = targetUrl;
+            else window.location.href = "../login/index.html";
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        async function fetchActiveVendors() {
+            document.getElementById('skeleton-loader').style.display = 'grid';
+            try {
+                const { data, error } = await supabaseClient
+                    .from('vendors')
+                    .select('id, business_name, description, logo_url')
+                    .eq('is_active', true);
+
+                if (error) throw error;
+
+                allVendors = shuffleArray(data);
+                currentDisplayList = [...allVendors];
+                
+                loadNextBatch();
+
+                // 🚀 THE FIX: Only turn on the invisible tripwire AFTER the first load is completely done!
+                observer.observe(document.getElementById('scroll-sentinel'));
+
+            } catch (error) {
+                document.getElementById('skeleton-loader').style.display = 'none';
+                document.getElementById('main-vendor-grid').innerHTML = `<p style="grid-column:span 2; text-align:center; color:red; padding: 40px;">Failed to load vendors.</p>`;
+            }
+        }
+
+        function loadNextBatch() {
+            if (isFetchingBatch) return;
+
+            const grid = document.getElementById('main-vendor-grid');
+            const skeleton = document.getElementById('skeleton-loader');
+            const endMsg = document.getElementById('end-message');
+            
+            if (currentDisplayList.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: span 2; text-align: center; padding: 60px 20px; color: #94a3b8;">
+                        <i class="fas fa-store-slash" style="font-size: 50px; margin-bottom: 15px; color: #cbd5e1;"></i>
+                        <h3 style="font-size: 16px; color: #1e293b; margin: 0 0 5px;">No vendor found</h3>
+                        <p style="font-size: 13px;">Try adjusting your search or spelling.</p>
+                    </div>`;
+                endMsg.style.display = 'none';
+                skeleton.style.display = 'none';
+                return;
+            }
+
+            if (vendorsLoaded >= currentDisplayList.length) return;
+
+            isFetchingBatch = true;
+            skeleton.style.display = 'grid';
+
+            setTimeout(() => {
+                skeleton.style.display = 'none';
+
+                const batchSize = vendorsLoaded === 0 ? 50 : 40;
+                const nextBatch = currentDisplayList.slice(vendorsLoaded, vendorsLoaded + batchSize);
+
+                nextBatch.forEach(v => {
+                    const logoUrl = v.logo_url || 'https://via.placeholder.com/150x150?text=Logo';
+                    const shortId = "V-" + v.id.substring(0, 5).toUpperCase();
+                    const safeName = v.business_name ? v.business_name : 'Verified Vendor';
+                    const safeDesc = v.description || "Verified Seller on UNICAL Digital Market";
+
+                    grid.insertAdjacentHTML('beforeend', `
+                        <div class="vendor-card" onclick="window.location.href='profile.html?id=${v.id}'">
+                            <img src="${logoUrl}" class="vendor-logo" onerror="this.src='https://via.placeholder.com/150x150?text=Logo'">
+                            <div class="vendor-info-wrapper">
+                                <div><span class="vendor-id">${shortId}</span></div>
+                                <div class="vendor-name">${safeName} <i class="fas fa-check-circle" style="color: #38bdf8;"></i></div>
+                                <div class="vendor-desc">${safeDesc}</div>
+                            </div>
+                            <button class="visit-btn">Visit Store</button>
+                        </div>
+                    `);
+                });
+
+                vendorsLoaded += nextBatch.length;
+                isFetchingBatch = false;
+
+                if (vendorsLoaded >= currentDisplayList.length) {
+                    endMsg.style.display = 'block';
+                }
+            }, 600);
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                loadNextBatch();
+            }
+        }, { rootMargin: "100px" });
+
+        function triggerSearch(e) {
+            if (e) e.preventDefault(); 
+            document.getElementById('vendor-search').blur(); 
+            
+            const query = document.getElementById('vendor-search').value.toLowerCase().trim();
+            
+            currentDisplayList = allVendors.filter(v => {
+                const shortId = "v-" + v.id.substring(0, 5).toLowerCase();
+                return (
+                    (v.business_name && v.business_name.toLowerCase().includes(query)) || 
+                    (v.description && v.description.toLowerCase().includes(query)) ||
+                    shortId.includes(query)
+                );
+            });
+
+            vendorsLoaded = 0;
+            document.getElementById('main-vendor-grid').innerHTML = "";
+            document.getElementById('end-message').style.display = 'none';
+            loadNextBatch();
+
+            return false;
+        }
+    </script>
+</body>
+</html>

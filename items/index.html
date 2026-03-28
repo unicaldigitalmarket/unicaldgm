@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>All Items | UNICAL Market</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+
+    <style>
+        .header-top-flex { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .page-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; }
+        
+        .search-container { background: #f1f5f9; border-radius: 12px; display: flex; align-items: center; padding: 10px 15px; margin: 0; }
+        .search-container input[type="search"] { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; color: var(--text-main); -webkit-appearance: none; }
+        
+        .cat-filter-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 15px 20px; scrollbar-width: none; background: white; border-bottom: 1px solid #f1f5f9; }
+        .cat-filter-scroll::-webkit-scrollbar { display: none; }
+        .filter-pill { 
+            background: white; border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 20px; 
+            font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: 0.2s;
+        }
+        .filter-pill.active { background: var(--brand-color); color: white; border-color: var(--brand-color); }
+
+        .items-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px 20px 0; }
+
+        .product-card { background: white; border-radius: 16px; padding: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); cursor: pointer; border: 1px solid #f1f5f9; position: relative; }
+        .product-img { width: 100%; height: 150px; object-fit: cover; border-radius: 10px; background: #f8fafc; margin-bottom: 10px; }
+        .product-price { font-size: 16px; font-weight: 800; color: #2d8eff; margin-bottom: 4px; }
+        .product-title { font-size: 13px; font-weight: 600; color: var(--text-main); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .product-location { font-size: 10px; color: var(--text-muted); margin-top: 5px; display: flex; align-items: center; gap: 4px; }
+        .multi-img-badge { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); color: white; font-size: 10px; padding: 4px 8px; border-radius: 10px; backdrop-filter: blur(4px); font-weight: bold; }
+
+        .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        
+        .sk-card { background: white; border-radius: 16px; padding: 10px; border: 1px solid #f1f5f9; }
+        .sk-img { width: 100%; height: 150px; border-radius: 10px; margin-bottom: 10px; }
+        .sk-line-1 { width: 60%; height: 14px; border-radius: 4px; margin-bottom: 8px; }
+        .sk-line-2 { width: 90%; height: 12px; border-radius: 4px; margin-bottom: 6px; }
+        .sk-line-3 { width: 70%; height: 12px; border-radius: 4px; }
+
+        .end-message { text-align: center; padding: 30px 20px 40px; color: #94a3b8; font-size: 13px; font-weight: 600; display: none; }
+        .end-message i { font-size: 24px; color: #e2e8f0; margin-bottom: 8px; display: block; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <div class="header">
+            <div class="header-top-flex">
+                <button onclick="window.history.back()" style="background:none; border:none; font-size:20px; color:var(--text-main); cursor:pointer;"><i class="fas fa-arrow-left"></i></button>
+                <h1 class="page-title">Explore Items</h1>
+            </div>
+            
+            <form class="search-container" action="#" onsubmit="return triggerSearch(event)">
+                <i class="fas fa-search" style="color: #94a3b8; margin-right: 10px;" onclick="triggerSearch(event)"></i>
+                <input type="search" id="item-search" placeholder="Search for iPhones, shoes, books...">
+            </form>
+        </div>
+
+        <div class="cat-filter-scroll" id="category-filters">
+            <div class="filter-pill active" onclick="filterByCategory('All', this)">All Items</div>
+            <div class="filter-pill" onclick="filterByCategory('Phones', this)">Phones</div>
+            <div class="filter-pill" onclick="filterByCategory('Laptops', this)">Laptops</div>
+            <div class="filter-pill" onclick="filterByCategory('Fashion', this)">Fashion</div>
+            <div class="filter-pill" onclick="filterByCategory('Food', this)">Food</div>
+            <div class="filter-pill" onclick="filterByCategory('Services', this)">Services</div>
+            <div class="filter-pill" onclick="filterByCategory('Books', this)">Books</div>
+            <div class="filter-pill" onclick="filterByCategory('Accommodation', this)">Hostels</div>
+        </div>
+
+        <div class="content-area" style="padding: 0 0 90px 0;">
+            
+            <div class="items-grid" id="main-items-grid"></div>
+
+            <div class="items-grid" id="skeleton-loader" style="padding-top: 12px; display: none;">
+                <div class="sk-card"><div class="sk-shimmer sk-img"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-img"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-img"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-img"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-img"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-img"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div></div>
+            </div>
+
+            <div id="scroll-sentinel" style="height: 1px; width: 100%;"></div>
+
+            <div class="end-message" id="end-message">
+                <i class="fas fa-check-circle"></i>
+                You've seen all items in this category.
+            </div>
+
+        </div>
+
+        <div class="bottom-nav">
+            <a href="../index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')"><i class="fas fa-comment-dots"></i><span>Messages</span></a>
+            <div class="nav-fab" onclick="requireLogin('../add-product/index.html')"><i class="fas fa-plus"></i></div>
+            <a href="#" class="nav-item" onclick="requireLogin('../saved/index.html')"><i class="fas fa-heart"></i><span>Saved</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../account/index.html')"><i class="fas fa-user"></i><span>Account</span></a>
+        </div>
+
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let allProducts = [];
+        let currentDisplayList = [];
+        let itemsLoaded = 0;
+        const ITEMS_PER_PAGE = 50;
+        let isFetchingBatch = false;
+        
+        // 🚀 NEW: Keeps track of the currently selected category
+        let currentCategory = 'All'; 
+
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchMarketItems();
+        });
+
+        async function requireLogin(targetUrl) {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) window.location.href = targetUrl;
+            else window.location.href = "../login/index.html";
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        async function fetchMarketItems() {
+            document.getElementById('skeleton-loader').style.display = 'grid';
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('products')
+                    .select('id, name, price, category, image_urls, status')
+                    .eq('status', 'Active');
+
+                if (error) throw error;
+
+                allProducts = shuffleArray(data);
+                currentDisplayList = [...allProducts]; 
+                
+                const urlParams = new URLSearchParams(window.location.search);
+                const passedCat = urlParams.get('cat');
+                
+                if (passedCat) {
+                    const pill = Array.from(document.querySelectorAll('.filter-pill')).find(p => p.innerText.includes(passedCat));
+                    if (pill) filterByCategory(passedCat, pill);
+                } else {
+                    loadNextBatch();
+                }
+
+                observer.observe(document.getElementById('scroll-sentinel'));
+
+            } catch (error) {
+                document.getElementById('skeleton-loader').style.display = 'none';
+                document.getElementById('main-items-grid').innerHTML = `<p style="grid-column:span 2; text-align:center; color:red; padding: 40px;">Failed to load items.</p>`;
+            }
+        }
+
+        function loadNextBatch() {
+            if (isFetchingBatch) return;
+
+            const grid = document.getElementById('main-items-grid');
+            const skeleton = document.getElementById('skeleton-loader');
+            const endMsg = document.getElementById('end-message');
+            
+            if (currentDisplayList.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: span 2; text-align: center; padding: 60px 20px; color: #94a3b8;">
+                        <i class="fas fa-box-open" style="font-size: 50px; margin-bottom: 15px; color: #cbd5e1;"></i>
+                        <h3 style="font-size: 16px; color: #1e293b; margin: 0 0 5px;">No items found</h3>
+                        <p style="font-size: 13px;">Try adjusting your search, category, or spelling.</p>
+                    </div>`;
+                endMsg.style.display = 'none';
+                skeleton.style.display = 'none';
+                return;
+            }
+
+            if (itemsLoaded >= currentDisplayList.length) return;
+
+            isFetchingBatch = true;
+            skeleton.style.display = 'grid';
+
+            setTimeout(() => {
+                skeleton.style.display = 'none';
+
+                const nextBatch = currentDisplayList.slice(itemsLoaded, itemsLoaded + ITEMS_PER_PAGE);
+
+                nextBatch.forEach(p => {
+                    const imgUrl = (p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/300x300?text=No+Image';
+                    const multiImageBadge = (p.image_urls && p.image_urls.length > 1) ? `<div class="multi-img-badge"><i class="far fa-images"></i> ${p.image_urls.length}</div>` : '';
+                    const fPrice = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(p.price);
+
+                    grid.insertAdjacentHTML('beforeend', `
+                        <div class="product-card" onclick="window.location.href='../product/index.html?id=${p.id}'">
+                            <img src="${imgUrl}" class="product-img" onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
+                            ${multiImageBadge}
+                            <div class="product-price">${fPrice}</div>
+                            <div class="product-title">${p.name}</div>
+                            <div class="product-location"><i class="fas fa-tag"></i> ${p.category}</div>
+                        </div>
+                    `);
+                });
+
+                itemsLoaded += nextBatch.length;
+                isFetchingBatch = false;
+
+                if (itemsLoaded >= currentDisplayList.length) {
+                    endMsg.style.display = 'block';
+                }
+
+            }, 600);
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                loadNextBatch();
+            }
+        }, { rootMargin: "100px" });
+
+        function resetAndReload() {
+            itemsLoaded = 0;
+            document.getElementById('main-items-grid').innerHTML = "";
+            document.getElementById('end-message').style.display = 'none';
+            loadNextBatch();
+        }
+
+        function filterByCategory(categoryName, btnElement) {
+            // Update active pill UI
+            document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+            if(btnElement) btnElement.classList.add('active');
+
+            // 🚀 FIX: Remember the chosen category globally
+            currentCategory = categoryName;
+
+            // Trigger the search function directly so it applies BOTH the active category AND any typed search word
+            triggerSearch(null); 
+        }
+
+        function triggerSearch(e) {
+            if (e) e.preventDefault(); 
+            if (document.getElementById('item-search')) {
+                document.getElementById('item-search').blur(); 
+            }
+
+            const query = document.getElementById('item-search').value.toLowerCase().trim();
+            
+            // 🚀 FIX: Filter by BOTH the typed word AND the globally saved category
+            currentDisplayList = allProducts.filter(p => {
+                const matchesSearchText = p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query);
+                const matchesCategory = (currentCategory === 'All') || (p.category === currentCategory);
+                
+                return matchesSearchText && matchesCategory;
+            });
+            
+            resetAndReload();
+            return false;
+        }
+    </script>
+</body>
+</html>

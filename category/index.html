@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>All Categories | UNICAL Market</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <div class="header" style="display: flex; align-items: center; gap: 15px; padding-bottom: 15px;">
+            <a href="../index.html" class="back-btn" style="color: var(--text-main); font-size: 20px;"><i class="fas fa-arrow-left"></i></a>
+            <h1 class="logo" style="margin: 0; font-size: 18px;">All Categories</h1>
+        </div>
+
+        <div class="content-area" style="padding: 10px 20px 110px;">
+            
+            <div class="full-cat-list">
+                
+                <a href="../items/index.html?cat=Phones" class="full-cat-item">
+                    <div class="full-cat-icon" style="color: #3b82f6; background: #eff6ff;"><i class="fas fa-mobile-alt"></i></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Phones & Tablets</div>
+                        <div class="full-cat-desc">iPhones, Androids, iPads, Accessories</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: #cbd5e1; font-size: 14px;"></i>
+                </a>
+
+                <a href="../items/index.html?cat=Laptops" class="full-cat-item">
+                    <div class="full-cat-icon" style="color: #8b5cf6; background: #f5f3ff;"><i class="fas fa-laptop"></i></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Laptops & Computers</div>
+                        <div class="full-cat-desc">MacBooks, Windows, Printers, Repairs</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: #cbd5e1; font-size: 14px;"></i>
+                </a>
+
+                <a href="../items/index.html?cat=Fashion" class="full-cat-item">
+                    <div class="full-cat-icon" style="color: #ec4899; background: #fdf2f8;"><i class="fas fa-tshirt"></i></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Fashion & Clothing</div>
+                        <div class="full-cat-desc">Shirts, Dresses, Shoes, Bags, Jewelry</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: #cbd5e1; font-size: 14px;"></i>
+                </a>
+
+                <a href="../items/index.html?cat=Food" class="full-cat-item">
+                    <div class="full-cat-icon" style="color: #f59e0b; background: #fffbeb;"><i class="fas fa-hamburger"></i></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Food & Pastries</div>
+                        <div class="full-cat-desc">Fast food, Snacks, Cakes, Drinks</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: #cbd5e1; font-size: 14px;"></i>
+                </a>
+
+                <a href="../items/index.html?cat=Services" class="full-cat-item">
+                    <div class="full-cat-icon" style="color: #10b981; background: #ecfdf5;"><i class="fas fa-tools"></i></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Campus Services</div>
+                        <div class="full-cat-desc">Graphics, Tailors, Barbers, Tutors</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: #cbd5e1; font-size: 14px;"></i>
+                </a>
+
+                <a href="../items/index.html?cat=Books" class="full-cat-item">
+                    <div class="full-cat-icon" style="color: #6366f1; background: #eef2ff;"><i class="fas fa-book"></i></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Books & Study Materials</div>
+                        <div class="full-cat-desc">Textbooks, Past Questions, Handouts</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: #cbd5e1; font-size: 14px;"></i>
+                </a>
+
+                <a href="../items/index.html?cat=Accommodation" class="full-cat-item">
+                    <div class="full-cat-icon" style="color: #14b8a6; background: #ecfdf5;"><i class="fas fa-home"></i></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Accommodation</div>
+                        <div class="full-cat-desc">Hostels, Roommates wanted, Lodges</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: #cbd5e1; font-size: 14px;"></i>
+                </a>
+
+                <a href="../items/index.html?cat=Health" class="full-cat-item">
+                    <div class="full-cat-icon" style="color: #f43f5e; background: #fff1f2;"><i class="fas fa-spa"></i></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Health & Beauty</div>
+                        <div class="full-cat-desc">Skincare, Makeup, Perfumes, Hair</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: #cbd5e1; font-size: 14px;"></i>
+                </a>
+
+                <a href="../items/index.html?cat=Electronics" class="full-cat-item">
+                    <div class="full-cat-icon" style="color: #0ea5e9; background: #f0f9ff;"><i class="fas fa-tv"></i></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Electronics</div>
+                        <div class="full-cat-desc">Fans, TVs, Irons, Generators</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: #cbd5e1; font-size: 14px;"></i>
+                </a>
+
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <a href="../index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')">
+                <i class="fas fa-comment-dots"></i>
+                <span>Messages</span>
+            </a>
+            <div class="nav-fab" onclick="requireLogin('../add-product/index.html')">
+                <i class="fas fa-plus"></i>
+            </div>
+            <a href="#" class="nav-item" onclick="requireLogin('../saved/index.html')">
+                <i class="fas fa-heart"></i>
+                <span>Saved</span>
+            </a>
+            <a href="#" class="nav-item" onclick="requireLogin('../account/index.html')">
+                <i class="fas fa-user"></i>
+                <span>Account</span>
+            </a>
+        </div>
+
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function requireLogin(targetUrl) {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                window.location.href = targetUrl;
+            } else {
+                window.location.href = "../login/";
+            }
+        }
+    </script>
+</body>
+</html>
