@@ -11,19 +11,25 @@
     <link rel="stylesheet" href="../asset/style.css">
 
     <style>
-        /* 🚀 FIX: Switched to strict 100% height to stop mobile browsers from hiding the bottom */
-        body, html { height: 100%; margin: 0; padding: 0; background: #f8fafc; overflow: hidden; }
+       /* 🚀 FIX: Using 100dvh (Dynamic Viewport Height) locks it perfectly to the mobile screen */
+        body, html { 
+            height: 100dvh; 
+            margin: 0; padding: 0; 
+            background: #f8fafc; 
+            overflow: hidden; /* Stops the whole screen from scrolling */
+        }
         
         .chat-container { 
             display: flex; 
             flex-direction: column; 
-            height: 100%; /* Fixed from 100vh */
+            height: 100dvh; /* Forces exact fit */
             width: 100%;
             max-width: 480px; 
             margin: 0 auto; 
             background: white; 
             box-shadow: 0 0 20px rgba(0,0,0,0.05); 
             position: relative;
+            overflow: hidden; /* Keeps everything inside */
         }
         
         /* Header */
