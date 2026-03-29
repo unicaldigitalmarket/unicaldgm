@@ -166,9 +166,25 @@
         async function initializeChat() {
             try {
                 if (urlChatId) {
-                    const { data: chat } = await supabaseClient.from('chats').select('*, products(name), profiles:customer_id(full_name)').eq('id', urlChatId).single();
+                    // 🚀 FIX 1: Safe 2-step fetch to prevent the 400 Bad Request Error
+                    const { data: chat, error } = await supabaseClient
+                        .from('chats')
+                        .select('*, products(name)')
+                        .eq('id', urlChatId)
+                        .single();
+                        
+                    if (error) throw error;
                     currentChat = chat;
                     activeChatId = chat.id;
+
+                    // Fetch customer name safely
+                    const { data: customerProfile } = await supabaseClient
+                        .from('profiles')
+                        .select('full_name')
+                        .eq('id', chat.customer_id)
+                        .single();
+                    if (customerProfile) currentChat.customer_name = customerProfile.full_name;
+
                 } else if (urlProductId && urlVendorId) {
                     const { data: chat } = await supabaseClient.from('chats')
                         .select('*, products(name)')
@@ -179,10 +195,20 @@
                     if (chat) {
                         currentChat = chat;
                         activeChatId = chat.id;
+                        
+                        const { data: customerProfile } = await supabaseClient
+                            .from('profiles')
+                            .select('full_name')
+                            .eq('id', chat.customer_id)
+                            .single();
+                        if (customerProfile) currentChat.customer_name = customerProfile.full_name;
+
                     } else {
                         document.getElementById('disclaimer').style.display = 'block';
                         const { data: prod } = await supabaseClient.from('products').select('name').eq('id', urlProductId).single();
-                        document.getElementById('head-product').innerText = prod.name;
+                        if (prod) {
+                            document.getElementById('head-product').innerText = prod.name;
+                        }
                         document.getElementById('head-name').innerText = "Vendor";
                     }
                 }
@@ -193,18 +219,17 @@
                     subscribeToRealtime();
                 }
 
-            } catch (err) { console.error(err); }
+            } catch (err) { console.error("Initialization Error:", err); }
         }
 
-        // 🚀 FIX 1: Made the header setup crash-proof
+        // 🚀 FIX 2: Crash-proof header setup
         function setupHeader() {
-            // Only try to update the product name if it actually exists in the object
-            if (currentChat.products && currentChat.products.name) {
+            if (currentChat && currentChat.products && currentChat.products.name) {
                 document.getElementById('head-product').innerText = currentChat.products.name;
             }
             
-            if (currentUser.id === currentChat.vendor_id) {
-                document.getElementById('head-name').innerText = currentChat.profiles?.full_name || "Customer";
+            if (currentChat && currentUser.id === currentChat.vendor_id) {
+                document.getElementById('head-name').innerText = currentChat.customer_name || "Customer";
             } else {
                 document.getElementById('head-name').innerText = "Store Vendor";
             }
@@ -316,30 +341,39 @@
                     
                     document.getElementById('disclaimer').style.display = 'none';
                     subscribeToRealtime();
-                    
-                    // 🚀 FIX 2: Removed setupHeader() here so it doesn't crash trying to read missing data!
 
                     await insertMessage(text, imgUrl, false);
 
                     const autoText = `System Auto-Contact Details:\nName: ${userProfile.full_name}\nPhone: ${userProfile.phone}`;
                     await insertMessage(autoText, null, true);
 
-                    const { data: vendorData } = await supabaseClient.from('profiles').select('email').eq('id', urlVendorId).single();
+                    // 🚀 FIX 3: Correctly fetching Vendor email from the 'vendors' table!
+                    const { data: vendorData } = await supabaseClient.from('vendors').select('email').eq('profile_id', urlVendorId).single();
                     if(vendorData && vendorData.email) {
-                        emailjs.send(EMAILJS_SERVICE, EMAILJS_VENDOR_TEMPLATE, { to_email: vendorData.email }).catch(e => console.log("Email err", e));
+                        console.log("Sending Vendor Alert to:", vendorData.email);
+                        emailjs.send(EMAILJS_SERVICE, EMAILJS_VENDOR_TEMPLATE, { to_email: vendorData.email })
+                            .then(res => console.log("Email sent successfully to vendor!", res))
+                            .catch(err => console.error("Vendor Email failed:", err));
+                    } else {
+                        console.log("No vendor email found to send alert.");
                     }
                 } 
                 else {
                     await insertMessage(text, imgUrl, false);
-                    
                     await supabaseClient.from('chats').update({ last_message_text: text || "Sent an image", last_message_time: new Date() }).eq('id', activeChatId);
 
                     if (currentUser.id === currentChat.vendor_id && currentChat.vendor_has_replied === false) {
                         await supabaseClient.from('chats').update({ vendor_has_replied: true }).eq('id', activeChatId);
                         
+                        // Fetching Customer email from profiles
                         const { data: custData } = await supabaseClient.from('profiles').select('email').eq('id', currentChat.customer_id).single();
                         if(custData && custData.email) {
-                            emailjs.send(EMAILJS_SERVICE, EMAILJS_CUSTOMER_TEMPLATE, { to_email: custData.email }).catch(e => console.log("Email err", e));
+                            console.log("Sending Customer Alert to:", custData.email);
+                            emailjs.send(EMAILJS_SERVICE, EMAILJS_CUSTOMER_TEMPLATE, { to_email: custData.email })
+                                .then(res => console.log("Email sent successfully to customer!", res))
+                                .catch(err => console.error("Customer Email failed:", err));
+                        } else {
+                            console.log("No customer email found to send alert.");
                         }
                     }
                 }
