@@ -158,10 +158,7 @@
             return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
         }
 
-        // 🚀 SMART BACK BUTTON LOGIC
         window.smartBack = function() {
-            // If they came from an external link (like WhatsApp) there is no browser history.
-            // Fallback directly to the items directory.
             if (document.referrer === "" || document.referrer.includes('wa.me')) {
                 window.location.href = "../items/index.html";
             } else {
@@ -223,11 +220,16 @@
                     dots.innerHTML += `<div class="dot ${index === 0 ? 'active' : ''}"></div>`;
                 });
 
-                if (images.length > 1) startAutoSlide(); // Trigger auto-slide if multiple pics!
+                if (images.length > 1) startAutoSlide(); 
 
                 // Populate Vendor
                 if (vendor) {
-                    document.getElementById('v-name').innerHTML = `${vendor.business_name} <i class="fas fa-check-circle" style="color: #2d8eff;"></i>`;
+                    // 🚀 Dynamic Badge Color Logic added here!
+                    let badgeColor = "#38bdf8"; // Default Blue (Verified)
+                    if (vendor.subscription_plan === "Influencer") badgeColor = "#fbbf24"; // Gold
+                    if (vendor.subscription_plan === "Icon") badgeColor = "#1e293b"; // Black/Slate
+
+                    document.getElementById('v-name').innerHTML = `${vendor.business_name} <i class="fas fa-check-circle" style="color: ${badgeColor};"></i>`;
                     document.getElementById('v-cat').innerText = vendor.categories ? vendor.categories.split(',')[0] : "Verified Seller";
                     document.getElementById('v-logo').src = vendor.logo_url || "https://via.placeholder.com/150";
                     
@@ -250,7 +252,6 @@
             }
         }
 
-        // 🚀 AUTO-SLIDING CAROUSEL LOGIC
         function updateDots() {
             const gallery = document.getElementById('image-gallery');
             const dots = document.querySelectorAll('.dot');
@@ -267,16 +268,14 @@
             const gallery = document.getElementById('image-gallery');
             slideInterval = setInterval(() => {
                 const maxScroll = gallery.scrollWidth - gallery.clientWidth;
-                // If we hit the end, go back to start. Otherwise scroll one image width right.
                 if (gallery.scrollLeft >= maxScroll - 10) {
                     gallery.scrollTo({ left: 0, behavior: 'smooth' });
                 } else {
                     gallery.scrollBy({ left: gallery.clientWidth, behavior: 'smooth' });
                 }
-            }, 2500); // Slides every 2.5 seconds
+            }, 2500); 
         }
 
-        // 🚀 RELATED ITEMS
         async function loadRelatedItems(category, currentId) {
             const grid = document.getElementById('related-grid');
             try {
@@ -285,7 +284,7 @@
                     .eq('category', category)
                     .eq('status', 'Active')
                     .neq('id', currentId) 
-                    .limit(4); // Keep it clean
+                    .limit(4); 
                 
                 if(!data || data.length === 0) {
                     grid.innerHTML = "<p style='grid-column: span 2; text-align: center; color: #94a3b8; font-size: 13px;'>No similar items right now.</p>";
@@ -307,7 +306,6 @@
             } catch(e) { console.error(e); }
         }
 
-        // 🚀 SHARE & SAVE LOGIC
         window.shareItem = function() {
             if (!currentProduct) return;
             const url = window.location.href;
@@ -321,31 +319,57 @@
             }
         }
 
-        function checkSavedStatus(id) {
-            const saved = JSON.parse(localStorage.getItem('saved_items') || '[]');
+       // Check if item is saved in database
+        async function checkSavedStatus(productId) {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) return; // Not logged in, can't check
+            
             const btn = document.getElementById('save-btn');
-            if (saved.includes(id)) {
+            
+            const { data } = await supabaseClient
+                .from('saved_items')
+                .select('id')
+                .match({ user_id: session.user.id, product_id: productId })
+                .single();
+
+            if (data) {
                 btn.innerHTML = '<i class="fas fa-heart" style="color:#ef4444;"></i>';
+                btn.setAttribute('data-saved', 'true');
             } else {
                 btn.innerHTML = '<i class="far fa-heart"></i>';
+                btn.setAttribute('data-saved', 'false');
             }
         }
 
-        window.toggleSave = function() {
+        // Save or Unsave to Database
+        window.toggleSave = async function() {
             if (!currentProduct) return;
-            let saved = JSON.parse(localStorage.getItem('saved_items') || '[]');
             
-            if (saved.includes(currentProduct.id)) {
-                // Remove it
-                saved = saved.filter(id => id !== currentProduct.id);
-                // Simple visual cue since we don't have custom toast alerts yet
-            } else {
-                // Add it
-                saved.push(currentProduct.id);
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                alert("Please log in to save items!");
+                window.location.href = "../login/index.html";
+                return;
             }
-            
-            localStorage.setItem('saved_items', JSON.stringify(saved));
-            checkSavedStatus(currentProduct.id);
+
+            const btn = document.getElementById('save-btn');
+            const isSaved = btn.getAttribute('data-saved') === 'true';
+
+            // Optimistic UI update (feels instant to the user)
+            if (isSaved) {
+                btn.innerHTML = '<i class="far fa-heart"></i>';
+                btn.setAttribute('data-saved', 'false');
+                // Delete from DB
+                await supabaseClient.from('saved_items').delete().match({ user_id: session.user.id, product_id: currentProduct.id });
+            } else {
+                btn.innerHTML = '<i class="fas fa-heart" style="color:#ef4444;"></i>';
+                btn.setAttribute('data-saved', 'true');
+                // Insert into DB
+                await supabaseClient.from('saved_items').insert([{
+                    user_id: session.user.id,
+                    product_id: currentProduct.id
+                }]);
+            }
         }
     </script>
 </body>

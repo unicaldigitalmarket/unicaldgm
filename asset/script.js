@@ -85,13 +85,14 @@ async function fetchItems() {
     } catch (error) { grid.innerHTML = `<p style="grid-column: span 2; text-align: center; color: red;">Failed to load items.</p>`; }
 }
 
-// --- FETCH VENDORS (STRICT HEIGHT FIX) ---
+// --- FETCH VENDORS (STRICT HEIGHT FIX & DYNAMIC BADGE) ---
 async function fetchVendors() {
     const grid = document.getElementById('vendor-grid');
     try {
+        // 🚀 FIX: Added subscription_plan to the Supabase select query
         const { data: vendors, error } = await supabaseClient
             .from('vendors')
-            .select('id, business_name, description, logo_url')
+            .select('id, business_name, description, logo_url, subscription_plan')
             .eq('is_active', true)
             .limit(100);
 
@@ -108,15 +109,21 @@ async function fetchVendors() {
         randomVendors.forEach(v => {
             const logo = v.logo_url || "https://via.placeholder.com/100";
             
-            // 🚀 FIX: We enforce truncation in JS to prevent HTML stretching bugs completely
             const nameTxt = v.business_name ? v.business_name : 'Unknown';
             const descTxt = v.description ? v.description.substring(0, 25) + '...' : 'Verified Seller';
+
+            // 🚀 THE FIX: Dynamic Badge Color Logic
+            let badgeColor = "#38bdf8"; // Default Blue (Verified)
+            if (v.subscription_plan === "Influencer") badgeColor = "#fbbf24"; // Gold
+            if (v.subscription_plan === "Icon") badgeColor = "#1e293b"; // Black/Slate
 
             grid.innerHTML += `
                 <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center; height: 100%;" onclick="window.location.href='vendors/profile.html?id=${v.id}'">
                     <img src="${logo}" style="width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 10px; flex-shrink: 0; object-fit: cover;" onerror="this.src='https://via.placeholder.com/100'">
                     <div style="width: 100%; overflow: hidden;">
-                        <div style="font-size: 13px; font-weight: 800; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${nameTxt} <i class="fas fa-check-circle" style="color: #2d8eff;"></i></div>
+                        <div style="font-size: 13px; font-weight: 800; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            ${nameTxt} <i class="fas fa-check-circle" style="color: ${badgeColor};"></i>
+                        </div>
                         <div style="margin-top: 5px; font-size: 11px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${descTxt}</div>
                     </div>
                 </div>

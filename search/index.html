@@ -13,7 +13,6 @@
         .search-header-row { display: flex; align-items: center; gap: 15px; width: 100%; }
         .search-input-wrapper { flex: 1; background: #f1f5f9; border-radius: 12px; display: flex; align-items: center; padding: 10px 15px; margin: 0; }
         
-        /* 🚀 FIX: Removes default webkit search styling so it looks clean */
         .search-input-wrapper input[type="search"] { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; color: var(--text-main); -webkit-appearance: none; }
         .search-input-wrapper i { color: #94a3b8; margin-right: 10px; cursor: pointer; }
 
@@ -175,18 +174,17 @@
             executeSearch();
         });
 
-        // 🚀 FIX: The new, powerful form submission handler
         function triggerSearch(e) {
-            if (e) e.preventDefault(); // Completely stops browser from refreshing or jumping
+            if (e) e.preventDefault(); 
             
-            document.getElementById('search-input').blur(); // Drops the keyboard out of the way!
+            document.getElementById('search-input').blur(); 
             
             const newQuery = document.getElementById('search-input').value.trim();
             window.history.replaceState(null, '', `?q=${encodeURIComponent(newQuery)}`);
             currentQuery = newQuery;
             executeSearch();
             
-            return false; // Backup prevention for forms
+            return false; 
         }
 
         async function fetchAllData() {
@@ -194,7 +192,8 @@
                 const { data: pData } = await supabaseClient.from('products').select('id, name, price, image_urls, category, description').eq('status', 'Active');
                 if (pData) allProducts = pData;
 
-                const { data: vData } = await supabaseClient.from('vendors').select('id, business_name, description, logo_url').eq('is_active', true);
+                // 🚀 FIX: Added subscription_plan to the fetch request so we know what color badge to show
+                const { data: vData } = await supabaseClient.from('vendors').select('id, business_name, description, logo_url, subscription_plan').eq('is_active', true);
                 if (vData) allVendors = vData;
             } catch (error) { console.error("Database fetch error."); }
         }
@@ -283,11 +282,18 @@
                 const logo = v.logo_url || "https://via.placeholder.com/100";
                 const descTxt = v.description ? v.description.substring(0, 25) + '...' : 'Verified Seller';
 
+                // 🚀 FIX: Apply the Dynamic Badge Color Logic
+                let badgeColor = "#38bdf8"; // Default Blue (Verified)
+                if (v.subscription_plan === "Influencer") badgeColor = "#fbbf24"; // Gold
+                if (v.subscription_plan === "Icon") badgeColor = "#1e293b"; // Black/Slate
+
                 grid.innerHTML += `
                     <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center; height: 100%;" onclick="window.location.href='../vendors/profile.html?id=${v.id}'">
                         <img src="${logo}" style="width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 10px; flex-shrink: 0; object-fit: cover;" onerror="this.src='https://via.placeholder.com/100'">
                         <div class="card-text-fix" style="width: 100%;">
-                            <div class="card-title" style="font-size: 13px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${v.business_name} <i class="fas fa-check-circle" style="color: #2d8eff;"></i></div>
+                            <div class="card-title" style="font-size: 13px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                ${v.business_name} <i class="fas fa-check-circle" style="color: ${badgeColor};"></i>
+                            </div>
                             <div class="card-desc" style="margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${descTxt}</div>
                         </div>
                     </div>

@@ -38,14 +38,24 @@
 
         .submit-btn { background: var(--brand-color); color: white; width: 100%; padding: 16px; border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; margin-top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
         .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* 🚀 NEW: Loading Screen while checking status */
+        #auth-check-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: var(--brand-color); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
+    <div id="auth-check-loader">
+        <div class="spinner"></div>
+        <p style="margin-top: 15px; font-weight: 600; color: var(--text-muted); font-size: 14px;">Checking account status...</p>
+    </div>
+
     <div class="app-container">
         <div class="header">
             <div class="header-top-flex">
-                <a href="../add-product/index.html" class="back-btn" style="color: var(--text-main); font-size: 20px;"><i class="fas fa-arrow-left"></i></a>
+                <button onclick="window.history.back()" style="background:none; border:none; font-size:20px; color:var(--text-main); cursor:pointer;"><i class="fas fa-arrow-left"></i></button>
                 <h1 class="page-title">Vendor Application</h1>
             </div>
         </div>
@@ -67,9 +77,9 @@
                 <div class="form-group">
                     <select id="v-plan" class="form-input" required>
                         <option value="" disabled selected>-- Choose a Plan --</option>
-                        <option value="Essential (₦2,000/month)">Essential - ₦2,000/month (5 Items)</option>
-                        <option value="Pro (₦3,500/month)">Pro - ₦3,500/month (15 Items)</option>
-                        <option value="Executive (₦5,000/month)">Executive - ₦5,000/month (Unlimited)</option>
+                        <option value="Verified">Verified - ₦2,000 (5 Slots + Blue Badge)</option>
+                        <option value="Influencer">Influencer - ₦3,500 (10 Slots + Gold Badge)</option>
+                        <option value="Icon">Icon - ₦5,000 (15 Slots + Black Badge)</option>
                     </select>
                 </div>
 
@@ -151,8 +161,36 @@
 
         document.addEventListener("DOMContentLoaded", async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session) { window.location.href = "../login/index.html"; return; }
+            
+            // 1. Kick them out if not logged in at all
+            if (!session) { 
+                window.location.href = "../login/index.html"; 
+                return; 
+            }
+            
             currentUser = session.user;
+
+            // 🚀 2. THE FIX: Check if they are ALREADY a vendor
+            try {
+                const { data: existingVendor } = await supabaseClient
+                    .from('vendors')
+                    .select('id')
+                    .eq('profile_id', currentUser.id)
+                    .single();
+
+                if (existingVendor) {
+                    // They are already a vendor! Boot them to the dashboard.
+                    window.location.href = "../add-product/index.html";
+                    return;
+                }
+                
+                // If they are NOT a vendor, hide the loading screen and let them register
+                document.getElementById('auth-check-loader').style.display = 'none';
+
+            } catch (error) {
+                // If an error happens (usually means no row found), just let them register
+                document.getElementById('auth-check-loader').style.display = 'none';
+            }
         });
 
         // Makes the upload boxes turn green when a file is selected
@@ -197,23 +235,23 @@
                 btn.innerText = "Uploading ID (3/3)...";
                 const idUrl = await uploadToCloudinary(document.getElementById('f-id').files[0]);
 
-                // 2. Determine Max Items based on plan
+                // 2. Determine Max Items based on the plan
                 const planStr = document.getElementById('v-plan').value;
-                let maxItems = 5;
-                if(planStr.includes("Pro")) maxItems = 15;
-                if(planStr.includes("Executive")) maxItems = 999;
+                let maxItems = 5; // Default for Verified
+                if(planStr === "Influencer") maxItems = 10;
+                if(planStr === "Icon") maxItems = 15;
 
                 // 3. Save to Supabase (Pending Status)
                 btn.innerText = "Submitting Application...";
                 
                 const { error } = await supabaseClient.from('vendors').insert([{
                     profile_id: currentUser.id,
-                    email: currentUser.email, // 🚀 THE MAGIC FIX: Saves email directly!
+                    email: currentUser.email,
                     business_name: document.getElementById('v-name').value.trim(),
                     whatsapp_number: document.getElementById('v-whatsapp').value.trim(),
                     location: document.getElementById('v-location').value.trim(),
                     description: document.getElementById('v-desc').value.trim(),
-                    subscription_plan: planStr,
+                    subscription_plan: planStr, // Saves 'Verified', 'Influencer', or 'Icon'
                     categories: selectedCats.join(", "),
                     logo_url: logoUrl,
                     receipt_url: receiptUrl,
@@ -234,7 +272,6 @@
                 btn.disabled = false;
                 btn.innerText = "Submit Application";
             }
-            
         }
     </script>
 </body>

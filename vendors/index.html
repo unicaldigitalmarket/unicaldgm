@@ -150,9 +150,10 @@
         async function fetchActiveVendors() {
             document.getElementById('skeleton-loader').style.display = 'grid';
             try {
+                // 🚀 THE FIX: Added 'subscription_plan' to the select query
                 const { data, error } = await supabaseClient
                     .from('vendors')
-                    .select('id, business_name, description, logo_url')
+                    .select('id, business_name, description, logo_url, subscription_plan')
                     .eq('is_active', true);
 
                 if (error) throw error;
@@ -161,8 +162,6 @@
                 currentDisplayList = [...allVendors];
                 
                 loadNextBatch();
-
-                // 🚀 THE FIX: Only turn on the invisible tripwire AFTER the first load is completely done!
                 observer.observe(document.getElementById('scroll-sentinel'));
 
             } catch (error) {
@@ -207,12 +206,17 @@
                     const safeName = v.business_name ? v.business_name : 'Verified Vendor';
                     const safeDesc = v.description || "Verified Seller on UNICAL Digital Market";
 
+                    // 🚀 THE FIX: Dynamic Badge Color Logic
+                    let badgeColor = "#38bdf8"; // Default Blue (Verified)
+                    if (v.subscription_plan === "Influencer") badgeColor = "#fbbf24"; // Gold
+                    if (v.subscription_plan === "Icon") badgeColor = "#1e293b"; // Black/Slate
+
                     grid.insertAdjacentHTML('beforeend', `
                         <div class="vendor-card" onclick="window.location.href='profile.html?id=${v.id}'">
                             <img src="${logoUrl}" class="vendor-logo" onerror="this.src='https://via.placeholder.com/150x150?text=Logo'">
                             <div class="vendor-info-wrapper">
                                 <div><span class="vendor-id">${shortId}</span></div>
-                                <div class="vendor-name">${safeName} <i class="fas fa-check-circle" style="color: #38bdf8;"></i></div>
+                                <div class="vendor-name">${safeName} <i class="fas fa-check-circle" style="color: ${badgeColor};"></i></div>
                                 <div class="vendor-desc">${safeDesc}</div>
                             </div>
                             <button class="visit-btn">Visit Store</button>

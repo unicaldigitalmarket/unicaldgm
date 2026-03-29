@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Edit Vendor Profile | UNICAL Market</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+
+    <style>
+        :root {
+            --brand-color: #2d8eff; 
+            --brand-bg: #f8fafc;    
+            --text-main: #1e293b;   
+            --text-muted: #64748b;  
+            --danger: #ef4444;      
+            --success: #10b981;     
+        }
+
+        .header-top-flex { display: flex; align-items: center; gap: 15px; margin-bottom: 20px; }
+        .page-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; }
+        
+        .avatar-upload-container { display: flex; flex-direction: column; align-items: center; margin-bottom: 25px; }
+        .avatar-preview-box { position: relative; width: 100px; height: 100px; border-radius: 50%; margin-bottom: 10px; }
+        .avatar-preview { width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid white; box-shadow: 0 4px 15px rgba(0,0,0,0.05); background: #eee; }
+        .avatar-edit-btn { position: absolute; bottom: 0; right: 0; background: var(--brand-color); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 3px solid white; cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        #logo-upload { display: none; }
+
+        .form-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; margin-bottom: 20px; }
+        .input-group { margin-bottom: 16px; }
+        .input-label { display: block; font-size: 12px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .input-field { width: 100%; padding: 14px 15px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px; outline: none; background: #f8fafc; transition: 0.2s; font-family: inherit; }
+        .input-field:focus { border-color: var(--brand-color); background: white; box-shadow: 0 0 0 3px rgba(45, 142, 255, 0.1); }
+        textarea.input-field { resize: vertical; min-height: 100px; }
+
+        .cat-picker-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 5px; }
+        .cat-pill { 
+            background: #f1f5f9; color: var(--text-muted); border: 1px solid #e2e8f0; 
+            padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; 
+            cursor: pointer; transition: 0.2s; user-select: none;
+        }
+        .cat-pill.active { background: var(--brand-color); color: white; border-color: var(--brand-color); box-shadow: 0 4px 10px rgba(45, 142, 255, 0.2); }
+
+        .stats-panel { display: flex; gap: 10px; margin-bottom: 20px; }
+        .stat-box { flex: 1; background: #f1f5f9; padding: 15px; border-radius: 12px; text-align: center; border: 1px dashed #cbd5e1; }
+        .stat-box i { color: var(--text-muted); font-size: 20px; margin-bottom: 8px; }
+        .stat-value { font-size: 16px; font-weight: 800; color: var(--text-main); margin-bottom: 2px; }
+        .stat-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 600; }
+
+        .save-btn { background: var(--brand-color); color: white; border: none; width: 100%; padding: 16px; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(45, 142, 255, 0.2); display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .save-btn:active { transform: scale(0.98); }
+        .save-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        #msg-box { font-size: 13px; font-weight: 600; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; display: none; }
+        .msg-error { color: var(--danger); background: #fef2f2; border: 1px solid #fecaca; }
+        .msg-success { color: var(--success); background: #ecfdf5; border: 1px solid #a7f3d0; }
+
+        #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 100; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: var(--brand-color); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p style="margin-top: 15px; font-weight: 600; color: var(--text-muted); font-size: 14px;">Loading Store Details...</p>
+    </div>
+
+    <div class="app-container">
+        
+        <div class="header">
+            <div class="header-top-flex">
+                <button onclick="window.history.back()" style="background:none; border:none; font-size:20px; color:var(--text-main); cursor:pointer;"><i class="fas fa-arrow-left"></i></button>
+                <h1 class="page-title">Store Settings</h1>
+            </div>
+        </div>
+
+        <div class="content-area" style="padding: 0 20px 90px;">
+            
+            <div id="msg-box"></div>
+
+            <div class="avatar-upload-container">
+                <div class="avatar-preview-box">
+                    <img src="https://via.placeholder.com/150x150?text=Logo" id="profile-preview" class="avatar-preview">
+                    <label for="logo-upload" class="avatar-edit-btn">
+                        <i class="fas fa-camera"></i>
+                    </label>
+                    <input type="file" id="logo-upload" accept="image/*" onchange="previewImage(event)">
+                </div>
+                <div style="font-size: 12px; color: var(--text-muted);">Tap camera to change logo</div>
+            </div>
+
+            <div class="stats-panel">
+                <div class="stat-box">
+                    <i class="fas fa-box-open"></i>
+                    <div class="stat-value" id="disp-max-items">--</div>
+                    <div class="stat-label">Max Items</div>
+                </div>
+                <div class="stat-box">
+                    <i class="fas fa-gem"></i>
+                    <div class="stat-value" id="disp-plan" style="color: var(--brand-color);">--</div>
+                    <div class="stat-label">Current Plan</div>
+                </div>
+            </div>
+
+            <form id="profile-form" onsubmit="saveProfile(event)">
+                <div class="form-card">
+                    <div class="input-group">
+                        <label class="input-label">Business Name</label>
+                        <input type="text" id="business-name" class="input-field" placeholder="e.g. Joy's Pastries" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Store Description</label>
+                        <textarea id="description" class="input-field" placeholder="Tell students what you sell..." required></textarea>
+                    </div>
+                </div>
+
+                <div class="form-card">
+                    <div class="input-group">
+                        <label class="input-label">Categories (Select Multiple)</label>
+                        <div class="cat-picker-grid" id="category-container">
+                            <div class="cat-pill" data-val="Phones">Phones & Tablets</div>
+                            <div class="cat-pill" data-val="Laptops">Laptops & Computers</div>
+                            <div class="cat-pill" data-val="Fashion">Fashion & Clothing</div>
+                            <div class="cat-pill" data-val="Food">Food & Pastries</div>
+                            <div class="cat-pill" data-val="Services">Campus Services</div>
+                            <div class="cat-pill" data-val="Books">Books & Materials</div>
+                            <div class="cat-pill" data-val="Accommodation">Accommodation</div>
+                            <div class="cat-pill" data-val="Electronics">Electronics</div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">Location on Campus</label>
+                        <input type="text" id="location" class="input-field" placeholder="e.g. Hall 4, Block B" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label class="input-label">WhatsApp Number</label>
+                        <input type="tel" id="whatsapp" class="input-field" placeholder="e.g. 08012345678" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="save-btn" id="save-btn">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dj6yl36fq/image/upload';
+        const CLOUDINARY_PRESET = 'unical_avaters';
+
+        let currentUser = null;
+        let currentVendorId = null;
+        let newLogoFile = null;
+        
+        let selectedCategories = [];
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initPage();
+            setupCategoryPills();
+        });
+
+        function setupCategoryPills() {
+            document.querySelectorAll('.cat-pill').forEach(pill => {
+                pill.addEventListener('click', function() {
+                    const val = this.getAttribute('data-val');
+                    
+                    if (selectedCategories.includes(val)) {
+                        selectedCategories = selectedCategories.filter(c => c !== val);
+                        this.classList.remove('active');
+                    } else {
+                        selectedCategories.push(val);
+                        this.classList.add('active');
+                    }
+                });
+            });
+        }
+
+        function showMsg(text, isError = false) {
+            const msgBox = document.getElementById('msg-box');
+            msgBox.innerText = text;
+            msgBox.className = isError ? 'msg-error' : 'msg-success';
+            msgBox.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                newLogoFile = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profile-preview').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function initPage() {
+            const { data: { session }, error: authError } = await supabaseClient.auth.getSession();
+            
+            if (!session || authError) {
+                window.location.href = "../login/index.html";
+                return;
+            }
+
+            currentUser = session.user;
+            await loadVendorData(currentUser.id);
+        }
+
+        async function loadVendorData(userId) {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('vendors')
+                    .select('*')
+                    .eq('profile_id', userId)
+                    .single();
+
+                if (error || !data) {
+                    document.getElementById('loading-overlay').innerHTML = `
+                        <i class="fas fa-store-slash" style="font-size: 40px; color: #ef4444; margin-bottom: 15px;"></i>
+                        <h3 style="margin:0; color: #1e293b;">Not a Vendor</h3>
+                        <p style="color: #64748b; font-size: 13px; margin-top: 5px;">You need a vendor account to view this page.</p>
+                        <button onclick="window.location.href='../index.html'" class="save-btn" style="width: auto; padding: 10px 20px; margin-top: 20px;">Go Home</button>
+                    `;
+                    return;
+                }
+
+                currentVendorId = data.id;
+
+                document.getElementById('business-name').value = data.business_name || '';
+                document.getElementById('description').value = data.description || '';
+                document.getElementById('location').value = data.location || '';
+                document.getElementById('whatsapp').value = data.whatsapp_number || '';
+                
+                if (data.categories) {
+                    selectedCategories = data.categories.split(',').map(c => c.trim());
+                    
+                    document.querySelectorAll('.cat-pill').forEach(pill => {
+                        if (selectedCategories.includes(pill.getAttribute('data-val'))) {
+                            pill.classList.add('active');
+                        }
+                    });
+                }
+
+                if (data.logo_url) {
+                    document.getElementById('profile-preview').src = data.logo_url;
+                }
+
+                document.getElementById('disp-max-items').innerText = data.max_items || '50';
+                document.getElementById('disp-plan').innerText = data.subscription_plan || 'Free';
+
+                document.getElementById('loading-overlay').style.display = 'none';
+
+            } catch (error) {
+                console.error(error);
+                showMsg("Failed to load profile data. Please check your connection.", true);
+            }
+        }
+
+        window.saveProfile = async function(event) {
+            event.preventDefault();
+            
+            if (selectedCategories.length === 0) {
+                showMsg("Please select at least one category.", true);
+                return;
+            }
+
+            const btn = document.getElementById('save-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            document.getElementById('msg-box').style.display = 'none';
+
+            try {
+                let finalLogoUrl = document.getElementById('profile-preview').src;
+
+                if (newLogoFile) {
+                    const formData = new FormData();
+                    formData.append('file', newLogoFile);
+                    formData.append('upload_preset', CLOUDINARY_PRESET);
+
+                    const cloudinaryResponse = await fetch(CLOUDINARY_URL, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!cloudinaryResponse.ok) {
+                        throw new Error("Failed to upload image. Please try again.");
+                    }
+
+                    const cloudinaryData = await cloudinaryResponse.json();
+                    finalLogoUrl = cloudinaryData.secure_url; 
+                }
+
+                const categoriesString = selectedCategories.join(', ');
+
+                // 🚀 THE FIX: Removed the updated_at column so Supabase stops rejecting it!
+                const updates = {
+                    business_name: document.getElementById('business-name').value.trim(),
+                    description: document.getElementById('description').value.trim(),
+                    categories: categoriesString, 
+                    location: document.getElementById('location').value.trim(),
+                    whatsapp_number: document.getElementById('whatsapp').value.trim(),
+                    logo_url: finalLogoUrl
+                };
+
+                const { error: updateError } = await supabaseClient
+                    .from('vendors')
+                    .update(updates)
+                    .eq('id', currentVendorId);
+
+                if (updateError) throw updateError;
+
+                showMsg("Profile updated successfully!");
+                newLogoFile = null; 
+
+            } catch (error) {
+                console.error(error);
+                showMsg(error.message || "An error occurred while saving.", true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Buyer Requests | UNICAL Market</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+
+    <style>
+        .header-top-flex { display: flex; align-items: center; gap: 15px; }
+        .page-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; }
+        
+        .request-box { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; margin: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .request-header { font-size: 16px; font-weight: 800; color: #1e293b; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 12px; font-weight: 800; color: var(--text-main); margin-bottom: 6px; }
+        .form-input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 13px; outline: none; background: #f8fafc; box-sizing: border-box; }
+        .form-input:focus { border-color: #2d8eff; background: white; }
+        
+        .image-upload-wrapper { border: 2px dashed #cbd5e1; border-radius: 10px; padding: 15px; text-align: center; background: #f8fafc; cursor: pointer; margin-bottom: 15px; transition: 0.2s; }
+        .image-upload-wrapper:hover { border-color: #2d8eff; background: #eff6ff; }
+        .image-preview { max-width: 100%; height: 120px; border-radius: 8px; object-fit: cover; display: none; margin-top: 10px; }
+        
+        .submit-btn { background: #2d8eff; color: white; border: none; width: 100%; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .submit-btn:active { transform: scale(0.98); }
+        .submit-btn:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; }
+
+        .status-card { background: #fef2f2; border: 1px solid #fecaca; color: #ef4444; padding: 12px; border-radius: 10px; font-size: 12px; font-weight: 600; margin-bottom: 15px; display: none; line-height: 1.5; }
+
+        .my-list-title { margin: 30px 20px 10px; font-size: 15px; font-weight: 800; color: #334155; }
+        
+        .req-card { background: white; margin: 0 20px 15px; padding: 15px; border-radius: 12px; border: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: flex-start; }
+        .req-title { font-size: 14px; font-weight: 800; color: #1e293b; margin-bottom: 4px; }
+        .req-meta { font-size: 11px; color: #64748b; margin-bottom: 8px; }
+        .req-budget { font-size: 13px; font-weight: 800; color: #10b981; }
+        
+        .del-btn { background: #fee2e2; color: #ef4444; border: none; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <div class="header" style="position: sticky; top: 0; z-index: 100; background: white; border-bottom: 1px solid #f1f5f9; padding: 15px 20px;">
+            <div class="header-top-flex">
+                <button onclick="window.history.back()" style="background:none; border:none; font-size:20px; color:var(--text-main); cursor:pointer;"><i class="fas fa-arrow-left"></i></button>
+                <h1 class="page-title">Buyer Requests</h1>
+            </div>
+        </div>
+
+        <div class="content-area" style="padding: 0 0 90px 0;">
+            
+            <div class="request-box">
+                <div class="request-header"><i class="fas fa-bullhorn" style="color: #2d8eff;"></i> Post a Request</div>
+                
+                <div id="limit-warning" class="status-card"></div>
+
+                <form id="requestForm" onsubmit="submitRequest(event)">
+                    <div class="form-group">
+                        <label class="form-label">What are you looking for?</label>
+                        <input type="text" id="r-name" class="form-input" placeholder="e.g. Clean UK used iPhone X" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Category</label>
+                        <select id="r-cat" class="form-input" required>
+                            <option value="" disabled selected>Select Category</option>
+                            <option value="Phones">Phones</option>
+                            <option value="Laptops">Laptops</option>
+                            <option value="Fashion">Fashion</option>
+                            <option value="Food">Food</option>
+                            <option value="Books">Books</option>
+                            <option value="Services">Services</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Your Budget (₦)</label>
+                        <input type="number" id="r-budget" class="form-input" placeholder="e.g. 150000" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Extra Details</label>
+                        <textarea id="r-desc" class="form-input" style="height: 80px; resize: none;" placeholder="Any specific color, battery health, or condition?" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Add a Reference Image (Optional)</label>
+                        <div class="image-upload-wrapper" onclick="document.getElementById('r-image').click()">
+                            <i class="fas fa-camera" style="font-size: 24px; color: #94a3b8; margin-bottom: 8px;"></i>
+                            <div style="font-size: 12px; color: #64748b; font-weight: bold;">Tap to upload an image</div>
+                            <input type="file" id="r-image" accept="image/*" style="display: none;" onchange="previewImage(event)">
+                            <img id="img-preview" class="image-preview" src="">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="submit-btn">Broadcast to Vendors</button>
+                </form>
+            </div>
+
+            <div class="my-list-title">My Active Requests</div>
+            <div id="my-requests-list"></div>
+
+        </div>
+
+        <div class="bottom-nav">
+            <a href="../index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')"><i class="fas fa-comment-dots"></i><span>Messages</span></a>
+            <div class="nav-fab" onclick="requireLogin('../add-product/index.html')"><i class="fas fa-plus"></i></div>
+            <a href="#" class="nav-item" onclick="requireLogin('../saved/index.html')"><i class="fas fa-heart"></i><span>Saved</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../account/index.html')"><i class="fas fa-user"></i><span>Account</span></a>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const EMAILJS_PUBLIC_KEY = '3wyBJiU29t_daxKxy';
+        const EMAILJS_SERVICE_ID = 'service_8t5x5xb';
+        const EMAILJS_TEMPLATE_ID = 'template_b3srwob';
+
+        const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dj6yl36fq/image/upload';
+        const CLOUDINARY_PRESET = 'unical_images';
+
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+
+        let currentUser = null;
+        let selectedFile = null;
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { window.location.href = "../login/index.html"; return; }
+            currentUser = session.user;
+            
+            checkLimitsAndLoad();
+        });
+
+        async function requireLogin(targetUrl) {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) window.location.href = targetUrl;
+            else window.location.href = "../login/index.html";
+        }
+
+        function previewImage(event) {
+            const file = event.target.files[0];
+            if (file) {
+                selectedFile = file;
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.getElementById('img-preview');
+                    img.src = e.target.result;
+                    img.style.display = 'inline-block';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function uploadToCloudinary(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', CLOUDINARY_PRESET);
+            
+            const res = await fetch(CLOUDINARY_URL, { method: 'POST', body: formData });
+            const data = await res.json();
+            return data.secure_url;
+        }
+
+        async function checkLimitsAndLoad() {
+            const list = document.getElementById('my-requests-list');
+            const warning = document.getElementById('limit-warning');
+            const btn = document.getElementById('submitBtn');
+            
+            list.innerHTML = "<p style='text-align:center; font-size:12px; color:#94a3b8;'>Loading...</p>";
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('requests')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const activeRequests = data.filter(r => r.status === 'Active');
+                let canPostTime = true;
+                let hoursLeft = 0;
+                
+                if (data.length > 0) {
+                    const lastPostDate = new Date(data[0].created_at).getTime();
+                    const now = new Date().getTime();
+                    const diffHours = (now - lastPostDate) / (1000 * 60 * 60);
+                    
+                    if (diffHours < 24) {
+                        canPostTime = false;
+                        hoursLeft = Math.ceil(24 - diffHours);
+                    }
+                }
+
+                if (activeRequests.length >= 2) {
+                    warning.innerHTML = "<i class='fas fa-exclamation-circle'></i> You have reached the maximum limit of 2 active requests. Please delete one before posting a new one.";
+                    warning.style.display = "block";
+                    btn.disabled = true;
+                } else if (!canPostTime) {
+                    warning.innerHTML = `<i class='fas fa-clock'></i> You can only post one request every 24 hours to prevent spam. You can post again in <b>${hoursLeft} hours</b>.`;
+                    warning.style.display = "block";
+                    btn.disabled = true;
+                } else {
+                    warning.style.display = "none";
+                    btn.disabled = false;
+                }
+
+                if (activeRequests.length === 0) {
+                    list.innerHTML = "<p style='text-align:center; font-size:12px; color:#94a3b8;'>You have no active requests.</p>";
+                    return;
+                }
+
+                list.innerHTML = "";
+                activeRequests.forEach(r => {
+                    const fPrice = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(r.budget);
+                    
+                    list.innerHTML += `
+                        <div class="req-card">
+                            <div>
+                                <div class="req-title">${r.product_name}</div>
+                                <div class="req-meta"><i class="fas fa-tag"></i> ${r.category}</div>
+                                <div class="req-budget">Budget: ${fPrice}</div>
+                            </div>
+                            <button class="del-btn" onclick="deleteRequest('${r.id}')"><i class="fas fa-trash"></i> Delete</button>
+                        </div>
+                    `;
+                });
+
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        async function submitRequest(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            
+            btn.innerText = "Processing...";
+            btn.disabled = true;
+
+            try {
+                let uploadedImageUrl = null;
+                if (selectedFile) {
+                    btn.innerText = "Uploading Image...";
+                    uploadedImageUrl = await uploadToCloudinary(selectedFile);
+                }
+
+                const reqData = {
+                    user_id: currentUser.id,
+                    product_name: document.getElementById('r-name').value.trim(),
+                    category: document.getElementById('r-cat').value,
+                    budget: document.getElementById('r-budget').value,
+                    description: document.getElementById('r-desc').value.trim(),
+                    image_url: uploadedImageUrl 
+                };
+
+                btn.innerText = "Saving Request...";
+                
+                const { error: insertErr } = await supabaseClient.from('requests').insert([reqData]);
+                if (insertErr) throw insertErr;
+
+                btn.innerText = "Notifying Vendors...";
+                
+                const { data: vendors } = await supabaseClient
+                    .from('vendors')
+                    .select('email')
+                    .eq('is_active', true)
+                    .ilike('categories', `%${reqData.category}%`);
+
+                if (vendors && vendors.length > 0) {
+                    const emailList = vendors.map(v => v.email).filter(e => e).join(','); 
+                    
+                    const templateParams = {
+                        product_name: reqData.product_name,
+                        category: reqData.category,
+                        budget: "₦" + Number(reqData.budget).toLocaleString(),
+                        description: reqData.description,
+                        vendor_emails: emailList 
+                    };
+
+                    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams).catch(() => {}); 
+                }
+
+                alert("Request posted successfully!");
+                document.getElementById('requestForm').reset();
+                document.getElementById('img-preview').style.display = 'none';
+                selectedFile = null;
+                checkLimitsAndLoad(); 
+
+            } catch (error) {
+                alert("Failed to post request.");
+                console.error(error);
+                btn.disabled = false;
+                btn.innerText = "Broadcast to Vendors";
+            }
+        }
+
+        window.deleteRequest = async function(reqId) {
+            if(!confirm("Are you sure you want to remove this request?")) return;
+            try {
+                await supabaseClient.from('requests').update({ status: 'Deleted' }).eq('id', reqId);
+                checkLimitsAndLoad(); 
+            } catch(e) {
+                alert("Failed to delete.");
+            }
+        }
+    </script>
+</body>
+</html>

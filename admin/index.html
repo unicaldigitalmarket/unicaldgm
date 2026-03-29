@@ -76,8 +76,10 @@
         .btn-unsuspend { background: #3b82f6; color: white; }
         .btn-primary { background: #0f172a; color: white; }
 
-        .slots-input-group { display: flex; align-items: center; gap: 10px; }
-        .slots-input { width: 80px; padding: 8px; border: 1px solid #cbd5e1; border-radius: 8px; text-align: center; font-weight: bold; }
+        /* VENDOR MANAGER INPUTS */
+        .vm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .vm-label { font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase; margin-bottom: 4px; display: block; }
+        .vm-input { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; }
     </style>
 </head>
 <body>
@@ -103,10 +105,10 @@
             </div>
 
             <div class="admin-card card-green">
-                <i class="fas fa-layer-group card-icon" style="color: #10b981;"></i>
-                <div class="card-title">Vendor Slots Manager</div>
-                <div class="card-desc">Upgrade or downgrade the maximum number of items a specific vendor can post.</div>
-                <button class="open-modal-btn" style="background: #10b981;" onclick="openModal('slotsModal', () => { document.getElementById('slots-results').innerHTML=''; document.getElementById('slots-search').value=''; })">Manage Slots</button>
+                <i class="fas fa-user-cog card-icon" style="color: #10b981;"></i>
+                <div class="card-title">Vendor Manager</div>
+                <div class="card-desc">Upgrade/downgrade plans (Verified, Influencer, Icon), edit max slots, and update emails.</div>
+                <button class="open-modal-btn" style="background: #10b981;" onclick="openModal('managerModal', () => { document.getElementById('manager-results').innerHTML=''; document.getElementById('manager-search').value=''; })">Open Manager</button>
             </div>
         </div>
 
@@ -156,15 +158,15 @@
         </div>
     </div>
 
-    <div id="slotsModal" class="modal-overlay">
+    <div id="managerModal" class="modal-overlay">
         <div class="modal-body">
-            <div class="modal-header"><h2>📦 Item Slots Manager</h2><button class="close-btn" onclick="closeModal('slotsModal')">&times;</button></div>
+            <div class="modal-header"><h2>⚙️ Vendor Manager</h2><button class="close-btn" onclick="closeModal('managerModal')">&times;</button></div>
             <div class="modal-content-scroll">
                 <div class="search-group">
-                    <input type="text" id="slots-search" class="admin-input" placeholder="Search by Business Name or Email...">
-                    <button class="action-btn btn-primary" onclick="searchVendors('slots')">Search</button>
+                    <input type="text" id="manager-search" class="admin-input" placeholder="Search by Business Name or Email...">
+                    <button class="action-btn btn-primary" onclick="searchVendors('manager')">Search</button>
                 </div>
-                <div id="slots-results"></div>
+                <div id="manager-results"></div>
             </div>
         </div>
     </div>
@@ -179,9 +181,7 @@
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const CLOUD_NAME = "dj6yl36fq"; 
 
-        // ==========================================
         // 0. STRICT SECURITY CLEARANCE
-        // ==========================================
         document.addEventListener("DOMContentLoaded", async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (!session) { window.location.href = "../login/index.html"; return; }
@@ -209,9 +209,7 @@
             document.body.style.overflow = 'auto'; 
         }
 
-        // ==========================================
         // 1. VENDOR APPROVALS MODULE
-        // ==========================================
         window.loadApprovals = async function() {
             const list = document.getElementById('approval-list');
             list.innerHTML = '<p style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading pending applications...</p>';
@@ -249,27 +247,20 @@
                         </div>`;
                 });
             } catch (error) { 
-                console.error("APPROVALS ERROR:", error);
                 list.innerHTML = "<p style='color:red; text-align:center;'>Failed to load. Check console for details.</p>"; 
             }
         }
 
-        // 🚀 THE FIX: Attached securely to window object!
         window.approveVendor = async function(id) {
             if(!confirm("Approve this vendor? They will immediately get access to their dashboard.")) return;
             try {
                 await supabaseClient.from('vendors').update({ is_active: true, is_suspended: false }).eq('id', id);
                 alert("Vendor Approved!");
-                loadApprovals(); // Refresh list automatically
-            } catch(e) { 
-                console.error(e);
-                alert("Failed to approve."); 
-            }
+                loadApprovals(); 
+            } catch(e) { alert("Failed to approve."); }
         }
 
-        // ==========================================
-        // 2 & 3. VENDOR SEARCH (For Control & Slots)
-        // ==========================================
+        // 2 & 3. VENDOR SEARCH (For Control & NEW Manager)
         window.searchVendors = async function(mode) {
             const query = document.getElementById(`${mode}-search`).value.toLowerCase().trim();
             const results = document.getElementById(`${mode}-results`);
@@ -291,7 +282,7 @@
 
                 results.innerHTML = "";
                 matches.forEach(v => {
-                    const userEmail = v.email || 'No email attached'; 
+                    const userEmail = v.email || ''; 
                     
                     if (mode === 'control') {
                         const isSuspended = v.is_suspended === true;
@@ -304,7 +295,7 @@
                                     <div class="item-title">${v.business_name}</div>
                                     <div>${statusTxt}</div>
                                 </div>
-                                <div class="item-meta">${userEmail}</div>
+                                <div class="item-meta">${userEmail || 'No email attached'}</div>
                                 <div class="action-row">
                                     ${isSuspended 
                                         ? `<button class="action-btn btn-unsuspend" onclick="toggleVendorSuspend('${v.id}', true)">Restore Vendor</button>` 
@@ -312,24 +303,44 @@
                                     }
                                 </div>
                             </div>`;
-                    } else if (mode === 'slots') {
+                    
+                    } else if (mode === 'manager') {
+                        // 🚀 NEW: The Advanced Vendor Manager UI
+                        const plan = v.subscription_plan || 'Verified';
+                        
                         results.innerHTML += `
                             <div class="list-item" style="border-left: 4px solid #10b981;">
                                 <div class="item-title">${v.business_name}</div>
-                                <div class="item-meta">${userEmail} | Plan: <b>${v.subscription_plan || 'N/A'}</b></div>
-                                <div class="action-row" style="justify-content: space-between; align-items: center;">
-                                    <span style="font-size:12px; font-weight:bold;">Current Limit:</span>
-                                    <div class="slots-input-group">
-                                        <input type="number" id="slot-val-${v.id}" class="slots-input" value="${v.max_items}">
-                                        <button class="action-btn btn-primary" onclick="updateVendorSlots('${v.id}')">Update</button>
+                                <hr style="border:0; border-top:1px solid #f1f5f9; margin: 10px 0;">
+                                
+                                <div class="vm-grid">
+                                    <div>
+                                        <label class="vm-label">Max Items (Slots)</label>
+                                        <input type="number" id="vm-slots-${v.id}" class="vm-input" value="${v.max_items || 0}">
+                                    </div>
+                                    <div>
+                                        <label class="vm-label">Subscription Plan</label>
+                                        <select id="vm-plan-${v.id}" class="vm-input">
+                                            <option value="Verified" ${plan === 'Verified' ? 'selected' : ''}>Verified (Blue Badge)</option>
+                                            <option value="Influencer" ${plan === 'Influencer' ? 'selected' : ''}>Influencer (Gold Badge)</option>
+                                            <option value="Icon" ${plan === 'Icon' ? 'selected' : ''}>Icon (Black Badge)</option>
+                                        </select>
                                     </div>
                                 </div>
+                                
+                                <div style="margin-bottom: 10px;">
+                                    <label class="vm-label">Contact Email</label>
+                                    <input type="email" id="vm-email-${v.id}" class="vm-input" value="${userEmail}">
+                                </div>
+
+                                <button class="open-modal-btn" style="background:#10b981; padding:10px;" onclick="updateVendorDetails('${v.id}')">
+                                    <i class="fas fa-save"></i> Save Updates
+                                </button>
                             </div>`;
                     }
                 });
 
             } catch(e) { 
-                console.error("SEARCH ERROR:", e);
                 results.innerHTML = "<p style='color:red;'>Search failed. Check console.</p>"; 
             }
         }
@@ -348,22 +359,32 @@
 
                 alert(`Vendor successfully ${isCurrentlySuspended ? 'restored' : 'suspended'}.`);
                 searchVendors('control'); 
-            } catch(e) { alert("Action failed."); console.error(e); }
+            } catch(e) { alert("Action failed."); }
         }
 
-        window.updateVendorSlots = async function(vendorId) {
-            const newSlots = document.getElementById(`slot-val-${vendorId}`).value;
-            if(!newSlots || newSlots < 0) return alert("Enter a valid number.");
+        // 🚀 NEW: Advanced Update Function
+        window.updateVendorDetails = async function(vendorId) {
+            const newSlots = document.getElementById(`vm-slots-${vendorId}`).value;
+            const newPlan = document.getElementById(`vm-plan-${vendorId}`).value;
+            const newEmail = document.getElementById(`vm-email-${vendorId}`).value.trim();
+
+            if(!newSlots || newSlots < 0) return alert("Enter a valid number for slots.");
             
             try {
-                await supabaseClient.from('vendors').update({ max_items: parseInt(newSlots) }).eq('id', vendorId);
-                alert("Vendor slots updated successfully!");
-            } catch(e) { alert("Failed to update slots."); }
+                await supabaseClient.from('vendors').update({ 
+                    max_items: parseInt(newSlots),
+                    subscription_plan: newPlan,
+                    email: newEmail
+                }).eq('id', vendorId);
+                
+                alert("Vendor details updated successfully!");
+            } catch(e) { 
+                alert("Failed to update details. Check console.");
+                console.error(e);
+            }
         }
 
-        // ==========================================
         // 4. REVIEWS MODULE
-        // ==========================================
         window.loadAdminReviews = async function() {
             const list = document.getElementById('modal-reviews-list'); 
             list.innerHTML = '<p style="text-align:center;">Loading reviews...</p>';
@@ -387,7 +408,7 @@
                             </div>
                         </div>`;
                 });
-            } catch (e) { console.error(e); list.innerHTML = "<p>Error loading reviews.</p>"; }
+            } catch (e) { list.innerHTML = "<p>Error loading reviews.</p>"; }
         }
         
         window.approveReview = async function(id) { 
@@ -403,9 +424,7 @@
             } 
         }
 
-        // ==========================================
         // 5. BLOGS MODULE
-        // ==========================================
         window.loadAdminBlogs = async function() {
             const list = document.getElementById('modal-blogs-list'); 
             list.innerHTML = '<p style="text-align:center;">Loading posts...</p>';
@@ -486,7 +505,6 @@
                 resetBlogForm(); 
                 loadAdminBlogs(); 
             } catch(e) { 
-                console.error(e); 
                 alert("Error saving post."); 
             } finally { 
                 btn.innerText = "Publish Post"; 

@@ -11,7 +11,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
 
-        /* 🚀 THE FIX FOR THE BUTTON OVERFLOW */
         * { box-sizing: border-box; }
 
         :root {
@@ -84,6 +83,11 @@
         .user-badge {
             background: #e2e8f0; color: #475569; font-size: 11px; font-weight: 700;
             padding: 5px 12px; border-radius: 20px; display: inline-block; margin-top: 15px;
+            transition: 0.3s;
+        }
+        
+        .user-badge.vendor {
+            background: #eef7ff; color: #2d8eff; border: 1px solid #bae6fd;
         }
 
         .menu-wrapper { padding: 0 20px 30px; }
@@ -139,9 +143,15 @@
             
             <div class="menu-title">Marketplace</div>
             
-            <a href="../add-product/" class="menu-btn" style="border-left: 4px solid #2d8eff;">
+            <a href="../add-product/index.html" class="menu-btn" id="btn-add-item" style="border-left: 4px solid #2d8eff; display: none;">
                 <div class="menu-icon" style="background: #eef7ff; color: #2d8eff;"><i class="fas fa-store"></i></div>
                 <div class="menu-text">Add Item</div>
+                <i class="fas fa-chevron-right" style="color: #cbd5e1;"></i>
+            </a>
+
+            <a href="../profile-edit/index.html" class="menu-btn" id="btn-edit-profile" style="border-left: 4px solid #8b5cf6; display: none;">
+                <div class="menu-icon" style="background: #f5f3ff; color: #8b5cf6;"><i class="fas fa-user-edit"></i></div>
+                <div class="menu-text">Edit Store Profile</div>
                 <i class="fas fa-chevron-right" style="color: #cbd5e1;"></i>
             </a>
 
@@ -173,6 +183,8 @@
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         const CLOUD_NAME = "dj6yl36fq"; 
+        const UPLOAD_PRESET = "unical_avaters"; 
+        
         let currentUser = null;
 
         document.addEventListener("DOMContentLoaded", async () => {
@@ -186,7 +198,7 @@
             currentUser = session.user;
             document.getElementById('user-email').innerText = currentUser.email;
 
-            const { data: profileData, error } = await supabaseClient
+            const { data: profileData } = await supabaseClient
                 .from('profiles')
                 .select('*')
                 .eq('id', currentUser.id)
@@ -198,12 +210,28 @@
                     document.getElementById('user-img').src = profileData.avatar_url;
                 }
             }
+
+            const { data: vendorData, error: vendorError } = await supabaseClient
+                .from('vendors')
+                .select('id')
+                .eq('profile_id', currentUser.id)
+                .single();
+
+            if (vendorData) {
+                const badge = document.getElementById('user-role-badge');
+                badge.innerText = "Vendor Account";
+                badge.classList.add('vendor'); 
+
+                document.getElementById('btn-add-item').style.display = "flex";
+                document.getElementById('btn-edit-profile').style.display = "flex";
+            }
         });
 
+        // 🚀 THE FIX: Changed the redirect path to send them back to the home page
         async function logout() {
             if (confirm("Are you sure you want to log out?")) {
                 await supabaseClient.auth.signOut();
-                window.location.href = "../login/index.html";
+                window.location.href = "../index.html"; 
             }
         }
 
@@ -245,7 +273,7 @@
 
                 const formData = new FormData();
                 formData.append('file', compressedFile);
-                formData.append('upload_preset', 'unical_avatars'); 
+                formData.append('upload_preset', UPLOAD_PRESET); 
 
                 const cloudinaryRes = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
                     method: 'POST',
