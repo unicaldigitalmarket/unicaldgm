@@ -310,7 +310,7 @@
             return data.secure_url;
         }
 
-        async function sendMessage() {
+       async function sendMessage() {
             const input = document.getElementById('msg-input');
             const text = input.value.trim();
             const btn = document.getElementById('send-btn');
@@ -327,6 +327,7 @@
                     clearImage();
                 }
 
+                // SCENARIO 1: First time Customer sends a message
                 if (!activeChatId) {
                     const { data: newChat, error: chatErr } = await supabaseClient.from('chats').insert([{
                         product_id: urlProductId,
@@ -347,7 +348,7 @@
                     const autoText = `System Auto-Contact Details:\nName: ${userProfile.full_name}\nPhone: ${userProfile.phone}`;
                     await insertMessage(autoText, null, true);
 
-                    // 🚀 FIX 3: Correctly fetching Vendor email from the 'vendors' table!
+                    // Fetch Vendor email from the 'vendors' table
                     const { data: vendorData } = await supabaseClient.from('vendors').select('email').eq('profile_id', urlVendorId).single();
                     if(vendorData && vendorData.email) {
                         console.log("Sending Vendor Alert to:", vendorData.email);
@@ -358,22 +359,26 @@
                         console.log("No vendor email found to send alert.");
                     }
                 } 
+                
+                // SCENARIO 2: Vendor (or customer) replies
                 else {
                     await insertMessage(text, imgUrl, false);
                     await supabaseClient.from('chats').update({ last_message_text: text || "Sent an image", last_message_time: new Date() }).eq('id', activeChatId);
 
+                    // If Vendor is replying for the very first time
                     if (currentUser.id === currentChat.vendor_id && currentChat.vendor_has_replied === false) {
                         await supabaseClient.from('chats').update({ vendor_has_replied: true }).eq('id', activeChatId);
                         
-                        // Fetching Customer email from profiles
-                        const { data: custData } = await supabaseClient.from('profiles').select('email').eq('id', currentChat.customer_id).single();
-                        if(custData && custData.email) {
-                            console.log("Sending Customer Alert to:", custData.email);
-                            emailjs.send(EMAILJS_SERVICE, EMAILJS_CUSTOMER_TEMPLATE, { to_email: custData.email })
+                        // 🚀 FIX: Use the secure SQL bridge to get the customer's email from auth.users!
+                        const { data: custEmail, error: rpcErr } = await supabaseClient.rpc('get_customer_email', { uid: currentChat.customer_id });
+                        
+                        if(custEmail) {
+                            console.log("Sending Customer Alert to:", custEmail);
+                            emailjs.send(EMAILJS_SERVICE, EMAILJS_CUSTOMER_TEMPLATE, { to_email: custEmail })
                                 .then(res => console.log("Email sent successfully to customer!", res))
                                 .catch(err => console.error("Customer Email failed:", err));
                         } else {
-                            console.log("No customer email found to send alert.");
+                            console.log("No customer email found to send alert. Error:", rpcErr);
                         }
                     }
                 }
@@ -388,7 +393,6 @@
                 btn.innerHTML = '<i class="fas fa-paper-plane"></i>';
             }
         }
-
         async function insertMessage(text, imgUrl, isAuto) {
             const msgData = {
                 chat_id: activeChatId,
