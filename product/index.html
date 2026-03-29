@@ -318,7 +318,7 @@
             }
         }
 
-        // 🚀 THE MAGIC: Routing to the Chat Page safely
+      // 🚀 THE MAGIC: Routing to the Chat Page safely
         window.openChat = async function() {
             if (!currentProduct) return;
             
@@ -329,14 +329,28 @@
                 return;
             }
 
+            // 🚀 FIX: We must fetch the actual User Account ID of the vendor from the database!
+            const { data: vendorData } = await supabaseClient
+                .from('vendors')
+                .select('profile_id')
+                .eq('id', currentProduct.vendor_id)
+                .single();
+
+            if (!vendorData || !vendorData.profile_id) {
+                alert("Could not load vendor details.");
+                return;
+            }
+
+            const actualVendorUserId = vendorData.profile_id;
+
             // Optional Security: Stop vendors from chatting with themselves about their own products
-            if (session.user.id === currentProduct.vendor_id) {
+            if (session.user.id === actualVendorUserId) {
                 alert("You cannot chat with yourself about your own product.");
                 return;
             }
 
-            // Send them straight into the chat room with the product context!
-            window.location.href = `../chats/index.html?product_id=${currentProduct.id}&vendor_id=${currentProduct.vendor_id}`;
+            // Send them straight into the chat room with the correct User ID context!
+            window.location.href = `../chats/index.html?product_id=${currentProduct.id}&vendor_id=${actualVendorUserId}`;
         }
 
        // Check if item is saved in database
