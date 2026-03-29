@@ -196,17 +196,18 @@
             } catch (err) { console.error(err); }
         }
 
+        // 🚀 FIX 1: Made the header setup crash-proof
         function setupHeader() {
-            document.getElementById('head-product').innerText = currentChat.products.name;
-            if (currentUser.id === currentRefreshVendor_id()) {
+            // Only try to update the product name if it actually exists in the object
+            if (currentChat.products && currentChat.products.name) {
+                document.getElementById('head-product').innerText = currentChat.products.name;
+            }
+            
+            if (currentUser.id === currentChat.vendor_id) {
                 document.getElementById('head-name').innerText = currentChat.profiles?.full_name || "Customer";
             } else {
                 document.getElementById('head-name').innerText = "Store Vendor";
             }
-        }
-        
-        function currentRefreshVendor_id() {
-             return currentChat.vendor_id;
         }
 
         async function fetchMessages() {
@@ -315,7 +316,8 @@
                     
                     document.getElementById('disclaimer').style.display = 'none';
                     subscribeToRealtime();
-                    setupHeader();
+                    
+                    // 🚀 FIX 2: Removed setupHeader() here so it doesn't crash trying to read missing data!
 
                     await insertMessage(text, imgUrl, false);
 
