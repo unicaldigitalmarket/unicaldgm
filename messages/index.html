@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Inbox | UNICAL Market</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+
+    <style>
+        .header-top-flex { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+        .page-title { font-size: 22px; font-weight: 900; color: var(--text-main); margin: 0; }
+        
+        .inbox-container { padding: 10px 20px; }
+        
+        .chat-card { 
+            background: white; border-radius: 16px; padding: 15px; margin-bottom: 12px; 
+            display: flex; align-items: center; gap: 15px; cursor: pointer;
+            border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.02); transition: 0.2s;
+        }
+        .chat-card:active { transform: scale(0.98); background: #f8fafc; }
+
+        .chat-avatar { 
+            width: 50px; height: 50px; border-radius: 50%; object-fit: cover; 
+            background: #e2e8f0; flex-shrink: 0; border: 2px solid #f8fafc;
+        }
+        
+        .chat-info { flex: 1; min-width: 0; }
+        .chat-header-row { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+        .chat-name { font-size: 15px; font-weight: 800; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-time { font-size: 11px; color: #94a3b8; font-weight: 600; flex-shrink: 0; margin-left: 10px; }
+        
+        .chat-product { font-size: 11px; font-weight: 800; color: #2d8eff; text-transform: uppercase; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-last-msg { font-size: 13px; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .empty-state { text-align: center; padding: 60px 20px; }
+        .empty-state i { font-size: 60px; color: #cbd5e1; margin-bottom: 15px; }
+        .empty-state h3 { font-size: 18px; color: #1e293b; margin: 0 0 5px; }
+        .empty-state p { font-size: 13px; color: #64748b; }
+
+        /* Skeletons */
+        .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .sk-card { display: flex; gap: 15px; padding: 15px; background: white; border-radius: 16px; margin-bottom: 12px; border: 1px solid #f1f5f9; }
+        .sk-avatar { width: 50px; height: 50px; border-radius: 50%; }
+        .sk-lines { flex: 1; }
+        .sk-line-1 { height: 16px; width: 60%; border-radius: 4px; margin-bottom: 8px; }
+        .sk-line-2 { height: 12px; width: 40%; border-radius: 4px; margin-bottom: 8px; }
+        .sk-line-3 { height: 12px; width: 90%; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <div class="header" style="position: sticky; top: 0; z-index: 100; background: white; border-bottom: 1px solid #f1f5f9; padding: 15px 20px;">
+            <div class="header-top-flex">
+                <h1 class="page-title">Messages</h1>
+            </div>
+        </div>
+
+        <div class="content-area" style="padding: 0 0 90px 0;">
+            
+            <div class="inbox-container" id="skeleton-loader">
+                <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-lines"><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-lines"><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-lines"><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div></div></div>
+            </div>
+
+            <div class="inbox-container" id="inbox-list" style="display: none;"></div>
+
+        </div>
+
+        <div class="bottom-nav">
+            <a href="../index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="#" class="nav-item active"><i class="fas fa-comment-dots"></i><span>Messages</span></a>
+            <div class="nav-fab" onclick="window.location.href='../add-product/index.html'"><i class="fas fa-plus"></i></div>
+            <a href="../saved/index.html" class="nav-item"><i class="fas fa-heart"></i><span>Saved</span></a>
+            <a href="../account/index.html" class="nav-item"><i class="fas fa-user"></i><span>Account</span></a>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let currentUser = null;
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { window.location.href = "../login/index.html"; return; }
+            currentUser = session.user;
+            
+            await loadInbox();
+            setupRealtimeInbox();
+        });
+
+        // Smart Two-Step Fetch to prevent Join Errors
+        async function loadInbox() {
+            const list = document.getElementById('inbox-list');
+            const skeleton = document.getElementById('skeleton-loader');
+
+            try {
+                // 1. Fetch all chats involving this user
+                const { data: chats, error } = await supabaseClient
+                    .from('chats')
+                    .select('*')
+                    .or(`customer_id.eq.${currentUser.id},vendor_id.eq.${currentUser.id}`)
+                    .order('last_message_time', { ascending: false });
+
+                if (error) throw error;
+
+                skeleton.style.display = 'none';
+                list.style.display = 'block';
+
+                if (!chats || chats.length === 0) {
+                    list.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <h3>No Messages Yet</h3>
+                            <p>When you contact a vendor or a customer messages you, the chat will appear here.</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // 2. Collect all the unique IDs we need to fetch details for
+                const productIds = [...new Set(chats.map(c => c.product_id))];
+                const customerIds = [...new Set(chats.map(c => c.customer_id))];
+                const vendorIds = [...new Set(chats.map(c => c.vendor_id))];
+
+                // 3. Fetch Products, Profiles, and Vendors in parallel
+                const [prodRes, profRes, vendRes] = await Promise.all([
+                    supabaseClient.from('products').select('id, name').in('id', productIds),
+                    supabaseClient.from('profiles').select('id, full_name, avatar_url').in('id', customerIds),
+                    supabaseClient.from('vendors').select('profile_id, business_name, logo_url').in('profile_id', vendorIds)
+                ]);
+
+                // 4. Create quick lookup dictionaries
+                const prodDict = {}; prodRes.data?.forEach(p => prodDict[p.id] = p);
+                const profDict = {}; profRes.data?.forEach(p => profDict[p.id] = p);
+                const vendDict = {}; vendRes.data?.forEach(v => vendDict[v.profile_id] = v);
+
+                list.innerHTML = "";
+
+                // 5. Render the Inbox Cards
+                chats.forEach(chat => {
+                    const amICustomer = currentUser.id === chat.customer_id;
+                    const productData = prodDict[chat.product_id] || { name: "Unknown Item" };
+                    
+                    let displayName = "";
+                    let displayAvatar = "";
+                    let isVerified = false;
+
+                    // Determine what the "other side" of the chat looks like
+                    if (amICustomer) {
+                        // I am the buyer. Show me the Vendor's details
+                        const vData = vendDict[chat.vendor_id];
+                        displayName = vData ? vData.business_name : "Store Vendor";
+                        displayAvatar = vData && vData.logo_url ? vData.logo_url : "https://via.placeholder.com/150";
+                        isVerified = true;
+                    } else {
+                        // I am the vendor. Show me the Customer's details
+                        const cData = profDict[chat.customer_id];
+                        displayName = cData ? cData.full_name : "Customer";
+                        displayAvatar = cData && cData.avatar_url ? cData.avatar_url : "https://via.placeholder.com/150";
+                    }
+
+                    const timeAgo = formatChatTime(chat.last_message_time);
+                    const lastMsg = chat.last_message_text || "Started a conversation";
+
+                    list.innerHTML += `
+                        <div class="chat-card" onclick="window.location.href='../chats/index.html?chat_id=${chat.id}'">
+                            <img src="${displayAvatar}" class="chat-avatar" onerror="this.src='https://via.placeholder.com/150'">
+                            <div class="chat-info">
+                                <div class="chat-header-row">
+                                    <div class="chat-name">${displayName} ${isVerified ? '<i class="fas fa-check-circle" style="color: #38bdf8; font-size: 11px;"></i>' : ''}</div>
+                                    <div class="chat-time">${timeAgo}</div>
+                                </div>
+                                <div class="chat-product"><i class="fas fa-box" style="margin-right:4px;"></i>${productData.name}</div>
+                                <div class="chat-last-msg">${lastMsg}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+            } catch (err) {
+                console.error("Failed to load inbox:", err);
+                skeleton.style.display = 'none';
+                list.innerHTML = `<p style="text-align:center; color:red;">Error loading messages. Please check your connection.</p>`;
+            }
+        }
+
+        // 🚀 REAL-TIME: Instantly reshuffle inbox when a new message arrives!
+        function setupRealtimeInbox() {
+            supabaseClient.channel('inbox-updates')
+                .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'chats' }, () => {
+                    loadInbox(); // Reload silently in background
+                })
+                .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chats' }, () => {
+                    loadInbox(); // Reload silently in background
+                })
+                .subscribe();
+        }
+
+        // Format time like "10:30 AM" or "Yesterday"
+        function formatChatTime(dateString) {
+            if (!dateString) return "";
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffMs = now - date;
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 0 && now.getDate() === date.getDate()) {
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } else if (diffDays === 1 || (diffDays === 0 && now.getDate() !== date.getDate())) {
+                return "Yesterday";
+            } else if (diffDays < 7) {
+                return date.toLocaleDateString([], { weekday: 'short' });
+            } else {
+                return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+            }
+        }
+    </script>
+</body>
+</html>

@@ -143,9 +143,9 @@
             
             <div class="menu-title">Marketplace</div>
             
-            <a href="../add-product/index.html" class="menu-btn" id="btn-add-item" style="border-left: 4px solid #2d8eff; display: none;">
-                <div class="menu-icon" style="background: #eef7ff; color: #2d8eff;"><i class="fas fa-store"></i></div>
-                <div class="menu-text">Add Item</div>
+            <a href="../view-requests/index.html" class="menu-btn" id="btn-view-requests" style="border-left: 4px solid #2d8eff; display: none;">
+                <div class="menu-icon" style="background: #eef7ff; color: #2d8eff;"><i class="fas fa-clipboard-list"></i></div>
+                <div class="menu-text">View Buyer Requests</div>
                 <i class="fas fa-chevron-right" style="color: #cbd5e1;"></i>
             </a>
 
@@ -222,12 +222,12 @@
                 badge.innerText = "Vendor Account";
                 badge.classList.add('vendor'); 
 
-                document.getElementById('btn-add-item').style.display = "flex";
+                // 🚀 FIX: Update the ID here to display the new View Requests button
+                document.getElementById('btn-view-requests').style.display = "flex";
                 document.getElementById('btn-edit-profile').style.display = "flex";
             }
         });
 
-        // 🚀 THE FIX: Changed the redirect path to send them back to the home page
         async function logout() {
             if (confirm("Are you sure you want to log out?")) {
                 await supabaseClient.auth.signOut();

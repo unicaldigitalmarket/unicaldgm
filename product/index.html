@@ -140,7 +140,7 @@
         </div>
 
         <div class="fixed-bottom-bar" id="action-bar" style="display: none;">
-            <button class="action-btn btn-chat" onclick="alert('In-App Messaging is Coming Soon! Use WhatsApp for now.')"><i class="fas fa-comment-dots"></i> Chat</button>
+            <button class="action-btn btn-chat" onclick="openChat()"><i class="fas fa-comment-dots"></i> Chat</button>
             <button class="action-btn btn-whatsapp" id="whatsapp-btn"><i class="fab fa-whatsapp" style="font-size: 16px;"></i> WhatsApp</button>
         </div>
 
@@ -224,7 +224,6 @@
 
                 // Populate Vendor
                 if (vendor) {
-                    // 🚀 Dynamic Badge Color Logic added here!
                     let badgeColor = "#38bdf8"; // Default Blue (Verified)
                     if (vendor.subscription_plan === "Influencer") badgeColor = "#fbbf24"; // Gold
                     if (vendor.subscription_plan === "Icon") badgeColor = "#1e293b"; // Black/Slate
@@ -319,6 +318,27 @@
             }
         }
 
+        // 🚀 THE MAGIC: Routing to the Chat Page safely
+        window.openChat = async function() {
+            if (!currentProduct) return;
+            
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                alert("Please log in to send a message!");
+                window.location.href = "../login/index.html";
+                return;
+            }
+
+            // Optional Security: Stop vendors from chatting with themselves about their own products
+            if (session.user.id === currentProduct.vendor_id) {
+                alert("You cannot chat with yourself about your own product.");
+                return;
+            }
+
+            // Send them straight into the chat room with the product context!
+            window.location.href = `../chats/index.html?product_id=${currentProduct.id}&vendor_id=${currentProduct.vendor_id}`;
+        }
+
        // Check if item is saved in database
         async function checkSavedStatus(productId) {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -355,16 +375,14 @@
             const btn = document.getElementById('save-btn');
             const isSaved = btn.getAttribute('data-saved') === 'true';
 
-            // Optimistic UI update (feels instant to the user)
+            // Optimistic UI update
             if (isSaved) {
                 btn.innerHTML = '<i class="far fa-heart"></i>';
                 btn.setAttribute('data-saved', 'false');
-                // Delete from DB
                 await supabaseClient.from('saved_items').delete().match({ user_id: session.user.id, product_id: currentProduct.id });
             } else {
                 btn.innerHTML = '<i class="fas fa-heart" style="color:#ef4444;"></i>';
                 btn.setAttribute('data-saved', 'true');
-                // Insert into DB
                 await supabaseClient.from('saved_items').insert([{
                     user_id: session.user.id,
                     product_id: currentProduct.id
