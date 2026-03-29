@@ -11,17 +11,41 @@
     <link rel="stylesheet" href="../asset/style.css">
 
     <style>
-        body, html { height: 100%; margin: 0; background: #f8fafc; overflow: hidden; }
-        .chat-container { display: flex; flex-direction: column; height: 100vh; max-width: 480px; margin: 0 auto; background: white; box-shadow: 0 0 20px rgba(0,0,0,0.05); }
+        /* 🚀 FIX: Switched to strict 100% height to stop mobile browsers from hiding the bottom */
+        body, html { height: 100%; margin: 0; padding: 0; background: #f8fafc; overflow: hidden; }
+        
+        .chat-container { 
+            display: flex; 
+            flex-direction: column; 
+            height: 100%; /* Fixed from 100vh */
+            width: 100%;
+            max-width: 480px; 
+            margin: 0 auto; 
+            background: white; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.05); 
+            position: relative;
+        }
         
         /* Header */
-        .chat-header { background: white; padding: 15px 20px; display: flex; align-items: center; border-bottom: 1px solid #e2e8f0; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .chat-header { 
+            background: white; padding: 15px 20px; display: flex; align-items: center; 
+            border-bottom: 1px solid #e2e8f0; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.02); 
+            flex-shrink: 0; /* Prevents header from squishing */
+        }
         .chat-title-area { margin-left: 15px; flex: 1; }
         .chat-title { font-size: 16px; font-weight: 800; color: #1e293b; margin: 0 0 2px; }
         .chat-subtitle { font-size: 12px; color: #2d8eff; font-weight: 600; }
 
         /* Messages Area */
-        .chat-area { flex: 1; overflow-y: auto; padding: 20px; background: #f8fafc; display: flex; flex-direction: column; gap: 15px; }
+        .chat-area { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 20px; 
+            background: #f8fafc; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+        }
         
         .disclaimer-box { background: #fffbeb; border: 1px solid #fde68a; color: #b45309; padding: 10px 15px; border-radius: 12px; font-size: 11px; text-align: center; margin-bottom: 10px; line-height: 1.5; }
 
@@ -39,15 +63,25 @@
         .msg-time { font-size: 10px; color: #94a3b8; margin-top: 4px; }
         .me .msg-time { color: #cbd5e1; text-align: right; }
 
-        /* Input Area */
-        .input-area { background: white; padding: 10px 15px 25px; border-top: 1px solid #e2e8f0; display: flex; align-items: flex-end; gap: 10px; }
+        /* 🚀 FIX: Added flex-shrink: 0 and safe-area padding for iPhone/Android screens */
+        .input-area { 
+            background: white; 
+            padding: 12px 15px; 
+            padding-bottom: calc(12px + env(safe-area-inset-bottom)); 
+            border-top: 1px solid #e2e8f0; 
+            display: flex; 
+            align-items: flex-end; 
+            gap: 10px; 
+            flex-shrink: 0; 
+        }
+        
         .attach-btn { background: #f1f5f9; color: #64748b; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 18px; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; }
         .msg-input { flex: 1; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 20px; padding: 12px 15px; font-size: 14px; outline: none; max-height: 100px; resize: none; font-family: inherit; }
         .send-btn { background: #2d8eff; color: white; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 16px; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; transition: 0.2s; }
         .send-btn:active { transform: scale(0.9); }
         .send-btn:disabled { background: #cbd5e1; }
 
-        .img-preview-bar { display: none; padding: 10px 20px; background: #eff6ff; border-top: 1px solid #bfdbfe; align-items: center; justify-content: space-between; }
+        .img-preview-bar { display: none; padding: 10px 20px; background: #eff6ff; border-top: 1px solid #bfdbfe; align-items: center; justify-content: space-between; flex-shrink: 0; }
         .img-preview-bar img { height: 40px; border-radius: 6px; }
     </style>
 </head>
@@ -67,7 +101,7 @@
             <div class="disclaimer-box" id="disclaimer" style="display: none;">
                 <i class="fas fa-shield-alt"></i> Safety Notice: To help vendors contact you quickly, your registered name and phone number will be automatically sent when you send your first message.
             </div>
-            </div>
+        </div>
 
         <div class="img-preview-bar" id="img-preview-bar">
             <div style="display: flex; align-items: center; gap: 10px;">
@@ -91,11 +125,10 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // ADD YOUR NEW EMAILJS KEYS HERE!
         const EMAILJS_PUB_KEY = 'EhgRXY4ATiEQet7Pf'; 
         const EMAILJS_SERVICE = 'service_1coj3hy';
-        const EMAILJS_VENDOR_TEMPLATE = 'template_iq7xyhr'; // Template telling Vendor they have a message
-        const EMAILJS_CUSTOMER_TEMPLATE = 'template_f5538gb'; // Template telling Customer the vendor replied
+        const EMAILJS_VENDOR_TEMPLATE = 'template_iq7xyhr'; 
+        const EMAILJS_CUSTOMER_TEMPLATE = 'template_f5538gb'; 
         emailjs.init(EMAILJS_PUB_KEY);
 
         const CLOUD_NAME = "dj6yl36fq"; 
@@ -106,7 +139,6 @@
         let currentChat = null;
         let activeChatId = null;
         
-        // URL Context
         const urlParams = new URLSearchParams(window.location.search);
         const urlChatId = urlParams.get('chat_id');
         const urlProductId = urlParams.get('product_id');
@@ -119,7 +151,6 @@
             if (!session) { window.location.href = "../login/index.html"; return; }
             currentUser = session.user;
 
-            // Get user's profile for the auto-responder
             const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', currentUser.id).single();
             userProfile = profile;
 
@@ -129,12 +160,10 @@
         async function initializeChat() {
             try {
                 if (urlChatId) {
-                    // Coming from Inbox
                     const { data: chat } = await supabaseClient.from('chats').select('*, products(name), profiles:customer_id(full_name)').eq('id', urlChatId).single();
                     currentChat = chat;
                     activeChatId = chat.id;
                 } else if (urlProductId && urlVendorId) {
-                    // Coming from Product Page. Does a chat already exist?
                     const { data: chat } = await supabaseClient.from('chats')
                         .select('*, products(name)')
                         .eq('product_id', urlProductId)
@@ -145,9 +174,7 @@
                         currentChat = chat;
                         activeChatId = chat.id;
                     } else {
-                        // Brand new chat waiting to happen!
                         document.getElementById('disclaimer').style.display = 'block';
-                        // Fetch product name for header
                         const { data: prod } = await supabaseClient.from('products').select('name').eq('id', urlProductId).single();
                         document.getElementById('head-product').innerText = prod.name;
                         document.getElementById('head-name').innerText = "Vendor";
@@ -165,12 +192,15 @@
 
         function setupHeader() {
             document.getElementById('head-product').innerText = currentChat.products.name;
-            // If I am the vendor, show customer name. If I am customer, show "Vendor"
-            if (currentUser.id === currentChat.vendor_id) {
+            if (currentUser.id === currentRefreshVendor_id()) {
                 document.getElementById('head-name').innerText = currentChat.profiles?.full_name || "Customer";
             } else {
                 document.getElementById('head-name').innerText = "Store Vendor";
             }
+        }
+        
+        function currentRefreshVendor_id() {
+             return currentChat.vendor_id;
         }
 
         async function fetchMessages() {
@@ -210,11 +240,9 @@
             box.scrollTop = box.scrollHeight;
         }
 
-        // 🚀 THE MAGIC: REAL-TIME LISTENER
         function subscribeToRealtime() {
             supabaseClient.channel('custom-all-channel')
             .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `chat_id=eq.${activeChatId}` }, (payload) => {
-                // Only render if someone ELSE sent it (we already rendered our own)
                 if (payload.new.sender_id !== currentUser.id) {
                     renderMessage(payload.new);
                     scrollToBottom();
@@ -222,7 +250,6 @@
             }).subscribe();
         }
 
-        // IMAGE HANDLING
         function handleImageSelect(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -251,7 +278,6 @@
             return data.secure_url;
         }
 
-        // SENDING MESSAGES & TRIGGERS
         async function sendMessage() {
             const input = document.getElementById('msg-input');
             const text = input.value.trim();
@@ -269,9 +295,7 @@
                     clearImage();
                 }
 
-                // Scenario A: Brand New Chat!
                 if (!activeChatId) {
-                    // Create the chat room
                     const { data: newChat, error: chatErr } = await supabaseClient.from('chats').insert([{
                         product_id: urlProductId,
                         customer_id: currentUser.id,
@@ -287,31 +311,24 @@
                     subscribeToRealtime();
                     setupHeader();
 
-                    // Send the User's actual message
                     await insertMessage(text, imgUrl, false);
 
-                    // 🚀 FIRE THE AUTO-RESPONDER!
                     const autoText = `System Auto-Contact Details:\nName: ${userProfile.full_name}\nPhone: ${userProfile.phone}`;
                     await insertMessage(autoText, null, true);
 
-                    // 📧 Fire EmailJS to Vendor (Fire & Forget)
                     const { data: vendorData } = await supabaseClient.from('profiles').select('email').eq('id', urlVendorId).single();
                     if(vendorData && vendorData.email) {
                         emailjs.send(EMAILJS_SERVICE, EMAILJS_VENDOR_TEMPLATE, { to_email: vendorData.email }).catch(e => console.log("Email err", e));
                     }
                 } 
-                // Scenario B: Existing Chat
                 else {
                     await insertMessage(text, imgUrl, false);
                     
-                    // Update Chat's last message
                     await supabaseClient.from('chats').update({ last_message_text: text || "Sent an image", last_message_time: new Date() }).eq('id', activeChatId);
 
-                    // 🚀 VENDOR FIRST REPLY LOGIC
                     if (currentUser.id === currentChat.vendor_id && currentChat.vendor_has_replied === false) {
                         await supabaseClient.from('chats').update({ vendor_has_replied: true }).eq('id', activeChatId);
                         
-                        // 📧 Fire EmailJS to Customer
                         const { data: custData } = await supabaseClient.from('profiles').select('email').eq('id', currentChat.customer_id).single();
                         if(custData && custData.email) {
                             emailjs.send(EMAILJS_SERVICE, EMAILJS_CUSTOMER_TEMPLATE, { to_email: custData.email }).catch(e => console.log("Email err", e));
@@ -339,12 +356,10 @@
                 is_auto_message: isAuto
             };
             
-            // Render it instantly on our screen for zero latency feel
             const tempMsg = { ...msgData, created_at: new Date().toISOString() };
             renderMessage(tempMsg);
             scrollToBottom();
 
-            // Save to DB
             await supabaseClient.from('messages').insert([msgData]);
         }
     </script>
