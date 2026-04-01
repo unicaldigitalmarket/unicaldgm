@@ -29,11 +29,45 @@ document.addEventListener("DOMContentLoaded", () => {
     fetchReviews();
     fetchBlogs();
     setupExpandableFooter(); 
+    checkGlobalBadges(); // 🚀 NEW: Checks for unread messages & notifications globally!
 });
+
+// 🚀 4. THE SMART BADGE CHECKER
+async function checkGlobalBadges() {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) return;
+    const uid = session.user.id;
+
+    try {
+        // Check Unread Messages
+        const { data: chats } = await supabaseClient.from('chats')
+            .select('customer_id, vendor_id, unread_by_customer, unread_by_vendor')
+            .or(`customer_id.eq.${uid},vendor_id.eq.${uid}`);
+
+        if (chats) {
+            const hasUnreadMsg = chats.some(c => 
+                (c.customer_id === uid && c.unread_by_customer === true) || 
+                (c.vendor_id === uid && c.unread_by_vendor === true)
+            );
+            if (hasUnreadMsg) {
+                document.querySelectorAll('.msg-dot').forEach(dot => dot.style.display = 'block');
+            }
+        }
+
+        // Notification Check (Placeholder for when you build the notifications table)
+        /* const { data: notifs } = await supabaseClient.from('notifications').select('id').eq('user_id', uid).eq('is_read', false).limit(1);
+        if (notifs && notifs.length > 0) {
+            document.querySelectorAll('.notify-dot').forEach(dot => dot.style.display = 'block');
+        }
+        */
+    } catch (e) { console.error("Badge check failed:", e); }
+}
 
 function setupSearch() {
     const searchInput = document.getElementById('main-search');
     const searchIcon = document.getElementById('search-btn-icon');
+
+    if (!searchInput || !searchIcon) return;
 
     function executeSearch() {
         const query = searchInput.value.trim();
@@ -50,6 +84,7 @@ function setupSearch() {
 // --- FETCH ITEMS ---
 async function fetchItems() {
     const grid = document.getElementById('product-grid');
+    if (!grid) return; // Prevent errors on pages without this grid
     try {
         const { data: products, error } = await supabaseClient
             .from('products')
@@ -85,11 +120,11 @@ async function fetchItems() {
     } catch (error) { grid.innerHTML = `<p style="grid-column: span 2; text-align: center; color: red;">Failed to load items.</p>`; }
 }
 
-// --- FETCH VENDORS (STRICT HEIGHT FIX & DYNAMIC BADGE) ---
+// --- FETCH VENDORS ---
 async function fetchVendors() {
     const grid = document.getElementById('vendor-grid');
+    if (!grid) return;
     try {
-        // 🚀 FIX: Added subscription_plan to the Supabase select query
         const { data: vendors, error } = await supabaseClient
             .from('vendors')
             .select('id, business_name, description, logo_url, subscription_plan')
@@ -108,17 +143,16 @@ async function fetchVendors() {
 
         randomVendors.forEach(v => {
             const logo = v.logo_url || "https://via.placeholder.com/100";
-            
             const nameTxt = v.business_name ? v.business_name : 'Unknown';
             const descTxt = v.description ? v.description.substring(0, 25) + '...' : 'Verified Seller';
 
-            // 🚀 THE FIX: Dynamic Badge Color Logic
-            let badgeColor = "#38bdf8"; // Default Blue (Verified)
-            if (v.subscription_plan === "Influencer") badgeColor = "#fbbf24"; // Gold
-            if (v.subscription_plan === "Icon") badgeColor = "#1e293b"; // Black/Slate
+            let badgeColor = "#38bdf8"; 
+            if (v.subscription_plan === "Influencer") badgeColor = "#fbbf24"; 
+            if (v.subscription_plan === "Icon") badgeColor = "#1e293b"; 
 
+            // 🚀 FIX: Updated Link to Clean Profile URL
             grid.innerHTML += `
-                <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center; height: 100%;" onclick="window.location.href='vendors/profile.html?id=${v.id}'">
+                <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center; height: 100%;" onclick="window.location.href='vendors/profile/?id=${v.id}'">
                     <img src="${logo}" style="width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 10px; flex-shrink: 0; object-fit: cover;" onerror="this.src='https://via.placeholder.com/100'">
                     <div style="width: 100%; overflow: hidden;">
                         <div style="font-size: 13px; font-weight: 800; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
@@ -135,6 +169,7 @@ async function fetchVendors() {
 // --- FETCH REVIEWS ---
 async function fetchReviews() {
     const slider = document.getElementById('reviews-slider');
+    if(!slider) return;
     try {
         const { data, error } = await supabaseClient
             .from('reviews')
@@ -191,6 +226,7 @@ function startReviewSlider() {
 // --- FETCH BLOGS ---
 async function fetchBlogs() {
     const list = document.getElementById('blog-list');
+    if (!list) return;
     try {
         const { data, error } = await supabaseClient
             .from('blogs')
@@ -228,7 +264,7 @@ async function fetchBlogs() {
     } catch (error) { list.innerHTML = "<p style='text-align:center; color:red;'>Failed to load news.</p>"; }
 }
 
-// 🚀 4. NEW: EXACT JIJI FOOTER LOGIC
+// 🚀 EXACT JIJI FOOTER LOGIC
 function setupExpandableFooter() {
     const footer = document.getElementById('main-app-footer');
     const toggleBtn = document.getElementById('footer-expand-btn');
@@ -238,13 +274,11 @@ function setupExpandableFooter() {
 
     toggleBtn.addEventListener('click', () => {
         if(footer.classList.contains('collapsed')) {
-            // Expand it: Arrow points UP
             footer.classList.remove('collapsed');
             footer.classList.add('expanded');
             arrowIcon.classList.remove('fa-chevron-down');
             arrowIcon.classList.add('fa-chevron-up'); 
         } else {
-            // Collapse it: Arrow points DOWN
             footer.classList.remove('expanded');
             footer.classList.add('collapsed');
             arrowIcon.classList.remove('fa-chevron-up');
@@ -256,3 +290,51 @@ function setupExpandableFooter() {
 window.downloadApp = function() {
     alert("🚀 Preparing UNICAL Market PWA Download...");
 }
+
+// =========================================
+// 🌙 GLOBAL DARK MODE LOGIC
+// =========================================
+
+// 1. Immediately apply the theme when the script loads on ANY page
+// This checks the browser memory. If it says "dark", it makes the page dark.
+if (localStorage.getItem('theme') === 'dark') {
+    document.body.classList.add('dark-mode');
+}
+
+// 2. Inject the Toggle Button ONLY on the main page
+document.addEventListener("DOMContentLoaded", () => {
+    // We only look for '.header-top', which only exists on your main index.html page
+    const headerTop = document.querySelector('.header-top');
+    
+    // If '.header-top' exists, it means we are on the main page, so we build the button
+    if (headerTop) {
+        const themeBtn = document.createElement('button');
+        themeBtn.className = "theme-toggle-btn";
+        
+        // Set the initial icon
+        const isDark = document.body.classList.contains('dark-mode');
+        themeBtn.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        
+        // Style the button
+        themeBtn.style.cssText = 'background:none; border:none; font-size:22px; color:var(--brand-color); cursor:pointer; margin-left: auto; margin-right: 15px; transition: 0.2s;';
+        
+        // What happens when you click it
+        themeBtn.onclick = function() {
+            const darkModeActive = document.body.classList.toggle('dark-mode');
+            
+            // Save the preference to browser memory so other pages know about it
+            localStorage.setItem('theme', darkModeActive ? 'dark' : 'light');
+            
+            // Swap the icon
+            themeBtn.innerHTML = darkModeActive ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+        };
+        
+        // Place the button next to the notification bell
+        const notifyIcon = document.querySelector('.notify-icon-container');
+        if (notifyIcon) {
+            headerTop.insertBefore(themeBtn, notifyIcon);
+        } else {
+            headerTop.appendChild(themeBtn);
+        }
+    }
+});

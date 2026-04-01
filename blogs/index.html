@@ -65,6 +65,44 @@
         .comment-input { flex: 1; padding: 12px 15px; border-radius: 20px; border: 1px solid #e2e8f0; background: #f8fafc; outline: none; font-size: 13px; }
         .comment-input:focus { border-color: var(--brand-color); }
         .send-btn { background: var(--brand-color); color: white; border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 16px; }
+        /* ========================================= */
+/* 🌙 DARK MODE FIXES FOR CAMPUS NEWS        */
+/* ========================================= */
+
+/* 1. Main Backgrounds & Search */
+body.dark-mode { background-color: #020617 !important; }
+body.dark-mode .app-container { background: #0f172a !important; }
+body.dark-mode .page-title,
+body.dark-mode .back-btn { color: #f1f5f9 !important; }
+body.dark-mode .search-container { background: #1e293b !important; border: 1px solid #334155 !important; box-shadow: none !important; }
+body.dark-mode .search-container input { color: #f1f5f9 !important; }
+
+/* 2. Category Chips */
+body.dark-mode .chip { background: #1e293b !important; border-color: #334155 !important; color: #94a3b8 !important; }
+body.dark-mode .chip.active { background: var(--brand-color) !important; color: white !important; border-color: var(--brand-color) !important; }
+
+/* 3. News Cards */
+body.dark-mode .news-card { background: #1e293b !important; border-color: #334155 !important; }
+body.dark-mode .news-cover { border-bottom-color: #334155 !important; }
+body.dark-mode .blog-title { color: #f1f5f9 !important; }
+body.dark-mode .blog-snippet { color: #cbd5e1 !important; }
+body.dark-mode .interaction-row { border-top-color: #334155 !important; }
+
+/* 4. Reading Modal Content */
+body.dark-mode .modal-content { background: #0f172a !important; }
+body.dark-mode .modal-title { color: #f1f5f9 !important; }
+body.dark-mode .modal-text { color: #cbd5e1 !important; }
+body.dark-mode .comments-section { border-top-color: #334155 !important; }
+body.dark-mode .comments-section h4 { color: #f1f5f9 !important; }
+
+/* 5. Comments Section */
+body.dark-mode .comment-bubble { background: #1e293b !important; border-color: #334155 !important; }
+body.dark-mode .comment-name { color: #f1f5f9 !important; }
+body.dark-mode .comment-text { color: #cbd5e1 !important; }
+
+/* 6. Comment Input Area */
+body.dark-mode .comment-input-area { background: #0f172a !important; border-top-color: #334155 !important; box-shadow: 0 -5px 20px rgba(0,0,0,0.5) !important;}
+body.dark-mode .comment-input { background: #1e293b !important; border-color: #334155 !important; color: #f1f5f9 !important; }
     </style>
 </head>
 <body>
@@ -131,8 +169,10 @@
             <a href="../index.html" class="nav-item">
                 <i class="fas fa-home"></i><span>Home</span>
             </a>
-            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')">
-                <i class="fas fa-comment-dots"></i><span>Messages</span>
+           <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')">
+                <i class="fas fa-comment-dots"></i>
+                <span class="red-dot msg-dot"></span>
+                <span>Messages</span>
             </a>
             <div class="nav-fab" onclick="requireLogin('../add-product/index.html')">
                 <i class="fas fa-plus"></i>
@@ -148,9 +188,6 @@
     </div>
 
    <script>
-    const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
-    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     let currentUser = null;
     let allBlogs = [];
@@ -423,5 +460,6 @@
         }
     }
 </script>
+<script src="../asset/script.js"></script>
 </body>
 </html>

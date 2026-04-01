@@ -12,6 +12,10 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
         
+        :root {
+            --brand-color: #FF7A00;
+        }
+
         body { 
             background: #e0e0e0; /* Matches global app background */
             display: flex; justify-content: center; min-height: 100vh; margin: 0; font-family: 'Inter', sans-serif; 
@@ -30,9 +34,9 @@
             box-sizing: border-box;
         }
 
-        /* 🚀 FIX: Changed to Black/Dark theme */
+        /* 🚀 BRAND UPDATE: Orange Icon */
         .auth-icon {
-            width: 60px; height: 60px; background: #f1f5f9; color: #1e293b;
+            width: 60px; height: 60px; background: rgba(255, 122, 0, 0.1); color: var(--brand-color);
             border-radius: 50%; display: flex; justify-content: center; align-items: center;
             font-size: 24px; margin: 0 auto 20px;
         }
@@ -46,29 +50,54 @@
         .input-field {
             width: 100%; padding: 14px 40px 14px 15px; border: 1px solid #e2e8f0;
             border-radius: 12px; font-size: 14px; outline: none; background: #f8fafc;
-            transition: 0.2s; box-sizing: border-box; color: #1e293b;
+            transition: 0.2s; box-sizing: border-box; color: #1e293b; /* Dark text for readability */
         }
         
-        /* Focus ring is now dark slate */
-        .input-field:focus { border-color: #1e293b; background: white; box-shadow: 0 0 0 3px rgba(30, 41, 59, 0.1); }
+        /* 🚀 BRAND UPDATE: Orange focus ring */
+        .input-field:focus { 
+            border-color: var(--brand-color); 
+            background: white; 
+            box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.1); 
+        }
         
         .toggle-password {
             position: absolute; right: 15px; top: 38px; color: #94a3b8;
             cursor: pointer; font-size: 14px;
         }
 
-        /* Button is now Black */
+        /* 🚀 BRAND UPDATE: Orange Button */
         .auth-btn {
-            background: #1e293b; color: white; border: none; width: 100%;
+            background: var(--brand-color); color: white; border: none; width: 100%;
             padding: 15px; border-radius: 12px; font-size: 15px; font-weight: 800;
-            cursor: pointer; transition: 0.2s; margin-top: 10px; box-shadow: 0 4px 15px rgba(30, 41, 59, 0.2);
+            cursor: pointer; transition: 0.2s; margin-top: 10px; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.2);
         }
+        .auth-btn:hover { opacity: 0.9; }
         .auth-btn:active { transform: scale(0.98); }
         .auth-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
         #msg-box { font-size: 13px; font-weight: 600; margin-top: 15px; display: none; padding: 10px; border-radius: 8px;}
         .msg-error { color: #ef4444; background: #fef2f2; border: 1px solid #fecaca; }
         .msg-success { color: #10b981; background: #ecfdf5; border: 1px solid #a7f3d0; }
+
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES FOR RESET PASSWORD     */
+        /* ========================================= */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .app-container { background: #0f172a !important; }
+        
+        body.dark-mode .auth-card { background: #1e293b !important; box-shadow: 0 10px 40px rgba(0,0,0,0.5) !important; }
+        
+        body.dark-mode .auth-icon { background: rgba(255, 122, 0, 0.1) !important; color: var(--brand-color) !important; }
+        
+        body.dark-mode .auth-title { color: #f1f5f9 !important; }
+        body.dark-mode .auth-sub { color: #94a3b8 !important; }
+        
+        body.dark-mode .input-label { color: #cbd5e1 !important; }
+        body.dark-mode .input-field { background: #0f172a !important; border-color: #334155 !important; color: #f1f5f9 !important; }
+        body.dark-mode .input-field:focus { border-color: var(--brand-color) !important; }
+        
+        body.dark-mode .msg-error { background: rgba(239, 68, 68, 0.1) !important; border-color: #ef4444 !important; color: #fca5a5 !important; }
+        body.dark-mode .msg-success { background: rgba(16, 185, 129, 0.1) !important; border-color: #10b981 !important; color: #6ee7b7 !important; }
     </style>
 </head>
 <body>
@@ -97,11 +126,11 @@
         </div>
     </div>
 
-    <script>
-        const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <script src="../asset/script.js"></script>
 
+    <script>
+        // 🚀 REMOVED DUPLICATE SUPABASE KEYS
+        
         // Checks if the user actually came from a valid recovery link
         document.addEventListener("DOMContentLoaded", () => {
             supabaseClient.auth.onAuthStateChange((event, session) => {

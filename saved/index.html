@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="../asset/style.css">
 
     <style>
-        /* 🚀 THE FIX: Removed the margin-bottom so it doesn't create dead space */
         .header-top-flex { display: flex; align-items: center; gap: 15px; }
         .page-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; }
         
@@ -44,6 +43,28 @@
         .sk-img { width: 100%; height: 150px; border-radius: 10px; margin-bottom: 10px; }
         .sk-line-1 { width: 60%; height: 14px; border-radius: 4px; margin-bottom: 8px; }
         .sk-line-2 { width: 90%; height: 12px; border-radius: 4px; margin-bottom: 6px; }
+
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES FOR SAVED ITEMS        */
+        /* ========================================= */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .app-container { background: #0f172a !important; }
+        
+        body.dark-mode .header { background: #1e293b !important; border-bottom-color: #334155 !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .page-title { color: #f1f5f9 !important; }
+        
+        body.dark-mode .empty-state h3 { color: #f1f5f9 !important; }
+        body.dark-mode .empty-state p { color: #94a3b8 !important; }
+        body.dark-mode .empty-state i { color: #334155 !important; }
+        
+        body.dark-mode .product-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .product-img { background: #334155 !important; }
+        body.dark-mode .product-title { color: #f1f5f9 !important; }
+        body.dark-mode .product-category { color: #94a3b8 !important; }
+        
+        body.dark-mode .remove-btn { background: rgba(15, 23, 42, 0.8) !important; color: #ef4444 !important; }
+        
+        body.dark-mode .sk-card { background: #1e293b !important; border-color: #334155 !important; }
     </style>
 </head>
 <body>
@@ -52,7 +73,6 @@
         
         <div class="header" style="position: sticky; top: 0; z-index: 100; background: white; border-bottom: 1px solid #f1f5f9; padding: 15px 20px;">
             <div class="header-top-flex">
-                <button onclick="window.history.back()" style="background:none; border:none; font-size:20px; color:var(--text-main); cursor:pointer;"><i class="fas fa-arrow-left"></i></button>
                 <h1 class="page-title">Saved Items</h1>
             </div>
         </div>
@@ -82,7 +102,9 @@
                 <i class="fas fa-home"></i><span>Home</span>
             </a>
             <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')">
-                <i class="fas fa-comment-dots"></i><span>Messages</span>
+                <i class="fas fa-comment-dots"></i>
+                <span class="red-dot msg-dot"></span>
+                <span>Messages</span>
             </a>
             <div class="nav-fab" onclick="requireLogin('../add-product/index.html')">
                 <i class="fas fa-plus"></i>
@@ -97,11 +119,10 @@
 
     </div>
 
-    <script>
-        const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <script src="../asset/script.js"></script>
 
+    <script>
+        // 🚀 REMOVED DUPLICATE SUPABASE INITIALIZATION
         let currentUser = null;
         let savedProducts = [];
 

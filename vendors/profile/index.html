@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Store Profile | UNICAL Market</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../../asset/style.css">
+
+    <style>
+        body, html { background: #f8fafc; margin: 0; padding: 0; }
+        .app-container { padding-bottom: 80px; position: relative; }
+        
+        /* 🚀 FIX: Solid Top Bar Background */
+        .sticky-top-bar { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .back-btn-overlay, .share-btn-overlay { background: #f1f5f9; color: #1e293b; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: none; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        .back-btn-overlay:active, .share-btn-overlay:active { transform: scale(0.9); background: #e2e8f0; }
+
+        /* Watermark Background (Pushed down to clear the new top bar) */
+        .profile-cover { margin-top: 70px; background: #e2e8f0; height: 120px; position: relative; border-radius: 0 0 30px 30px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        .profile-cover::before { content: "UNICAL DGM"; position: absolute; font-size: 45px; font-weight: 900; color: rgba(0,0,0,0.04); transform: rotate(-10deg); white-space: nowrap; pointer-events: none; }
+
+        .profile-card { background: white; margin: -50px 20px 20px; border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: relative; text-align: center; border: 1px solid #f1f5f9; }
+        .v-logo { width: 100px; height: 100px; border-radius: 50%; border: 5px solid white; background: #eee; object-fit: cover; margin-top: -50px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        
+        .v-name { font-size: 22px; font-weight: 900; color: #1e293b; margin: 10px 0 5px; display: flex; justify-content: center; align-items: center; gap: 6px; }
+        .v-categories { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 10px; }
+        .cat-tag { background: #eff6ff; color: #2563EB; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; }
+        
+        /* 🚀 FIX: Store Location */
+        .v-location { font-size: 12px; color: #64748b; font-weight: 600; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 5px; }
+
+        .v-desc { font-size: 13px; color: #475569; line-height: 1.6; margin-bottom: 20px; }
+        
+        .v-actions { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+        .btn-wa { background: #25D366; color: white; padding: 10px 20px; border-radius: 25px; font-weight: 800; font-size: 13px; border: none; cursor: pointer; display: inline-flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2); text-decoration: none; width: auto; min-width: 180px; transition: 0.2s; }
+        .btn-wa:active { transform: scale(0.95); }
+        .report-btn { display: inline-flex; align-items: center; gap: 5px; color: #ef4444; font-size: 12px; font-weight: 600; text-decoration: none; margin-top: 10px; background: #fef2f2; padding: 6px 12px; border-radius: 12px; }
+
+        /* Reviews Section */
+        .reviews-section { background: white; margin: 0 20px 20px; border-radius: 20px; padding: 20px; border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .rev-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .rev-title { font-size: 16px; font-weight: 800; color: #1e293b; margin: 0; }
+        .write-rev-btn { background: #FF7A00; color: white; border: none; padding: 8px 16px; border-radius: 12px; font-weight: 800; font-size: 12px; cursor: pointer; box-shadow: 0 4px 10px rgba(245, 166, 35, 0.2); }
+        
+        .rating-big { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
+        .rating-num { font-size: 32px; font-weight: 900; color: #1e293b; }
+        .rating-stars { color: #F5A623; font-size: 16px; }
+        .rating-count { font-size: 12px; color: #64748b; font-weight: 600; }
+
+        .reviews-list { display: flex; overflow-x: auto; gap: 15px; padding-bottom: 10px; scrollbar-width: none; scroll-snap-type: x mandatory; }
+        .reviews-list::-webkit-scrollbar { display: none; }
+        .rev-card { min-width: 260px; background: #f8fafc; padding: 15px; border-radius: 16px; scroll-snap-align: start; border: 1px solid #e2e8f0; position: relative; }
+        .r-name { font-size: 13px; font-weight: 800; color: #1e293b; margin-bottom: 2px; }
+        .r-stars { color: #F5A623; font-size: 10px; margin-bottom: 8px; }
+        .r-text { font-size: 13px; color: #475569; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+
+        /* Grids */
+        .section-heading { font-size: 18px; font-weight: 800; color: #1e293b; margin: 30px 20px 15px; display: flex; align-items: center; gap: 8px; }
+        .items-grid, .vendors-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 20px; }
+        
+        .product-card { background: white; border-radius: 16px; padding: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); cursor: pointer; border: 1px solid #f1f5f9; }
+        .product-img { width: 100%; height: 140px; object-fit: cover; border-radius: 10px; background: #eee; margin-bottom: 10px; }
+        .product-price { font-size: 15px; font-weight: 800; color: #FF7A00; margin-bottom: 4px; }
+        .product-title { font-size: 12px; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        .vendor-mini-card { background: white; border-radius: 16px; padding: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; cursor: pointer; }
+        .vendor-mini-img { width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px; border: 2px solid #f1f5f9; object-fit: cover; }
+        .vendor-mini-name { font-size: 13px; font-weight: 800; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* 🚀 FIX: View All Buttons */
+        .view-all-btn { display: block; text-align: center; background: #f1f5f9; color: #1e293b; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 13px; text-decoration: none; margin: 20px 20px 0; transition: 0.2s; }
+        .view-all-btn:active { transform: scale(0.98); background: #e2e8f0; }
+
+        /* Modal */
+        .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 5000; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
+        .modal-content { background: white; width: 100%; max-width: 400px; border-radius: 24px; padding: 25px; position: relative; text-align: center; }
+        .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #94a3b8; cursor: pointer; }
+        
+        .star-selector { display: flex; justify-content: center; gap: 10px; margin: 20px 0; font-size: 35px; color: #e2e8f0; cursor: pointer; }
+        .star-selector i.active { color: #F5A623; }
+        .rev-input { width: 100%; height: 100px; padding: 15px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 14px; resize: none; margin-bottom: 20px; background: #f8fafc; outline: none; }
+        .rev-input:focus { border-color: #F5A623; }
+        .submit-btn { background: #2563EB; color: white; width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: 800; font-size: 15px; cursor: pointer; }
+
+        /* Skeletons */
+        .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .sk-logo { width: 100px; height: 100px; border-radius: 50%; margin: -50px auto 10px; border: 5px solid white; }
+        .sk-line { height: 14px; border-radius: 6px; margin: 10px auto; }
+        .sk-vendor { background: white; border-radius: 16px; padding: 15px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; }
+
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES FOR VENDOR PROFILE     */
+        /* ========================================= */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .app-container { background: #020617 !important; }
+        
+        body.dark-mode .sticky-top-bar { background: rgba(15, 23, 42, 0.95) !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .sticky-top-bar div { color: #f1f5f9 !important; }
+        body.dark-mode .back-btn-overlay, body.dark-mode .share-btn-overlay { background: #1e293b !important; color: #f1f5f9 !important; }
+        
+        body.dark-mode .profile-cover { background: #1e293b !important; }
+        body.dark-mode .profile-cover::before { color: rgba(255,255,255,0.02) !important; }
+        
+        body.dark-mode .profile-card { background: #0f172a !important; border-color: #334155 !important; }
+        body.dark-mode .v-logo { border-color: #0f172a !important; background: #1e293b !important; }
+        body.dark-mode .v-name { color: #f1f5f9 !important; }
+        body.dark-mode .v-location { color: #94a3b8 !important; }
+        body.dark-mode .v-desc { color: #cbd5e1 !important; }
+        body.dark-mode .cat-tag { background: #1e293b !important; color: #60a5fa !important; }
+        body.dark-mode .report-btn { background: rgba(239, 68, 68, 0.1) !important; border: 1px solid #ef4444 !important; }
+
+        body.dark-mode .reviews-section { background: #0f172a !important; border-color: #334155 !important; }
+        body.dark-mode .rev-title { color: #f1f5f9 !important; }
+        body.dark-mode .rating-num { color: #f1f5f9 !important; }
+        body.dark-mode .rating-count { color: #94a3b8 !important; }
+        body.dark-mode .rev-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .r-name { color: #f1f5f9 !important; }
+        body.dark-mode .r-text { color: #cbd5e1 !important; }
+
+        body.dark-mode .section-heading { color: #f1f5f9 !important; }
+        
+        body.dark-mode .product-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .product-img { background: #334155 !important; }
+        body.dark-mode .product-title { color: #f1f5f9 !important; }
+
+        body.dark-mode .vendor-mini-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .vendor-mini-name { color: #f1f5f9 !important; }
+        body.dark-mode .vendor-mini-img { border-color: #1e293b !important; }
+
+        body.dark-mode .view-all-btn { background: #1e293b !important; color: #f1f5f9 !important; }
+        body.dark-mode .view-all-btn:active { background: #334155 !important; }
+
+        body.dark-mode .modal-content { background: #0f172a !important; }
+        body.dark-mode #modal-title { color: #f1f5f9 !important; }
+        body.dark-mode .rev-input { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+        
+        /* Dark Mode Skeletons */
+        body.dark-mode .sk-vendor, body.dark-mode .sk-card { background: #1e293b !important; border-color: #334155 !important; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <div class="sticky-top-bar">
+            <button class="back-btn-overlay" onclick="window.history.back()"><i class="fas fa-arrow-left"></i></button>
+            <div style="font-weight: 800; font-size: 16px; color: #1e293b;">Vendor Store</div>
+            <button class="share-btn-overlay" onclick="shareStore()"><i class="fas fa-share-alt"></i></button>
+        </div>
+
+        <div class="profile-cover"></div>
+
+        <div id="skeleton-view">
+            <div class="profile-card">
+                <div class="sk-shimmer sk-logo"></div>
+                <div class="sk-shimmer sk-line" style="width: 60%; height: 24px;"></div>
+                <div class="sk-shimmer sk-line" style="width: 40%;"></div>
+                <div class="sk-shimmer sk-line" style="width: 80%; margin-top: 20px;"></div>
+                <div class="sk-shimmer sk-line" style="width: 70%;"></div>
+            </div>
+            
+            <div class="section-heading"><div class="sk-shimmer sk-line" style="width: 150px; height: 20px; margin:0;"></div></div>
+            <div class="items-grid">
+                <div class="product-card"><div class="sk-shimmer" style="height:140px; border-radius:10px;"></div></div>
+                <div class="product-card"><div class="sk-shimmer" style="height:140px; border-radius:10px;"></div></div>
+            </div>
+
+            <div class="section-heading" style="margin-top: 40px;"><div class="sk-shimmer sk-line" style="width: 180px; height: 20px; margin:0;"></div></div>
+            <div class="vendors-grid">
+                <div class="sk-vendor"><div class="sk-shimmer" style="width:60px; height:60px; border-radius:50%; margin-bottom:10px;"></div><div class="sk-shimmer sk-line" style="width:80%;"></div></div>
+                <div class="sk-vendor"><div class="sk-shimmer" style="width:60px; height:60px; border-radius:50%; margin-bottom:10px;"></div><div class="sk-shimmer sk-line" style="width:80%;"></div></div>
+            </div>
+        </div>
+
+        <div id="real-view" style="display: none;">
+            <div class="profile-card" id="vendor-details">
+                <img src="" id="v-logo" class="v-logo">
+                <div class="v-name" id="v-name">Loading...</div>
+                
+                <div class="v-categories" id="v-cats"></div>
+                <div class="v-location" id="v-loc"><i class="fas fa-map-marker-alt"></i> Loading...</div>
+
+                <div class="v-desc" id="v-desc">...</div>
+
+                <div class="v-actions">
+                    <a href="#" id="wa-link" target="_blank" class="btn-wa"><i class="fab fa-whatsapp" style="font-size: 16px;"></i> Message Shop</a>
+                    <a href="../../report/index.html" id="report-link" class="report-btn"><i class="fas fa-flag"></i> Report Vendor</a>
+                </div>
+            </div>
+
+            <div class="reviews-section">
+                <div class="rev-header">
+                    <h3 class="rev-title">Store Reviews</h3>
+                    <button class="write-rev-btn" onclick="openReviewModal()">Write Review</button>
+                </div>
+                
+                <div class="rating-big">
+                    <div class="rating-num" id="avg-num">0.0</div>
+                    <div>
+                        <div class="rating-stars" id="avg-stars">☆☆☆☆☆</div>
+                        <div class="rating-count" id="total-revs">0 reviews</div>
+                    </div>
+                </div>
+
+                <div class="reviews-list" id="reviews-list"></div>
+            </div>
+
+            <div class="section-heading"><i class="fas fa-shopping-bag" style="color: #2563EB;"></i> Store Items <span id="store-items-count" style="color: #64748b; font-size: 14px; font-weight: 600; margin-left: 5px;">(0)</span></div>
+            <div class="items-grid" id="store-items"></div>
+
+            <div class="section-heading" style="margin-top: 40px;"><i class="fas fa-compass" style="color: #F5A623;"></i> Explore More Items</div>
+            <div class="items-grid" id="explore-items"></div>
+            <a href="../../items/index.html" class="view-all-btn">View All Market Items</a>
+
+            <div class="section-heading" style="margin-top: 40px;"><i class="fas fa-store" style="color: #1e293b;"></i> Discover Other Vendors</div>
+            <div class="vendors-grid" id="other-vendors"></div>
+            <a href="../../vendors/index.html" class="view-all-btn" style="margin-bottom: 20px;">View All Vendors</a>
+        </div>
+
+        <div class="modal-bg" id="review-modal">
+            <div class="modal-content">
+                <div class="close-modal" onclick="closeReviewModal()">&times;</div>
+                <h3 style="margin: 0 0 5px; font-size: 20px;" id="modal-title">Rate this Shop</h3>
+                <p style="font-size: 13px; color: #64748b; margin: 0;">Help other students buy safely.</p>
+                
+                <div class="star-selector" id="star-selector">
+                    <i class="fas fa-star" data-val="1"></i>
+                    <i class="fas fa-star" data-val="2"></i>
+                    <i class="fas fa-star" data-val="3"></i>
+                    <i class="fas fa-star" data-val="4"></i>
+                    <i class="fas fa-star" data-val="5"></i>
+                </div>
+                <input type="hidden" id="selected-rating" value="0">
+                <input type="hidden" id="edit-review-id" value="">
+                
+                <textarea id="review-text" class="rev-input" placeholder="Share your experience..."></textarea>
+                <button class="submit-btn" id="submit-rev-btn" onclick="submitReview()">Post Review</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="../../asset/script.js"></script>
+
+    <script>
+        // 🚀 REMOVED DUPLICATE SUPABASE KEYS
+        
+        let currentUser = null;
+        let currentVendor = null;
+        let vendorId = new URLSearchParams(window.location.search).get('id');
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) currentUser = session.user;
+            
+            if (!vendorId) {
+                alert("Vendor not found!"); window.location.href = "../../vendors/index.html"; return;
+            }
+
+            setupStars();
+            await loadVendorProfile();
+            await loadReviews();
+            await loadStoreItems();
+            await loadExploreItems();
+            await loadOtherVendors();
+
+            // Hide Skeleton, Show Content
+            document.getElementById('skeleton-view').style.display = 'none';
+            document.getElementById('real-view').style.display = 'block';
+        });
+
+        // 1. Load Vendor Details
+        async function loadVendorProfile() {
+            const { data: vendor, error } = await supabaseClient.from('vendors').select('*').eq('id', vendorId).single();
+            if (error || !vendor) {
+                document.getElementById('v-name').innerText = "Store Not Found"; return;
+            }
+            currentVendor = vendor;
+            document.title = `${vendor.business_name} | Profile`;
+
+            let badgeColor = "#2563EB"; 
+            if (vendor.subscription_plan === "Influencer") badgeColor = "#F5A623"; 
+            if (vendor.subscription_plan === "Icon") badgeColor = "#1e293b"; 
+
+            document.getElementById('v-name').innerHTML = `${vendor.business_name} <i class="fas fa-check-circle" style="color: ${badgeColor}; font-size: 16px;"></i>`;
+            document.getElementById('v-logo').src = vendor.logo_url || "https://via.placeholder.com/150";
+            document.getElementById('v-desc').innerText = vendor.description || "No description provided.";
+            
+            // 🚀 FIX: Load the Location
+            document.getElementById('v-loc').innerHTML = `<i class="fas fa-map-marker-alt"></i> ${vendor.location || "Location not provided"}`;
+
+            const catBox = document.getElementById('v-cats');
+            catBox.innerHTML = "";
+            if (vendor.categories) {
+                vendor.categories.split(',').forEach(cat => {
+                    catBox.innerHTML += `<span class="cat-tag">${cat.trim()}</span>`;
+                });
+            }
+
+            let phone = vendor.whatsapp_number || "";
+            if(phone.startsWith('0')) phone = "234" + phone.substring(1);
+            document.getElementById('wa-link').href = `https://wa.me/${phone}`;
+            document.getElementById('report-link').href = `../../report/index.html?vid=${vendor.id}&vname=${encodeURIComponent(vendor.business_name)}`;
+        }
+
+        // 2. Load Reviews (NO TIME LIMIT ON EDIT/DELETE)
+        async function loadReviews() {
+            const list = document.getElementById('reviews-list');
+            try {
+                const { data: reviews, error } = await supabaseClient.from('vendor_reviews').select('*').eq('vendor_id', vendorId).order('created_at', { ascending: false });
+                if (error) throw error;
+
+                if (!reviews || reviews.length === 0) {
+                    list.innerHTML = `<p style="color: #94a3b8; font-size: 13px; width: 100%; text-align: center;">No reviews yet. Be the first!</p>`;
+                    return;
+                }
+
+                const userIds = [...new Set(reviews.map(r => r.customer_id))];
+                const { data: profiles } = await supabaseClient.from('profiles').select('id, full_name').in('id', userIds);
+                const profileDict = {};
+                if (profiles) profiles.forEach(p => profileDict[p.id] = p.full_name);
+
+                let total = 0; list.innerHTML = "";
+
+                reviews.forEach(r => {
+                    total += r.rating;
+                    const starsHTML = '<i class="fas fa-star"></i>'.repeat(r.rating) + '<i class="far fa-star"></i>'.repeat(5 - r.rating);
+                    const name = profileDict[r.customer_id] || "Student";
+                    
+                    // 🚀 FIX: Removed the 24 hour limit entirely. User can always edit/delete.
+                    let actionBtns = '';
+                    if (currentUser && currentUser.id === r.customer_id) {
+                        actionBtns = `
+                            <div style="margin-top: 10px; display: flex; gap: 10px;">
+                                <button onclick="triggerEdit('${r.id}', \`${r.review_text.replace(/'/g, "\\'")}\`, ${r.rating})" style="background:#eff6ff; color:#2563EB; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer;"><i class="fas fa-edit"></i> Edit</button>
+                                <button onclick="triggerDelete('${r.id}')" style="background:#fef2f2; color:#ef4444; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer;"><i class="fas fa-trash"></i> Delete</button>
+                            </div>
+                        `;
+                    }
+                    
+                    list.innerHTML += `
+                        <div class="rev-card">
+                            <div class="r-name">${name}</div>
+                            <div class="r-stars">${starsHTML}</div>
+                            <div class="r-text">"${r.review_text}"</div>
+                            ${actionBtns}
+                        </div>
+                    `;
+                });
+
+                const avg = (total / reviews.length).toFixed(1);
+                document.getElementById('avg-num').innerText = avg;
+                document.getElementById('avg-stars').innerHTML = '<i class="fas fa-star"></i>'.repeat(Math.round(avg));
+                document.getElementById('total-revs').innerText = `${reviews.length} reviews`;
+
+            } catch (err) {
+                list.innerHTML = `<p style="color: red; font-size: 13px; width: 100%; text-align: center;">Failed to load reviews.</p>`;
+            }
+        }
+
+        // 3. Load Store Items
+        async function loadStoreItems() {
+            const grid = document.getElementById('store-items');
+            const { data: products } = await supabaseClient.from('products').select('*').eq('vendor_id', vendorId).eq('status', 'Active');
+            
+            if (!products || products.length === 0) {
+                grid.innerHTML = `<p style="grid-column: span 2; text-align: center; color: #94a3b8; padding: 20px;">This store has no active items.</p>`; return;
+            }
+
+            // 🚀 FIX: Dynamic total count
+            document.getElementById('store-items-count').innerText = `(${products.length})`;
+
+            grid.innerHTML = "";
+            products.forEach(p => {
+                const img = (p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/300';
+                const price = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(p.price);
+                // 🚀 FIX: Links to product details page
+                grid.innerHTML += `<div class="product-card" onclick="window.location.href='../../product/index.html?id=${p.id}'"><img src="${img}" class="product-img"><div class="product-price">${price}</div><div class="product-title">${p.name}</div></div>`;
+            });
+        }
+
+        // 4. Load Explore Items
+        async function loadExploreItems() {
+            const grid = document.getElementById('explore-items');
+            const { data: products } = await supabaseClient.from('products').select('*').neq('vendor_id', vendorId).eq('status', 'Active').limit(16);
+            if (!products) return;
+            grid.innerHTML = "";
+            products.forEach(p => {
+                const img = (p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/300';
+                const price = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(p.price);
+                // 🚀 FIX: Links to product details page
+                grid.innerHTML += `<div class="product-card" onclick="window.location.href='../../product/index.html?id=${p.id}'"><img src="${img}" class="product-img"><div class="product-price">${price}</div><div class="product-title">${p.name}</div></div>`;
+            });
+        }
+
+        // 5. Load Other Vendors
+        async function loadOtherVendors() {
+            const grid = document.getElementById('other-vendors');
+            const { data: vendors } = await supabaseClient.from('vendors').select('*').neq('id', vendorId).eq('is_active', true).limit(8);
+            if (!vendors) return;
+            grid.innerHTML = "";
+            vendors.forEach(v => {
+                const logo = v.logo_url || 'https://via.placeholder.com/150';
+                grid.innerHTML += `<div class="vendor-mini-card" onclick="window.location.href='index.html?id=${v.id}'"><img src="${logo}" class="vendor-mini-img"><div class="vendor-mini-name">${v.business_name}</div></div>`;
+            });
+        }
+
+        // --- Review Actions ---
+        function setupStars() {
+            const stars = document.querySelectorAll('#star-selector i');
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const val = this.getAttribute('data-val');
+                    document.getElementById('selected-rating').value = val;
+                    stars.forEach(s => {
+                        if(s.getAttribute('data-val') <= val) s.classList.add('active');
+                        else s.classList.remove('active');
+                    });
+                });
+            });
+        }
+
+        function openReviewModal() {
+            if (!currentUser) { alert("Please log in to leave a review."); window.location.href = "../../login/index.html"; return; }
+            if (currentUser.id === currentVendor.profile_id) { alert("You cannot review your own store."); return; }
+            
+            document.getElementById('modal-title').innerText = "Rate this Shop";
+            document.getElementById('edit-review-id').value = "";
+            document.getElementById('review-text').value = "";
+            document.getElementById('selected-rating').value = "0";
+            document.querySelectorAll('#star-selector i').forEach(s => s.classList.remove('active'));
+            
+            document.getElementById('review-modal').style.display = 'flex';
+        }
+
+        function closeReviewModal() { document.getElementById('review-modal').style.display = 'none'; }
+
+        // 🚀 EDIT Logic (No limits)
+        window.triggerEdit = function(id, text, rating) {
+            document.getElementById('modal-title').innerText = "Edit Review";
+            document.getElementById('edit-review-id').value = id;
+            document.getElementById('review-text').value = text;
+            document.getElementById('selected-rating').value = rating;
+            
+            const stars = document.querySelectorAll('#star-selector i');
+            stars.forEach(s => {
+                if(s.getAttribute('data-val') <= rating) s.classList.add('active');
+                else s.classList.remove('active');
+            });
+
+            document.getElementById('review-modal').style.display = 'flex';
+        }
+
+        // 🚀 DELETE Logic (No limits)
+        window.triggerDelete = async function(id) {
+            if (!confirm("Are you sure you want to permanently delete this review?")) return;
+            
+            try {
+                await supabaseClient.from('vendor_reviews').delete().eq('id', id);
+                alert("Review deleted successfully.");
+                await loadReviews();
+            } catch(e) { alert("Failed to delete review."); }
+        }
+
+        async function submitReview() {
+            const rating = parseInt(document.getElementById('selected-rating').value);
+            const text = document.getElementById('review-text').value.trim();
+            const editId = document.getElementById('edit-review-id').value;
+            const btn = document.getElementById('submit-rev-btn');
+
+            if (rating === 0) return alert("Please select a star rating!");
+            if (text.length < 5) return alert("Please write a bit more about your experience.");
+
+            btn.disabled = true; btn.innerText = "Posting...";
+
+            try {
+                if (editId) {
+                    await supabaseClient.from('vendor_reviews').update({ rating: rating, review_text: text }).eq('id', editId);
+                    alert("Review updated successfully!");
+                } else {
+                    const { error } = await supabaseClient.from('vendor_reviews').insert([{ vendor_id: vendorId, customer_id: currentUser.id, rating: rating, review_text: text }]);
+                    if (error) {
+                        if (error.code === '42501' || error.message.includes('Limit 2')) throw new Error("You have already reached the limit of 2 reviews for this store.");
+                        throw error;
+                    }
+                    alert("Review posted successfully!");
+                }
+
+                closeReviewModal();
+                await loadReviews();
+            } catch (err) {
+                alert(err.message || "Failed to post review.");
+            } finally {
+                btn.disabled = false; btn.innerText = "Post Review";
+            }
+        }
+
+        window.shareStore = function() {
+            if (!currentVendor) return;
+            const url = window.location.href;
+            const message = encodeURIComponent(`Check out ${currentVendor.business_name} on UNICAL Digital Market!\n\nStore Link: ${url}`);
+            window.open(`https://api.whatsapp.com/send?text=${message}`, '_blank');
+        }
+    </script>
+</body>
+</html>

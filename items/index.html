@@ -44,6 +44,34 @@
 
         .end-message { text-align: center; padding: 30px 20px 40px; color: #94a3b8; font-size: 13px; font-weight: 600; display: none; }
         .end-message i { font-size: 24px; color: #e2e8f0; margin-bottom: 8px; display: block; }
+
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES FOR ITEMS PAGE         */
+        /* ========================================= */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .app-container { background: #0f172a !important; }
+        body.dark-mode .header { background: #1e293b !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .page-title, body.dark-mode .fa-arrow-left { color: #f1f5f9 !important; }
+        
+        /* Search Bar */
+        body.dark-mode .search-container { background: #0f172a !important; border: 1px solid #334155 !important; }
+        body.dark-mode .search-container input { color: #f1f5f9 !important; }
+        
+        /* Filter Pills */
+        body.dark-mode .cat-filter-scroll { background: #1e293b !important; border-bottom-color: #334155 !important; }
+        body.dark-mode .filter-pill { background: #0f172a !important; border-color: #334155 !important; color: #94a3b8 !important; }
+        body.dark-mode .filter-pill.active { background: var(--brand-color) !important; color: white !important; border-color: var(--brand-color) !important; }
+        
+        /* Product Cards */
+        body.dark-mode .product-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .product-title { color: #f1f5f9 !important; }
+        body.dark-mode .product-img { background: #334155 !important; }
+        body.dark-mode .product-location { color: #94a3b8 !important; }
+        
+        /* End Message & Skeletons */
+        body.dark-mode .end-message { color: #94a3b8 !important; }
+        body.dark-mode .end-message i { color: #334155 !important; }
+        body.dark-mode .sk-card { background: #1e293b !important; border-color: #334155 !important; }
     </style>
 </head>
 <body>
@@ -58,19 +86,24 @@
             
             <form class="search-container" action="#" onsubmit="return triggerSearch(event)">
                 <i class="fas fa-search" style="color: #94a3b8; margin-right: 10px;" onclick="triggerSearch(event)"></i>
-                <input type="search" id="item-search" placeholder="Search for iPhones, shoes, books...">
+                <input type="search" id="item-search" placeholder="Search items, services, foods...">
             </form>
         </div>
 
         <div class="cat-filter-scroll" id="category-filters">
-            <div class="filter-pill active" onclick="filterByCategory('All', this)">All Items</div>
-            <div class="filter-pill" onclick="filterByCategory('Phones', this)">Phones</div>
-            <div class="filter-pill" onclick="filterByCategory('Laptops', this)">Laptops</div>
+            <div class="filter-pill active" onclick="filterByCategory('All', this)">All</div>
+            <div class="filter-pill" onclick="filterByCategory('Gadgets', this)">Gadgets</div>
             <div class="filter-pill" onclick="filterByCategory('Fashion', this)">Fashion</div>
             <div class="filter-pill" onclick="filterByCategory('Food', this)">Food</div>
-            <div class="filter-pill" onclick="filterByCategory('Services', this)">Services</div>
+            <div class="filter-pill" onclick="filterByCategory('Transport', this)">Transport</div>
+            <div class="filter-pill" onclick="filterByCategory('Beauty', this)">Beauty</div>
+            <div class="filter-pill" onclick="filterByCategory('Health', this)">Health</div>
+            <div class="filter-pill" onclick="filterByCategory('CampusServices', this)">Campus Services</div>
+            <div class="filter-pill" onclick="filterByCategory('Professional', this)">Professional</div>
+            <div class="filter-pill" onclick="filterByCategory('Tutorials', this)">Tutorials</div>
             <div class="filter-pill" onclick="filterByCategory('Books', this)">Books</div>
             <div class="filter-pill" onclick="filterByCategory('Accommodation', this)">Hostels</div>
+            <div class="filter-pill" onclick="filterByCategory('Electronics', this)">Electronics</div>
         </div>
 
         <div class="content-area" style="padding: 0 0 90px 0;">
@@ -97,7 +130,11 @@
 
         <div class="bottom-nav">
             <a href="../index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
-            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')"><i class="fas fa-comment-dots"></i><span>Messages</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')">
+                <i class="fas fa-comment-dots"></i>
+                <span class="red-dot msg-dot"></span>
+                <span>Messages</span>
+            </a>
             <div class="nav-fab" onclick="requireLogin('../add-product/index.html')"><i class="fas fa-plus"></i></div>
             <a href="#" class="nav-item" onclick="requireLogin('../saved/index.html')"><i class="fas fa-heart"></i><span>Saved</span></a>
             <a href="#" class="nav-item" onclick="requireLogin('../account/index.html')"><i class="fas fa-user"></i><span>Account</span></a>
@@ -105,10 +142,10 @@
 
     </div>
 
+    <script src="../asset/script.js"></script>
+
     <script>
-        const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // 🚀 REMOVED THE DUPLICATE SUPABASE INITIALIZATION
 
         let allProducts = [];
         let currentDisplayList = [];
@@ -116,7 +153,6 @@
         const ITEMS_PER_PAGE = 50;
         let isFetchingBatch = false;
         
-        // 🚀 NEW: Keeps track of the currently selected category
         let currentCategory = 'All'; 
 
         document.addEventListener("DOMContentLoaded", () => {
@@ -155,7 +191,7 @@
                 const passedCat = urlParams.get('cat');
                 
                 if (passedCat) {
-                    const pill = Array.from(document.querySelectorAll('.filter-pill')).find(p => p.innerText.includes(passedCat));
+                    const pill = Array.from(document.querySelectorAll('.filter-pill')).find(p => p.innerText.includes(passedCat) || p.getAttribute('onclick').includes(`'${passedCat}'`));
                     if (pill) filterByCategory(passedCat, pill);
                 } else {
                     loadNextBatch();
@@ -238,14 +274,10 @@
         }
 
         function filterByCategory(categoryName, btnElement) {
-            // Update active pill UI
             document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
             if(btnElement) btnElement.classList.add('active');
 
-            // 🚀 FIX: Remember the chosen category globally
             currentCategory = categoryName;
-
-            // Trigger the search function directly so it applies BOTH the active category AND any typed search word
             triggerSearch(null); 
         }
 
@@ -257,7 +289,6 @@
 
             const query = document.getElementById('item-search').value.toLowerCase().trim();
             
-            // 🚀 FIX: Filter by BOTH the typed word AND the globally saved category
             currentDisplayList = allProducts.filter(p => {
                 const matchesSearchText = p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query);
                 const matchesCategory = (currentCategory === 'All') || (p.category === currentCategory);

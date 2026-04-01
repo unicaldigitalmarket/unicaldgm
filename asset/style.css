@@ -3,11 +3,11 @@
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
 
 :root {
-    --brand-color: #2b2b2b; 
-    --brand-bg: #f8fafc;
+    --brand-color:#FF7A00; /* Your new Golden Yellow */
+    --brand-bg: #f0f4f8;
     --text-main: #1e293b;
     --text-muted: #64748b;
-    --blue-accent: #2d8eff;
+    --blue-accent:#FFA726; /* Your new matching Royal Blue */
 }
 
 body { background: #e0e0e0; display: flex; justify-content: center; }
@@ -19,10 +19,38 @@ body { background: #e0e0e0; display: flex; justify-content: center; }
 
 /* --- HEADER --- */
 .header { background: white; padding: 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
-.logo { font-size: 22px; font-weight: 800; color: var(--text-main); margin-bottom: 15px; letter-spacing: -0.5px; }
+/* 🚀 FIX: OLD LOGO TEXT STYLES REMOVED */
+/* .logo { font-size: 22px; font-weight: 800; color: var(--brand-color); margin-bottom: 15px; letter-spacing: -0.5px; } */
+
+/* 🚀 FIX: NEW LOGO IMAGE STYLES (RESPONSIVE) */
+.logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    margin-bottom: 15px; /* Keeps same spacing above search box */
+    transition: 0.2s; /* Smooth click animation */
+}
+.logo-link:active {
+    transform: scale(0.95); /* Mobile-app click effect */
+}
+.header-logo {
+    max-height: 45px; /* Adjust this number to make the logo larger or smaller vertically */
+    height: auto;
+    width: auto;
+    max-width: 100%; /* Makes it responsive: it won't overflow small screens */
+    display: block;
+}
 .search-box { background: #f1f5f9; border-radius: 12px; display: flex; align-items: center; padding: 12px 15px; }
 .search-icon { color: #94a3b8; margin-right: 10px; cursor: pointer; }
 .search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; color: var(--text-main); }
+/* 🚀 NOTIFICATIONS & SMART DOTS */
+.header-top { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+.notify-icon-container { position: relative; font-size: 22px; color: var(--brand-color); text-decoration: none; margin-right: 5px; transition: 0.2s; }
+.notify-icon-container:active { transform: scale(0.9); }
+.red-dot { position: absolute; top: -2px; right: -2px; width: 10px; height: 10px; background: #ef4444; border-radius: 50%; border: 2px solid white; display: none; }
+
+.nav-item { position: relative; } /* Allows the red dot to stick to the nav icon */
+.msg-dot { top: 5px; right: 15px; border: 2px solid var(--brand-bg); }
 
 /* 🚀 FIX: Removed padding-bottom here to allow footer to reach the bottom */
 .content-area { flex: 1; overflow-y: auto; }
@@ -74,25 +102,26 @@ body { background: #e0e0e0; display: flex; justify-content: center; }
 .blog-img { width: 80px; height: 80px; border-radius: 12px; object-fit: cover; background: #eee; flex-shrink: 0; }
 .blog-info { flex: 1; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
 .blog-cat-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
-.blog-cat { font-size: 10px; font-weight: 800; color: var(--blue-accent); text-transform: uppercase; }
+.blog-cat { font-size: 10px; font-weight: 800; color: var(--brand-color); text-transform: uppercase; }
 .blog-date { font-size: 10px; color: #94a3b8; font-weight: 600; }
 .blog-title { font-size: 14px; font-weight: 800; color: var(--text-main); margin-bottom: 4px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .blog-desc { font-size: 12px; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
 /* 🚀 THE FIXED EXPANDABLE FOOTER */
+/* 🚀 THE FIXED EXPANDABLE FOOTER */
 .footer {
-    background: #1e293b; color: white; 
-    padding: 30px 20px 100px; /* 100px bottom padding fixes the gap behind the nav bar */
+    background: var(--brand-color); color: #1e293b; 
+    padding: 30px 20px 100px; 
     border-radius: 24px 24px 0 0; position: relative;
     overflow: hidden; transition: max-height 0.4s ease-in-out;
     margin-top: 10px;
 }
-.footer.collapsed { max-height: 160px; } /* Collapsed height (includes the padding) */
+.footer.collapsed { max-height: 160px; } 
 .footer.expanded { max-height: 500px; }
 
-.footer-toggle { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.4); font-size: 14px; cursor: pointer; padding: 10px; width: 60px; text-align: center; }
+.footer-toggle { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); color: rgba(30, 41, 59, 0.5); font-size: 14px; cursor: pointer; padding: 10px; width: 60px; text-align: center; }
 .footer-top-collapsed { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; }
-.footer-logo-box { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; opacity: 0.9; margin: 0; }
+.footer-logo-box { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; opacity: 0.9; margin: 0; color: #1e293b; }
 
 .download-app-btn {
     background: var(--blue-accent); color: white; border: none; padding: 10px 18px; 
@@ -100,12 +129,12 @@ body { background: #e0e0e0; display: flex; justify-content: center; }
 }
 .download-app-btn:active { transform: scale(0.95); opacity: 0.9; }
 
-.footer-expanded-links { margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 25px; display: none; }
+.footer-expanded-links { margin-top: 30px; border-top: 1px solid rgba(30, 41, 59, 0.1); padding-top: 25px; display: none; }
 .footer.expanded .footer-expanded-links { display: block; animation: fadeIn 0.4s; }
 .footer-links-grid { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; margin-bottom: 25px; }
-.footer-links-grid a { color: rgba(255,255,255,0.7); text-decoration: none; font-size: 14px; font-weight: 600; }
-.copyright-text { font-size: 12px !important; color: rgba(255,255,255,0.4) !important; text-align: center; margin: 0; }
-.copyright-text a { color: #38bdf8; text-decoration: none; font-weight: 800; }
+.footer-links-grid a { color: #1e293b; text-decoration: none; font-size: 14px; font-weight: 800; }
+.copyright-text { font-size: 12px !important; color: rgba(30, 41, 59, 0.7) !important; text-align: center; margin: 0; font-weight: 600; }
+.copyright-text a { color: var(--blue-accent); text-decoration: none; font-weight: 800; }
 @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
 
 /* --- BOTTOM NAV --- */
@@ -150,3 +179,136 @@ body { background: #e0e0e0; display: flex; justify-content: center; }
 .sk-avatar { width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0; }
 .sk-v-avatar { width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 10px; flex-shrink: 0; }
 .sk-b-img { width: 80px; height: 80px; border-radius: 12px; flex-shrink: 0; }
+
+/* ========================================= */
+/* 🌙 GLOBAL DARK MODE STYLES                */
+/* ========================================= */
+body.dark-mode {
+    --brand-bg: #0f172a;
+    --text-main: #f1f5f9;
+    --text-muted: #94a3b8;
+    background-color: #020617; /* Very dark background */
+}
+
+/* Force App Container to be dark */
+body.dark-mode .app-container {
+    background: var(--brand-bg);
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+}
+
+/* Turn all white elements dark */
+body.dark-mode .header,
+body.dark-mode .bottom-nav,
+body.dark-mode .card,
+body.dark-mode .product-card,
+body.dark-mode .vendor-mini-card,
+body.dark-mode .blog-card,
+body.dark-mode .profile-card,
+body.dark-mode .reviews-section,
+body.dark-mode .chat-header,
+body.dark-mode .input-area,
+body.dark-mode .footer,
+body.dark-mode .modal-content,
+body.dark-mode .auth-card,
+body.dark-mode .chat-card,
+body.dark-mode .req-card,
+body.dark-mode .sticky-top-bar {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+    color: var(--text-main);
+}
+
+/* Fix Input fields and search boxes */
+body.dark-mode input,
+body.dark-mode textarea,
+body.dark-mode .search-box,
+body.dark-mode .rev-input,
+body.dark-mode .msg-input {
+    background: #0f172a !important;
+    color: #f1f5f9 !important;
+    border-color: #334155 !important;
+}
+
+/* Fix specific text colors */
+body.dark-mode .section-title,
+body.dark-mode .card-title,
+body.dark-mode .product-title,
+body.dark-mode .v-name,
+body.dark-mode .rev-title,
+body.dark-mode .page-title,
+body.dark-mode .chat-name,
+body.dark-mode h1, 
+body.dark-mode h2, 
+body.dark-mode h3 {
+    color: #f1f5f9 !important;
+}
+
+body.dark-mode .card-desc,
+body.dark-mode .v-desc,
+body.dark-mode .r-text,
+body.dark-mode .chat-last-msg {
+    color: #cbd5e1 !important;
+}
+
+/* Bottom Nav adjustments */
+body.dark-mode .nav-item { color: #64748b; }
+body.dark-mode .nav-item.active { color: var(--brand-color); }
+body.dark-mode .nav-fab { border-color: #0f172a; }
+
+/* Fix Empty states and Skeleton loaders for Dark Mode */
+body.dark-mode .sk-shimmer {
+    background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+    background-size: 200% 100%;
+}
+body.dark-mode .sk-card, 
+body.dark-mode .sk-vendor {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+}
+/* 🚀 FIX: MISSING DARK MODE EDGE CASES */
+
+/* 1. Remove the solid white background from the Category Grid */
+body.dark-mode .category-grid {
+    background: transparent !important;
+}
+body.dark-mode .cat-name {
+    color: #f1f5f9 !important;
+}
+
+/* 2. Fix the Review Cards (they were staying white) */
+body.dark-mode .review-card {
+    background: #1e293b !important;
+    border-color: #334155 !important;
+}
+
+/* 3. Force stubborn inline Vendor Names and Descriptions to turn white/gray */
+body.dark-mode .card div {
+    color: #f1f5f9 !important;
+}
+body.dark-mode .card-price {
+    color: var(--blue-accent) !important; 
+}
+body.dark-mode .card div[style*="color: #64748b"] {
+    color: #94a3b8 !important; /* Keeps the tiny description text slightly faded */
+}
+
+/* 4. Fix all Footer Text, Links, and the Dropdown Arrow */
+body.dark-mode .footer-logo-box,
+body.dark-mode .footer-links-grid a,
+body.dark-mode .copyright-text,
+body.dark-mode .footer-toggle,
+body.dark-mode #footer-arrow-icon {
+    color: #f1f5f9 !important;
+}
+body.dark-mode .copyright-text a {
+    color: var(--blue-accent) !important;
+}
+/* 5. Force bright pastel category boxes to become dark slate */
+body.dark-mode .cat-icon-box {
+    background: #1e293b !important;
+    box-shadow: none !important;
+}
+/* Keep the price orange in dark mode - High Specificity */
+body.dark-mode .card .card-price {
+    color: var(--blue-accent) !important; 
+}

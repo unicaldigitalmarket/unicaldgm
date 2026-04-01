@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="../asset/style.css">
 
     <style>
-        .header-top-flex { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .header-top-flex { display: flex; align-items: center; gap: 15px; margin-bottom: 5px; }
         .page-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; }
         
         /* State Containers */
@@ -60,6 +60,54 @@
         .modal-body { background: white; width: 100%; max-width: 400px; border-radius: 20px; padding: 25px; position: relative; animation: slideUp 0.3s; max-height: 85vh; overflow-y: auto; }
         @keyframes slideUp { from {transform: translateY(20px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
         .close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #94a3b8; cursor: pointer; background: none; border: none; }
+        
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES FOR VENDOR DASHBOARD   */
+        /* ========================================= */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .app-container { background: #0f172a !important; }
+        body.dark-mode .header { background: #1e293b !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; }
+
+        body.dark-mode .page-title, 
+        body.dark-mode .state-title, 
+        body.dark-mode .inventory-header { color: #f1f5f9 !important; }
+        body.dark-mode .state-desc { color: #94a3b8 !important; }
+        body.dark-mode .inventory-header { border-bottom-color: #334155 !important; }
+
+        body.dark-mode #not-vendor-state, 
+        body.dark-mode #pending-state,
+        body.dark-mode .form-card { 
+            background: #1e293b !important; 
+            border-color: #334155 !important; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important; 
+        }
+
+        /* 🚀 THE FIX: Override inline style for the Pending State button */
+        body.dark-mode #pending-state .action-btn {
+            background: #334155 !important;
+            color: #f1f5f9 !important;
+        }
+
+        body.dark-mode .form-label { color: #cbd5e1 !important; }
+        body.dark-mode .form-input { 
+            background: #0f172a !important; 
+            color: #f1f5f9 !important; 
+            border-color: #334155 !important; 
+        }
+        body.dark-mode .form-input:focus { border-color: #2d8eff !important; }
+
+        body.dark-mode .inv-card { 
+            background: #1e293b !important; 
+            border-color: #334155 !important; 
+        }
+        body.dark-mode .inv-title { color: #f1f5f9 !important; }
+
+        body.dark-mode .modal-body { 
+            background: #1e293b !important; 
+            color: #f1f5f9 !important; 
+            border: 1px solid #334155 !important;
+        }
+        body.dark-mode .close-btn { color: #f1f5f9 !important; }
     </style>
 </head>
 <body>
@@ -68,7 +116,7 @@
         <div class="header">
             <div class="header-top-flex">
                 <a href="../index.html" class="back-btn" style="color: var(--text-main); font-size: 20px;"><i class="fas fa-arrow-left"></i></a>
-                <h1 class="page-title">Vendor Area</h1>
+                <h1 class="page-title">Add Items</h1>
             </div>
         </div>
 
@@ -116,12 +164,18 @@
                     <div class="form-group">
                         <label class="form-label">Category</label>
                         <select id="p-cat" class="form-input" style="background: white;">
-                            <option value="Phones">Phones</option>
-                            <option value="Laptops">Laptops</option>
-                            <option value="Fashion">Fashion</option>
-                            <option value="Food">Food</option>
-                            <option value="Services">Services</option>
-                            <option value="Books">Books/PDFs</option>
+                            <option value="Gadgets">Gadgets</option>
+                            <option value="Fashion">Fashion & Clothing</option>
+                            <option value="Food">Food & Pastries</option>
+                            <option value="Transport">Transport & Delivery</option>
+                            <option value="Beauty">Beauty & Personal Care</option>
+                            <option value="Health">Health & Wellness</option>
+                            <option value="CampusServices">Campus Services</option>
+                            <option value="Professional">Professional Services</option>
+                            <option value="Tutorials">Tutorials & Learning</option>
+                            <option value="Books">Books & Materials</option>
+                            <option value="Accommodation">Accommodation</option>
+                            <option value="Electronics">Electronics</option>
                             <option value="Others">Others</option>
                         </select>
                     </div>
@@ -158,12 +212,18 @@
                 <div class="form-group">
                     <label class="form-label">Category</label>
                     <select id="edit-cat" class="form-input">
-                        <option value="Phones">Phones</option>
-                        <option value="Laptops">Laptops</option>
-                        <option value="Fashion">Fashion</option>
-                        <option value="Food">Food</option>
-                        <option value="Services">Services</option>
-                        <option value="Books">Books/PDFs</option>
+                        <option value="Gadgets">Gadgets</option>
+                        <option value="Fashion">Fashion & Clothing</option>
+                        <option value="Food">Food & Pastries</option>
+                        <option value="Transport">Transport & Delivery</option>
+                        <option value="Beauty">Beauty & Personal Care</option>
+                        <option value="Health">Health & Wellness</option>
+                        <option value="CampusServices">Campus Services</option>
+                        <option value="Professional">Professional Services</option>
+                        <option value="Tutorials">Tutorials & Learning</option>
+                        <option value="Books">Books & Materials</option>
+                        <option value="Accommodation">Accommodation</option>
+                        <option value="Electronics">Electronics</option>
                         <option value="Others">Others</option>
                     </select>
                 </div>
@@ -179,17 +239,20 @@
 
         <div class="bottom-nav">
             <a href="../index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
-            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')"><i class="fas fa-comment-dots"></i><span>Messages</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')">
+                <i class="fas fa-comment-dots"></i>
+                <span class="red-dot msg-dot"></span>
+                <span>Messages</span>
+            </a>
             <div class="nav-fab"><i class="fas fa-plus"></i></div>
             <a href="#" class="nav-item" onclick="requireLogin('../saved/index.html')"><i class="fas fa-heart"></i><span>Saved</span></a>
             <a href="../account/index.html" class="nav-item"><i class="fas fa-user"></i><span>Account</span></a>
         </div>
     </div>
 
+    <script src="../asset/script.js"></script>
+
     <script>
-        const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         const CLOUD_NAME = "dj6yl36fq"; 
 
         let currentUser = null;
@@ -218,7 +281,7 @@
                     document.getElementById('dashboard-state').style.display = 'block';
                     document.getElementById('dash-business-name').innerText = data.business_name;
                     document.getElementById('dash-max').innerText = data.max_items;
-                    loadMyInventory(); // 🚀 LOAD THEIR ITEMS
+                    loadMyInventory(); 
                 }
             } catch (error) {
                 document.getElementById('loading-state').style.display = 'none';
@@ -226,7 +289,6 @@
             }
         }
 
-        // 🚀 1. FETCH AND RENDER INVENTORY
         async function loadMyInventory() {
             const grid = document.getElementById('inventory-list');
             try {
@@ -239,14 +301,12 @@
                 if (error) throw error;
                 myProducts = data;
                 
-                // Update Slot Tracker
                 currentItemCount = data.length;
                 document.getElementById('dash-used').innerText = currentItemCount;
                 const percentage = (currentItemCount / myVendorData.max_items) * 100;
                 document.getElementById('dash-slot-bar').style.width = `${Math.min(percentage, 100)}%`;
                 if(currentItemCount >= myVendorData.max_items) document.getElementById('dash-slot-bar').style.background = '#ef4444';
 
-                // Render Grid
                 if (data.length === 0) {
                     grid.innerHTML = `<p style="grid-column: span 2; text-align: center; color: #94a3b8; font-size: 13px; padding: 20px;">You haven't posted any items yet.</p>`;
                     return;
@@ -266,7 +326,6 @@
                         ? `<button class="inv-btn btn-active" onclick="toggleStatus('${p.id}', 'Active')"><i class="fas fa-check"></i> Mark Active</button>`
                         : `<button class="inv-btn btn-sold" onclick="toggleStatus('${p.id}', 'Sold')"><i class="fas fa-times-circle"></i> Mark Sold</button>`;
 
-                    // Clean strings for javascript functions
                     const safeName = p.name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                     const safeDesc = p.description.replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
@@ -289,7 +348,6 @@
             } catch (error) { console.error("Error loading inventory", error); }
         }
 
-        // 🚀 2. POST NEW ITEM
         async function postItem() {
             if (currentItemCount >= myVendorData.max_items) return alert(`Limit reached! You can only post ${myVendorData.max_items} items.`);
 
@@ -322,7 +380,6 @@
 
                 if (error) throw error;
 
-                // 🚀 RESET FORM & REFRESH GRID WITHOUT LEAVING PAGE!
                 document.getElementById('p-name').value = '';
                 document.getElementById('p-price').value = '';
                 document.getElementById('p-desc').value = '';
@@ -335,24 +392,21 @@
             finally { btn.innerText = "Upload Item"; btn.disabled = false; }
         }
 
-        // 🚀 3. DELETE ITEM
         async function deleteItem(id) {
             if(!confirm("Are you sure you want to delete this item? You will get 1 slot back.")) return;
             try {
                 await supabaseClient.from('products').delete().eq('id', id);
-                loadMyInventory(); // Refresh automatically
+                loadMyInventory(); 
             } catch (error) { alert("Failed to delete."); }
         }
 
-        // 🚀 4. TOGGLE STATUS (Active <-> Sold)
         async function toggleStatus(id, newStatus) {
             try {
                 await supabaseClient.from('products').update({ status: newStatus }).eq('id', id);
-                loadMyInventory(); // Refresh automatically
+                loadMyInventory(); 
             } catch (error) { alert("Failed to update status."); }
         }
 
-        // 🚀 5. EDIT LOGIC
         window.openEditModal = function(id, name, price, cat, desc) {
             document.getElementById('edit-id').value = id;
             document.getElementById('edit-name').value = name;
@@ -379,7 +433,6 @@
             try {
                 const updateData = { name, price: parseFloat(price), category: cat, description: desc };
 
-                // Only upload and overwrite images if they selected new ones
                 if (files.length > 0) {
                     btn.innerText = "Uploading new photos...";
                     let imageUrls = [];
@@ -394,7 +447,7 @@
                 await supabaseClient.from('products').update(updateData).eq('id', id);
                 
                 document.getElementById('editModal').style.display = 'none';
-                loadMyInventory(); // Refresh automatically
+                loadMyInventory(); 
                 
             } catch(e) { alert("Update failed."); } 
             finally { btn.innerText = "Save Changes"; btn.disabled = false; }

@@ -89,6 +89,39 @@
 
         .img-preview-bar { display: none; padding: 10px 20px; background: #eff6ff; border-top: 1px solid #bfdbfe; align-items: center; justify-content: space-between; flex-shrink: 0; }
         .img-preview-bar img { height: 40px; border-radius: 6px; }
+
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES FOR CHAT ROOM          */
+        /* ========================================= */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .chat-container { background: #0f172a !important; }
+        
+        body.dark-mode .chat-header { background: #1e293b !important; border-bottom-color: #334155 !important; }
+        body.dark-mode .chat-header button { color: #f1f5f9 !important; }
+        body.dark-mode .chat-title { color: #f1f5f9 !important; }
+        body.dark-mode .chat-subtitle { color: #60a5fa !important; }
+        
+        body.dark-mode .chat-area { background: #0f172a !important; }
+        
+        body.dark-mode .disclaimer-box { background: rgba(245, 158, 11, 0.1) !important; border-color: rgba(245, 158, 11, 0.3) !important; color: #fbbf24 !important; }
+        
+        body.dark-mode .them .bubble { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+        body.dark-mode .me .bubble { background: var(--brand-color, #FF7A00) !important; color: white !important; }
+        body.dark-mode .auto-msg .bubble { background: rgba(16, 185, 129, 0.1) !important; color: #34d399 !important; border-color: #10b981 !important; }
+        
+        body.dark-mode .msg-time { color: #64748b !important; }
+        body.dark-mode .me .msg-time { color: #94a3b8 !important; }
+
+        body.dark-mode .input-area { background: #1e293b !important; border-top-color: #334155 !important; }
+        body.dark-mode .msg-input { background: #0f172a !important; border-color: #334155 !important; color: #f1f5f9 !important; }
+        body.dark-mode .msg-input::placeholder { color: #64748b !important; }
+        
+        body.dark-mode .attach-btn { background: #0f172a !important; color: #94a3b8 !important; }
+        body.dark-mode .send-btn { background: var(--brand-color, #FF7A00) !important; }
+        body.dark-mode .send-btn:disabled { background: #334155 !important; color: #64748b !important; }
+
+        body.dark-mode .img-preview-bar { background: #1e293b !important; border-top-color: #334155 !important; }
+        body.dark-mode .img-preview-bar span { color: #f1f5f9 !important; }
     </style>
 </head>
 <body>
@@ -126,11 +159,10 @@
 
     </div>
 
-    <script>
-        const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <script src="../asset/script.js"></script>
 
+    <script>
+        // 🚀 REMOVED DUPLICATE SUPABASE KEYS
         const EMAILJS_PUB_KEY = 'EhgRXY4ATiEQet7Pf'; 
         const EMAILJS_SERVICE = 'service_1coj3hy';
         const EMAILJS_VENDOR_TEMPLATE = 'template_iq7xyhr'; 
@@ -166,7 +198,6 @@
         async function initializeChat() {
             try {
                 if (urlChatId) {
-                    // 🚀 FIX 1: Safe 2-step fetch to prevent the 400 Bad Request Error
                     const { data: chat, error } = await supabaseClient
                         .from('chats')
                         .select('*, products(name)')
@@ -177,7 +208,6 @@
                     currentChat = chat;
                     activeChatId = chat.id;
 
-                    // Fetch customer name safely
                     const { data: customerProfile } = await supabaseClient
                         .from('profiles')
                         .select('full_name')
@@ -217,12 +247,20 @@
                     setupHeader();
                     await fetchMessages();
                     subscribeToRealtime();
+                    
+                    // 🚀 CLEAR UNREAD BADGE: You opened the chat, so we mark it as read for you!
+                    let readUpdate = {};
+                    if (currentUser.id === currentChat.vendor_id) readUpdate = { unread_by_vendor: false };
+                    if (currentUser.id === currentChat.customer_id) readUpdate = { unread_by_customer: false };
+                    
+                    if (Object.keys(readUpdate).length > 0) {
+                        await supabaseClient.from('chats').update(readUpdate).eq('id', activeChatId);
+                    }
                 }
 
             } catch (err) { console.error("Initialization Error:", err); }
         }
 
-        // 🚀 FIX 2: Crash-proof header setup
         function setupHeader() {
             if (currentChat && currentChat.products && currentChat.products.name) {
                 document.getElementById('head-product').innerText = currentChat.products.name;
@@ -278,6 +316,12 @@
                 if (payload.new.sender_id !== currentUser.id) {
                     renderMessage(payload.new);
                     scrollToBottom();
+                    
+                    // 🚀 CLEAR UNREAD ON ARRIVAL: If they message you while you are staring at the chat, mark it read instantly!
+                    let readUpdate = {};
+                    if (currentUser.id === currentChat.vendor_id) readUpdate = { unread_by_vendor: false };
+                    if (currentUser.id === currentChat.customer_id) readUpdate = { unread_by_customer: false };
+                    supabaseClient.from('chats').update(readUpdate).eq('id', activeChatId);
                 }
             }).subscribe();
         }
@@ -327,13 +371,13 @@
                     clearImage();
                 }
 
-                // SCENARIO 1: First time Customer sends a message
                 if (!activeChatId) {
                     const { data: newChat, error: chatErr } = await supabaseClient.from('chats').insert([{
                         product_id: urlProductId,
                         customer_id: currentUser.id,
                         vendor_id: urlVendorId,
                         last_message_text: text || "Sent an image",
+                        unread_by_vendor: true // 🚀 SET UNREAD: Vendor gets the red dot for your first message!
                     }]).select().single();
                     
                     if(chatErr) throw chatErr;
@@ -348,37 +392,30 @@
                     const autoText = `System Auto-Contact Details:\nName: ${userProfile.full_name}\nPhone: ${userProfile.phone}`;
                     await insertMessage(autoText, null, true);
 
-                    // Fetch Vendor email from the 'vendors' table
                     const { data: vendorData } = await supabaseClient.from('vendors').select('email').eq('profile_id', urlVendorId).single();
                     if(vendorData && vendorData.email) {
-                        console.log("Sending Vendor Alert to:", vendorData.email);
-                        emailjs.send(EMAILJS_SERVICE, EMAILJS_VENDOR_TEMPLATE, { to_email: vendorData.email })
-                            .then(res => console.log("Email sent successfully to vendor!", res))
-                            .catch(err => console.error("Vendor Email failed:", err));
-                    } else {
-                        console.log("No vendor email found to send alert.");
+                        emailjs.send(EMAILJS_SERVICE, EMAILJS_VENDOR_TEMPLATE, { to_email: vendorData.email }).catch(err => console.error("Vendor Email failed:", err));
                     }
                 } 
-                
-                // SCENARIO 2: Vendor (or customer) replies
                 else {
                     await insertMessage(text, imgUrl, false);
-                    await supabaseClient.from('chats').update({ last_message_text: text || "Sent an image", last_message_time: new Date() }).eq('id', activeChatId);
+                    
+                    // 🚀 SET UNREAD: Tell the database to flag the other person with a red dot!
+                    const amIVendor = currentUser.id === currentChat.vendor_id;
+                    
+                    await supabaseClient.from('chats').update({ 
+                        last_message_text: text || "Sent an image", 
+                        last_message_time: new Date(),
+                        unread_by_customer: amIVendor ? true : false, // If Vendor sends, Customer gets the dot
+                        unread_by_vendor: !amIVendor ? true : false   // If Customer sends, Vendor gets the dot
+                    }).eq('id', activeChatId);
 
-                    // If Vendor is replying for the very first time
-                    if (currentUser.id === currentChat.vendor_id && currentChat.vendor_has_replied === false) {
+                    if (amIVendor && currentChat.vendor_has_replied === false) {
                         await supabaseClient.from('chats').update({ vendor_has_replied: true }).eq('id', activeChatId);
                         
-                        // 🚀 FIX: Use the secure SQL bridge to get the customer's email from auth.users!
                         const { data: custEmail, error: rpcErr } = await supabaseClient.rpc('get_customer_email', { uid: currentChat.customer_id });
-                        
                         if(custEmail) {
-                            console.log("Sending Customer Alert to:", custEmail);
-                            emailjs.send(EMAILJS_SERVICE, EMAILJS_CUSTOMER_TEMPLATE, { to_email: custEmail })
-                                .then(res => console.log("Email sent successfully to customer!", res))
-                                .catch(err => console.error("Customer Email failed:", err));
-                        } else {
-                            console.log("No customer email found to send alert. Error:", rpcErr);
+                            emailjs.send(EMAILJS_SERVICE, EMAILJS_CUSTOMER_TEMPLATE, { to_email: custEmail }).catch(err => console.error("Customer Email failed:", err));
                         }
                     }
                 }
@@ -393,6 +430,7 @@
                 btn.innerHTML = '<i class="fas fa-paper-plane"></i>';
             }
         }
+        
         async function insertMessage(text, imgUrl, isAuto) {
             const msgData = {
                 chat_id: activeChatId,

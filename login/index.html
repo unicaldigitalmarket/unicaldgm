@@ -6,6 +6,7 @@
     <title>UNICAL Market | Authentication</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
@@ -14,7 +15,7 @@
         * { box-sizing: border-box; }
 
         :root {
-            --brand-color: #2b2b2b; 
+            --brand-color: #FF7A00; 
             --brand-bg: #f8fafc;
             --text-main: #1e293b;
             --text-muted: #64748b;
@@ -77,6 +78,34 @@
         .success-msg { color: #059669; background: #d1fae5; border: 1px solid #6ee7b7; }
 
         .signup-only { display: none; }
+
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES FOR LOGIN PAGE         */
+        /* ========================================= */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .app-container { background: #0f172a !important; }
+        
+        body.dark-mode .auth-card { 
+            background: #1e293b !important; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5) !important; 
+        }
+        
+        body.dark-mode .auth-title { color: #f1f5f9 !important; }
+        body.dark-mode .auth-subtitle { color: #94a3b8 !important; }
+        body.dark-mode .back-link { color: #cbd5e1 !important; }
+        
+        body.dark-mode .form-label { color: #cbd5e1 !important; }
+        body.dark-mode .form-input { 
+            background: #0f172a !important; 
+            color: #f1f5f9 !important; 
+            border-color: #334155 !important; 
+        }
+        body.dark-mode .form-input:focus { border-color: var(--brand-color) !important; }
+        
+        body.dark-mode .auth-switch { color: #94a3b8 !important; }
+        
+        body.dark-mode .error-msg { background: rgba(239, 68, 68, 0.1) !important; border-color: #ef4444 !important; color: #fca5a5 !important; }
+        body.dark-mode .success-msg { background: rgba(16, 185, 129, 0.1) !important; border-color: #10b981 !important; color: #6ee7b7 !important; }
     </style>
 </head>
 <body>
@@ -123,11 +152,10 @@
         </div>
     </div>
 
+    <script src="../asset/script.js"></script>
+
     <script>
-        const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
-        
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // 🚀 REMOVED THE DUPLICATE SUPABASE INITIALIZATION
         let isSignUpMode = false;
 
         function displayMessage(text, isError) {
@@ -135,6 +163,23 @@
             msgBox.innerText = text;
             msgBox.className = isError ? 'message-box error-msg' : 'message-box success-msg';
             msgBox.style.display = 'block';
+        }
+
+        // 🚀 THE MAGIC: Smart Redirect Function
+        function getSmartRedirectUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('redirect')) {
+                return urlParams.get('redirect');
+            }
+
+            const referrer = document.referrer;
+            const currentWebsite = window.location.origin;
+
+            if (referrer && referrer.startsWith(currentWebsite) && !referrer.includes('/login/') && !referrer.includes('/reset-password/')) {
+                return referrer; 
+            }
+
+            return "../";
         }
 
         window.switchView = function() {
@@ -195,7 +240,7 @@
                     if (error) throw error;
                     
                     displayMessage("Success! Redirecting...", false);
-                    setTimeout(() => { window.location.href = "../"; }, 1000);
+                    setTimeout(() => { window.location.href = getSmartRedirectUrl(); }, 1000);
 
                 } else {
                     const { data, error } = await supabaseClient.auth.signInWithPassword({
@@ -205,7 +250,7 @@
 
                     if (error) throw error;
                     
-                    window.location.href = "../";
+                    window.location.href = getSmartRedirectUrl();
                 }
             } catch (error) {
                 console.error("Auth Error:", error);
@@ -216,7 +261,7 @@
             }
         };
 
-       window.recoverPassword = async function() {
+        window.recoverPassword = async function() {
             const emailVal = document.getElementById('email').value.trim();
             if (!emailVal) {
                 displayMessage("Please type your email in the box first, then click Forgot Password.", true);
@@ -229,8 +274,6 @@
             btn.disabled = true;
 
             try {
-                // 🚀 THE FIX: Point exactly to your new folder
-                // window.location.origin automatically detects if you are testing on localhost or live on unicaldgm.com.ng!
                 const { error } = await supabaseClient.auth.resetPasswordForEmail(emailVal, {
                     redirectTo: window.location.origin + '/reset-password/'
                 });
