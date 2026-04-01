@@ -39,6 +39,7 @@
         .card-blue { border-left: 5px solid #3b82f6; }
         .card-red { border-left: 5px solid #ef4444; }
         .card-green { border-left: 5px solid #10b981; }
+        .card-orange { border-left: 5px solid #FF7A00; }
 
         .card-icon { font-size: 30px; margin-bottom: 15px; }
         .card-title { font-size: 16px; font-weight: 800; margin-bottom: 10px; }
@@ -135,6 +136,14 @@
                 <div class="card-desc">Write, edit, and publish campus news and updates directly to the marketplace.</div>
                 <button class="open-modal-btn" style="background: #a855f7;" onclick="openModal('blogModal', loadAdminBlogs)">Open Manager</button>
             </div>
+            
+            <div class="admin-card card-orange">
+                <i class="fas fa-bell card-icon" style="color: #FF7A00;"></i>
+                <div class="card-title">Notification Center</div>
+                <div class="card-desc">Send system alerts, promos, and announcements to all users or specific individuals.</div>
+                <button class="open-modal-btn" style="background: #FF7A00;" onclick="openModal('notifModal', loadAdminNotifications)">Open Center</button>
+            </div>
+
         </div>
     </div>
 
@@ -173,7 +182,63 @@
 
     <div id="reviewModal" class="modal-overlay"><div class="modal-body"><div class="modal-header"><h2>⭐ Review Approvals</h2><button class="close-btn" onclick="closeModal('reviewModal')">&times;</button></div><div class="modal-content-scroll" id="modal-reviews-list"></div></div></div>
     
-    <div id="blogModal" class="modal-overlay"><div class="modal-body"><div class="modal-header"><h2>📰 Blog Manager</h2><button class="close-btn" onclick="closeModal('blogModal')">&times;</button></div><div class="modal-content-scroll"><div style="background:white; padding:20px; border-radius:12px; margin-bottom:20px;"><h3 style="margin-bottom: 15px;" id="blogFormTitle">Create New Post</h3><input type="hidden" id="editBlogId"><input type="text" id="blogTitle" class="admin-input" placeholder="Post Title"><select id="blogCategory" class="admin-input"><option value="News">News</option><option value="Academics">Academics</option><option value="Gossip">Gossip</option><option value="Events">Events</option></select><textarea id="blogSnippet" class="admin-input" placeholder="Short Snippet" style="height: 60px;"></textarea><textarea id="blogContent" class="admin-input" placeholder="Full article content..." style="height: 150px;"></textarea><input type="file" id="blogImage" class="admin-input" accept="image/*"><button class="action-btn btn-primary" id="saveBlogBtn" style="width:100%; padding:14px;" onclick="saveBlog()">Publish Post</button><button class="action-btn btn-delete" id="cancelEditBtn" style="width: 100%; margin-top: 10px; display: none;" onclick="resetBlogForm()">Cancel Edit</button></div><div id="modal-blogs-list"></div></div></div></div>
+    <div id="blogModal" class="modal-overlay">
+        <div class="modal-body">
+            <div class="modal-header"><h2>📰 Blog Manager</h2><button class="close-btn" onclick="closeModal('blogModal')">&times;</button></div>
+            <div class="modal-content-scroll">
+                <div style="background:white; padding:20px; border-radius:12px; margin-bottom:20px;">
+                    <h3 style="margin-bottom: 15px;" id="blogFormTitle">Create New Post</h3>
+                    <input type="hidden" id="editBlogId">
+                    <input type="text" id="blogTitle" class="admin-input" placeholder="Post Title">
+                    <select id="blogCategory" class="admin-input">
+                        <option value="News">News</option>
+                        <option value="Academics">Academics</option>
+                        <option value="Gossip">Gossip</option>
+                        <option value="Events">Events</option>
+                    </select>
+                    <textarea id="blogSnippet" class="admin-input" placeholder="Short Snippet" style="height: 60px;"></textarea>
+                    <textarea id="blogContent" class="admin-input" placeholder="Full article content..." style="height: 150px;"></textarea>
+                    <input type="file" id="blogImage" class="admin-input" accept="image/*">
+                    <button class="action-btn btn-primary" id="saveBlogBtn" style="width:100%; padding:14px;" onclick="saveBlog()">Publish Post</button>
+                    <button class="action-btn btn-delete" id="cancelEditBtn" style="width: 100%; margin-top: 10px; display: none;" onclick="resetBlogForm()">Cancel Edit</button>
+                </div>
+                <div id="modal-blogs-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="notifModal" class="modal-overlay">
+        <div class="modal-body">
+            <div class="modal-header">
+                <h2>🔔 Notification Center</h2>
+                <button class="close-btn" onclick="closeModal('notifModal')">&times;</button>
+            </div>
+            <div class="modal-content-scroll">
+                <div style="background:white; padding:20px; border-radius:12px; margin-bottom:20px; border: 1px solid #e2e8f0;">
+                    <h3 style="margin-bottom: 15px; color: #0f172a;">Send New Notification</h3>
+                    
+                    <input type="text" id="notifTitle" class="admin-input" placeholder="Notification Title (e.g., 'Flash Sale!')">
+                    
+                    <select id="notifType" class="admin-input">
+                        <option value="system">System Message (Grey Icon)</option>
+                        <option value="promo">Promo / Announcement (Orange Icon)</option>
+                        <option value="alert">Alert / Warning (Red Icon)</option>
+                        <option value="success">Success / Update (Green Icon)</option>
+                    </select>
+                    
+                    <textarea id="notifMessage" class="admin-input" placeholder="Write your notification message here..." style="height: 80px; resize: none;"></textarea>
+                    
+                    <div class="item-meta" style="margin-bottom: 5px;">Optional: Enter a specific User's Account ID to send privately. Leave blank to send to EVERYONE.</div>
+                    <input type="text" id="notifUserId" class="admin-input" placeholder="Target User ID (Leave blank for All Users)">
+                    
+                    <button class="action-btn btn-primary" id="sendNotifBtn" style="width:100%; padding:14px; background: #FF7A00;" onclick="sendNotification()">Broadcast Notification</button>
+                </div>
+                
+                <h3 style="margin-bottom: 15px; color: #334155;">Past Notifications</h3>
+                <div id="admin-notifs-list"></div>
+            </div>
+        </div>
+    </div>
 
    <script>
         const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
@@ -305,7 +370,6 @@
                             </div>`;
                     
                     } else if (mode === 'manager') {
-                        // 🚀 NEW: The Advanced Vendor Manager UI
                         const plan = v.subscription_plan || 'Verified';
                         
                         results.innerHTML += `
@@ -362,7 +426,6 @@
             } catch(e) { alert("Action failed."); }
         }
 
-        // 🚀 NEW: Advanced Update Function
         window.updateVendorDetails = async function(vendorId) {
             const newSlots = document.getElementById(`vm-slots-${vendorId}`).value;
             const newPlan = document.getElementById(`vm-plan-${vendorId}`).value;
@@ -394,10 +457,10 @@
                 list.innerHTML = "";
                 data.forEach(r => {
                     const isPending = r.status === 'pending';
-                    const badge = isPending ? `<span class="status-badge status-pending">PENDING</span>` : `<span class="status-badge status-approved">LIVE</span>`;
+                    const badge = isPending ? `<span class="status-badge status-pending" style="background:#fef3c7; color:#d97706; padding:3px 8px; border-radius:10px; font-size:10px; font-weight:bold;">PENDING</span>` : `<span class="status-badge status-approved" style="background:#d1fae5; color:#059669; padding:3px 8px; border-radius:10px; font-size:10px; font-weight:bold;">LIVE</span>`;
                     list.innerHTML += `
                         <div class="list-item" style="${isPending ? 'border-left: 4px solid #f59e0b;' : 'border-left: 4px solid #10b981;'}">
-                            <div class="item-header">
+                            <div class="item-header" style="display:flex; justify-content:space-between; margin-bottom:8px;">
                                 <div><div class="item-title">${r.profiles?.full_name||"Unknown User"}</div><div class="item-meta">${r.rating} Stars</div></div>
                                 ${badge}
                             </div>
@@ -545,6 +608,70 @@
             document.getElementById('saveBlogBtn').innerText = "Publish Post";
             document.getElementById('cancelEditBtn').style.display = 'none'; 
         }
+
+        // 🚀 6. NEW: NOTIFICATIONS MODULE
+        window.loadAdminNotifications = async function() {
+            const list = document.getElementById('admin-notifs-list');
+            list.innerHTML = '<p style="text-align:center;">Loading notifications...</p>';
+            try {
+                const { data } = await supabaseClient.from('notifications').select('*').order('created_at', { ascending: false });
+                if (!data || data.length === 0) { list.innerHTML = "<p style='text-align:center;'>No past notifications.</p>"; return; }
+                
+                list.innerHTML = "";
+                data.forEach(n => {
+                    // 🚀 FIX: Correctly handling string escaping here!
+                    const target = n.user_id ? `<span style='color:#ef4444; font-weight:bold;'>User ID: ${n.user_id.substring(0,8)}...</span>` : `<span style='color:#10b981; font-weight:bold;'>ALL USERS</span>`;
+                    list.innerHTML += `
+                        <div class="list-item">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div style="flex:1;">
+                                    <div class="item-title">${n.title} <span style="font-size:10px; background:#e2e8f0; padding:2px 6px; border-radius:4px; margin-left:5px;">${n.type.toUpperCase()}</span></div>
+                                    <div class="item-meta">Target: ${target} | ${new Date(n.created_at).toLocaleDateString()}</div>
+                                    <div style="font-size:13px; color:#475569;">${n.message}</div>
+                                </div>
+                                <button class="action-btn btn-delete" onclick="deleteNotification('${n.id}')" style="margin-left: 10px;">Delete</button>
+                            </div>
+                        </div>`;
+                });
+            } catch (e) { 
+                list.innerHTML = "<p style='color:red; text-align:center;'>Error loading notifications.</p>"; 
+            }
+        };
+
+        window.sendNotification = async function() {
+            const btn = document.getElementById('sendNotifBtn');
+            const title = document.getElementById('notifTitle').value.trim();
+            const type = document.getElementById('notifType').value;
+            const message = document.getElementById('notifMessage').value.trim();
+            let userId = document.getElementById('notifUserId').value.trim();
+
+            if (!title || !message) return alert("Title and Message are required!");
+            if (userId === "") userId = null;
+
+            btn.innerText = "Sending..."; btn.disabled = true;
+
+            try {
+                await supabaseClient.from('notifications').insert([{ title, message, type, user_id: userId }]);
+                alert("Notification Sent Successfully!");
+                
+                document.getElementById('notifTitle').value = "";
+                document.getElementById('notifMessage').value = "";
+                document.getElementById('notifUserId').value = "";
+                
+                loadAdminNotifications();
+            } catch (e) {
+                alert("Error sending notification. Make sure the User ID is valid.");
+            } finally {
+                btn.innerText = "Broadcast Notification"; btn.disabled = false;
+            }
+        };
+
+        window.deleteNotification = async function(id) {
+            if (confirm("Delete this notification? It will be removed from user inboxes.")) {
+                await supabaseClient.from('notifications').delete().eq('id', id);
+                loadAdminNotifications();
+            }
+        };
     </script>
 </body>
 </html>

@@ -18,9 +18,9 @@
                <a href="index.html" class="logo-link">
                     <img src="asset/img/logo.png" alt="UNICAL Digital Market Logo" class="header-logo">
                 </a>
-                <a href="notification/index.html" class="notify-icon-container">
+                <a href="notification/" class="notify-icon-container" id="bell-icon" style="position: relative;">
                     <i class="far fa-bell"></i>
-                    <span class="red-dot notify-dot"></span>
+                    <span class="red-dot notify-dot" id="red-dot" style="display:none; position:absolute; top:-2px; right:-2px; width:10px; height:10px; background:#ef4444; border-radius:50%; border:2px solid white;"></span>
                 </a>
             </div>
             <div class="search-box">
@@ -204,5 +204,31 @@
     </div>
 
     <script src="asset/script.js"></script>
+
+    <script>
+        async function checkUnreadNotifications() {
+            try {
+                // Get the exact time the user last opened the notifications page
+                const lastSeenStr = localStorage.getItem('last_notif_seen_time') || '2000-01-01T00:00:00.000Z';
+                
+                const { data, error } = await supabaseClient
+                    .from('notifications')
+                    .select('id')
+                    .gt('created_at', lastSeenStr) // Check if any row was created AFTER the last time they looked
+                    .limit(1);
+
+                if (!error && data && data.length > 0) {
+                    document.getElementById('red-dot').style.display = 'block';
+                }
+            } catch(err) {
+                console.log("No notifications yet.");
+            }
+        }
+        
+        // Run the check quietly in the background when the home page loads
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(checkUnreadNotifications, 1000);
+        });
+    </script>
 </body>
 </html>
