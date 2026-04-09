@@ -132,9 +132,19 @@
 
     <script src="../asset/script.js"></script>
 
-    <script>
+   <script>
         let currentUser = null;
-        let currentlyOpenId = null; // Tracks the currently expanded notification
+        let currentlyOpenId = null; 
+
+        // 🛡️ XSS Sanitizers
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+        function escapeJS(str) {
+            if (!str) return '';
+            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+        }
 
         document.addEventListener("DOMContentLoaded", async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -143,8 +153,6 @@
             }
             
             await fetchNotifications();
-            
-            // Mark as seen so the Home Page Red Dot disappears!
             localStorage.setItem('last_notif_seen_time', new Date().toISOString());
         });
 
@@ -193,35 +201,38 @@
                     const timeString = formatTime(notifTime);
                     const { icon, bgClass } = getIconConfig(n.type);
 
-                    // 🚀 The Accordion Logic: Check if message is longer than 20 words
-                    const words = n.message.split(' ');
+                    // 🛡️ Escape user-generated inputs
+                    const safeTitle = escapeHTML(n.title);
+                    const safeMessage = escapeHTML(n.message);
+
+                    const words = safeMessage.split(' ');
                     let hasMore = false;
-                    let shortMsg = n.message;
+                    let shortMsg = safeMessage;
 
                     if (words.length > 20) {
                         shortMsg = words.slice(0, 20).join(' ') + '...';
                         hasMore = true;
                     }
 
-                    list.innerHTML += `
+                    list.insertAdjacentHTML('beforeend', `
                         <div class="notif-card ${unreadClass}">
                             <div class="notif-icon-wrapper ${bgClass}">
                                 <i class="${icon}"></i>
                             </div>
                             <div class="notif-content">
                                 <div class="notif-header">
-                                    <div class="notif-title">${n.title}</div>
+                                    <div class="notif-title">${safeTitle}</div>
                                     <div class="notif-time">${timeString}</div>
                                 </div>
                                 <div class="notif-message">
-                                    <span class="short-text" id="short-${n.id}">${shortMsg}</span>
-                                    <span class="full-text" id="full-${n.id}" style="display:none;">${n.message}</span>
+                                    <span class="short-text" id="short-${escapeJS(n.id)}">${shortMsg}</span>
+                                    <span class="full-text" id="full-${escapeJS(n.id)}" style="display:none;">${safeMessage.replace(/\n/g, '<br>')}</span>
                                     <br>
-                                    ${hasMore ? `<div class="read-more-btn" id="btn-${n.id}" onclick="toggleNotif('${n.id}')">Read more</div>` : ''}
+                                    ${hasMore ? `<div class="read-more-btn" id="btn-${escapeJS(n.id)}" onclick="toggleNotif('${escapeJS(n.id)}')">Read more</div>` : ''}
                                 </div>
                             </div>
                         </div>
-                    `;
+                    `);
                 });
 
             } catch (err) {
@@ -231,9 +242,7 @@
             }
         }
 
-        // 🚀 Expand/Collapse specific notification
         window.toggleNotif = function(id) {
-            // If another notification is currently open, close it first!
             if (currentlyOpenId && currentlyOpenId !== id) {
                 document.getElementById(`short-${currentlyOpenId}`).style.display = 'inline';
                 document.getElementById(`full-${currentlyOpenId}`).style.display = 'none';
@@ -245,13 +254,11 @@
             const btnEl = document.getElementById(`btn-${id}`);
 
             if (fullEl.style.display === 'none') {
-                // Expand
                 shortEl.style.display = 'none';
                 fullEl.style.display = 'inline';
                 btnEl.innerText = 'Show less';
                 currentlyOpenId = id;
             } else {
-                // Collapse
                 shortEl.style.display = 'inline';
                 fullEl.style.display = 'none';
                 btnEl.innerText = 'Read more';

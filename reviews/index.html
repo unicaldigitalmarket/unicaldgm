@@ -216,13 +216,21 @@
 
     <script src="../asset/script.js"></script>
 
-    <script>
-        // 🚀 REMOVED DUPLICATE SUPABASE INITIALIZATION
-        
+   <script>
         let currentUser = null;
         let allReviews = [];
         let selectedRating = 0;
         let editingReviewId = null;
+
+        // 🛡️ XSS Sanitizers
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+        function escapeJS(str) {
+            if (!str) return '';
+            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+        }
 
         document.addEventListener("DOMContentLoaded", async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -278,17 +286,20 @@
                 const starsHtml = '<i class="fas fa-star"></i>'.repeat(r.rating);
                 const isPending = r.status === 'pending' ? `<span class="pending-badge">PENDING</span>` : '';
                 
-                const authorName = r.profiles?.full_name || "UNICAL Student";
-                const authorImg = r.profiles?.avatar_url || "../img/person.png";
+                // 🛡️ Sanitize Content
+                const authorName = escapeHTML(r.profiles?.full_name || "UNICAL Student");
+                const authorImg = escapeHTML(r.profiles?.avatar_url || "../img/person.png");
+                const safeTextHTML = escapeHTML(r.review_text);
                 const dateText = timeAgo(r.created_at);
 
                 let actionHtml = "";
                 if (currentUser && r.reviewer_id === currentUser.id) {
-                    const safeText = r.review_text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    const safeTextJS = escapeJS(r.review_text);
+                    const safeIdJS = escapeJS(r.id);
                     actionHtml = `
                         <div>
-                            <i class="fas fa-edit action-icon" onclick="openEditModal('${r.id}', '${safeText}', ${r.rating})"></i>
-                            <i class="fas fa-trash action-icon action-delete" onclick="deleteReview('${r.id}')"></i>
+                            <i class="fas fa-edit action-icon" onclick="openEditModal('${safeIdJS}', '${safeTextJS}', ${r.rating})"></i>
+                            <i class="fas fa-trash action-icon action-delete" onclick="deleteReview('${safeIdJS}')"></i>
                         </div>
                     `;
                 }
@@ -306,7 +317,7 @@
                             </div>
                             ${actionHtml}
                         </div>
-                        <div class="rev-body">"${r.review_text}"</div>
+                        <div class="rev-body">"${safeTextHTML}"</div>
                     </div>
                 `;
             });

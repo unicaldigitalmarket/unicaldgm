@@ -176,10 +176,19 @@
     <script src="../asset/script.js"></script>
 
     <script>
-        // 🚀 REMOVED DUPLICATE SUPABASE INITIALIZATION
         let allProducts = [];
         let allVendors = [];
         let currentQuery = "";
+
+        // 🛡️ XSS Sanitizers
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+        function escapeJS(str) {
+            if (!str) return '';
+            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+        }
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -256,9 +265,7 @@
             renderVendorsGrid(randomVendors, 'explore-vendors-grid', null);
         }
 
-        function applyFilters() {
-            executeSearch(); 
-        }
+        function applyFilters() { executeSearch(); }
 
         function renderItemsGrid(itemsArray, containerId, countId) {
             const grid = document.getElementById(containerId);
@@ -276,19 +283,19 @@
 
             grid.innerHTML = "";
             itemsArray.forEach(p => {
-                const imgUrl = (p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/300';
+                const imgUrl = escapeHTML((p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/300');
                 const fPrice = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(p.price);
 
-                grid.innerHTML += `
-                    <div class="card" onclick="window.location.href='../product/index.html?id=${p.id}'">
+                grid.insertAdjacentHTML('beforeend', `
+                    <div class="card" onclick="window.location.href='../product/index.html?id=${escapeJS(p.id)}'">
                         <img src="${imgUrl}" class="card-img" onerror="this.src='https://via.placeholder.com/300'">
                         <div class="card-price">${fPrice}</div>
                         <div class="card-text-fix">
-                            <div class="card-title">${p.name}</div>
-                            <div class="card-desc">${p.category}</div>
+                            <div class="card-title">${escapeHTML(p.name)}</div>
+                            <div class="card-desc">${escapeHTML(p.category)}</div>
                         </div>
                     </div>
-                `;
+                `);
             });
         }
 
@@ -308,25 +315,25 @@
 
             grid.innerHTML = "";
             vendorsArray.forEach(v => {
-                const logo = v.logo_url || "https://via.placeholder.com/100";
-                const descTxt = v.description ? v.description.substring(0, 25) + '...' : 'Verified Seller';
+                const logo = escapeHTML(v.logo_url || "https://via.placeholder.com/100");
+                const descTxt = escapeHTML(v.description ? v.description.substring(0, 25) + '...' : 'Verified Seller');
+                const safeName = escapeHTML(v.business_name);
 
-                let badgeColor = "#38bdf8"; // Default Blue (Verified)
-                if (v.subscription_plan === "Influencer") badgeColor = "#fbbf24"; // Gold
-                if (v.subscription_plan === "Icon") badgeColor = "#1e293b"; // Black/Slate
+                let badgeColor = "#38bdf8"; 
+                if (v.subscription_plan === "Influencer") badgeColor = "#fbbf24"; 
+                if (v.subscription_plan === "Icon") badgeColor = "#1e293b"; 
 
-                // 🚀 FIX: Corrected URL path from profile.html to profile/index.html
-                grid.innerHTML += `
-                    <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center; height: 100%;" onclick="window.location.href='../vendors/profile/index.html?id=${v.id}'">
+                grid.insertAdjacentHTML('beforeend', `
+                    <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center; height: 100%;" onclick="window.location.href='../vendors/profile/index.html?id=${escapeJS(v.id)}'">
                         <img src="${logo}" style="width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 10px; flex-shrink: 0; object-fit: cover;" onerror="this.src='https://via.placeholder.com/100'">
                         <div class="card-text-fix" style="width: 100%;">
                             <div class="card-title" style="font-size: 13px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                ${v.business_name} <i class="fas fa-check-circle" style="color: ${badgeColor};"></i>
+                                ${safeName} <i class="fas fa-check-circle" style="color: ${badgeColor};"></i>
                             </div>
                             <div class="card-desc" style="margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${descTxt}</div>
                         </div>
                     </div>
-                `;
+                `);
             });
         }
     </script>

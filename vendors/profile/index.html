@@ -247,11 +247,19 @@
     <script src="../../asset/script.js"></script>
 
     <script>
-        // 🚀 REMOVED DUPLICATE SUPABASE KEYS
-        
         let currentUser = null;
         let currentVendor = null;
         let vendorId = new URLSearchParams(window.location.search).get('id');
+
+        // 🛡️ XSS Sanitizers
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+        function escapeJS(str) {
+            if (!str) return '';
+            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+        }
 
         document.addEventListener("DOMContentLoaded", async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -268,12 +276,10 @@
             await loadExploreItems();
             await loadOtherVendors();
 
-            // Hide Skeleton, Show Content
             document.getElementById('skeleton-view').style.display = 'none';
             document.getElementById('real-view').style.display = 'block';
         });
 
-        // 1. Load Vendor Details
         async function loadVendorProfile() {
             const { data: vendor, error } = await supabaseClient.from('vendors').select('*').eq('id', vendorId).single();
             if (error || !vendor) {
@@ -286,28 +292,25 @@
             if (vendor.subscription_plan === "Influencer") badgeColor = "#F5A623"; 
             if (vendor.subscription_plan === "Icon") badgeColor = "#1e293b"; 
 
-            document.getElementById('v-name').innerHTML = `${vendor.business_name} <i class="fas fa-check-circle" style="color: ${badgeColor}; font-size: 16px;"></i>`;
-            document.getElementById('v-logo').src = vendor.logo_url || "https://via.placeholder.com/150";
+            document.getElementById('v-name').innerHTML = `${escapeHTML(vendor.business_name)} <i class="fas fa-check-circle" style="color: ${badgeColor}; font-size: 16px;"></i>`;
+            document.getElementById('v-logo').src = escapeHTML(vendor.logo_url) || "https://via.placeholder.com/150";
             document.getElementById('v-desc').innerText = vendor.description || "No description provided.";
-            
-            // 🚀 FIX: Load the Location
-            document.getElementById('v-loc').innerHTML = `<i class="fas fa-map-marker-alt"></i> ${vendor.location || "Location not provided"}`;
+            document.getElementById('v-loc').innerHTML = `<i class="fas fa-map-marker-alt"></i> ${escapeHTML(vendor.location) || "Location not provided"}`;
 
             const catBox = document.getElementById('v-cats');
             catBox.innerHTML = "";
             if (vendor.categories) {
                 vendor.categories.split(',').forEach(cat => {
-                    catBox.innerHTML += `<span class="cat-tag">${cat.trim()}</span>`;
+                    catBox.insertAdjacentHTML('beforeend', `<span class="cat-tag">${escapeHTML(cat.trim())}</span>`);
                 });
             }
 
             let phone = vendor.whatsapp_number || "";
             if(phone.startsWith('0')) phone = "234" + phone.substring(1);
             document.getElementById('wa-link').href = `https://wa.me/${phone}`;
-            document.getElementById('report-link').href = `../../report/index.html?vid=${vendor.id}&vname=${encodeURIComponent(vendor.business_name)}`;
+            document.getElementById('report-link').href = `../../report/index.html?vid=${escapeJS(vendor.id)}&vname=${encodeURIComponent(vendor.business_name)}`;
         }
 
-        // 2. Load Reviews (NO TIME LIMIT ON EDIT/DELETE)
         async function loadReviews() {
             const list = document.getElementById('reviews-list');
             try {
@@ -329,27 +332,28 @@
                 reviews.forEach(r => {
                     total += r.rating;
                     const starsHTML = '<i class="fas fa-star"></i>'.repeat(r.rating) + '<i class="far fa-star"></i>'.repeat(5 - r.rating);
-                    const name = profileDict[r.customer_id] || "Student";
+                    const name = escapeHTML(profileDict[r.customer_id] || "Student");
+                    const safeTextHTML = escapeHTML(r.review_text);
                     
-                    // 🚀 FIX: Removed the 24 hour limit entirely. User can always edit/delete.
                     let actionBtns = '';
                     if (currentUser && currentUser.id === r.customer_id) {
+                        const safeTextJS = escapeJS(r.review_text);
                         actionBtns = `
                             <div style="margin-top: 10px; display: flex; gap: 10px;">
-                                <button onclick="triggerEdit('${r.id}', \`${r.review_text.replace(/'/g, "\\'")}\`, ${r.rating})" style="background:#eff6ff; color:#2563EB; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer;"><i class="fas fa-edit"></i> Edit</button>
-                                <button onclick="triggerDelete('${r.id}')" style="background:#fef2f2; color:#ef4444; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer;"><i class="fas fa-trash"></i> Delete</button>
+                                <button onclick="triggerEdit('${escapeJS(r.id)}', '${safeTextJS}', ${r.rating})" style="background:#eff6ff; color:#2563EB; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer;"><i class="fas fa-edit"></i> Edit</button>
+                                <button onclick="triggerDelete('${escapeJS(r.id)}')" style="background:#fef2f2; color:#ef4444; border:none; padding:4px 10px; border-radius:6px; font-size:11px; font-weight:bold; cursor:pointer;"><i class="fas fa-trash"></i> Delete</button>
                             </div>
                         `;
                     }
                     
-                    list.innerHTML += `
+                    list.insertAdjacentHTML('beforeend', `
                         <div class="rev-card">
                             <div class="r-name">${name}</div>
                             <div class="r-stars">${starsHTML}</div>
-                            <div class="r-text">"${r.review_text}"</div>
+                            <div class="r-text">"${safeTextHTML}"</div>
                             ${actionBtns}
                         </div>
-                    `;
+                    `);
                 });
 
                 const avg = (total / reviews.length).toFixed(1);
@@ -362,7 +366,6 @@
             }
         }
 
-        // 3. Load Store Items
         async function loadStoreItems() {
             const grid = document.getElementById('store-items');
             const { data: products } = await supabaseClient.from('products').select('*').eq('vendor_id', vendorId).eq('status', 'Active');
@@ -371,45 +374,39 @@
                 grid.innerHTML = `<p style="grid-column: span 2; text-align: center; color: #94a3b8; padding: 20px;">This store has no active items.</p>`; return;
             }
 
-            // 🚀 FIX: Dynamic total count
             document.getElementById('store-items-count').innerText = `(${products.length})`;
 
             grid.innerHTML = "";
             products.forEach(p => {
-                const img = (p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/300';
+                const img = escapeHTML((p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/300');
                 const price = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(p.price);
-                // 🚀 FIX: Links to product details page
-                grid.innerHTML += `<div class="product-card" onclick="window.location.href='../../product/index.html?id=${p.id}'"><img src="${img}" class="product-img"><div class="product-price">${price}</div><div class="product-title">${p.name}</div></div>`;
+                grid.insertAdjacentHTML('beforeend', `<div class="product-card" onclick="window.location.href='../../product/index.html?id=${escapeJS(p.id)}'"><img src="${img}" class="product-img"><div class="product-price">${price}</div><div class="product-title">${escapeHTML(p.name)}</div></div>`);
             });
         }
 
-        // 4. Load Explore Items
         async function loadExploreItems() {
             const grid = document.getElementById('explore-items');
             const { data: products } = await supabaseClient.from('products').select('*').neq('vendor_id', vendorId).eq('status', 'Active').limit(16);
             if (!products) return;
             grid.innerHTML = "";
             products.forEach(p => {
-                const img = (p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/300';
+                const img = escapeHTML((p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/300');
                 const price = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(p.price);
-                // 🚀 FIX: Links to product details page
-                grid.innerHTML += `<div class="product-card" onclick="window.location.href='../../product/index.html?id=${p.id}'"><img src="${img}" class="product-img"><div class="product-price">${price}</div><div class="product-title">${p.name}</div></div>`;
+                grid.insertAdjacentHTML('beforeend', `<div class="product-card" onclick="window.location.href='../../product/index.html?id=${escapeJS(p.id)}'"><img src="${img}" class="product-img"><div class="product-price">${price}</div><div class="product-title">${escapeHTML(p.name)}</div></div>`);
             });
         }
 
-        // 5. Load Other Vendors
         async function loadOtherVendors() {
             const grid = document.getElementById('other-vendors');
             const { data: vendors } = await supabaseClient.from('vendors').select('*').neq('id', vendorId).eq('is_active', true).limit(8);
             if (!vendors) return;
             grid.innerHTML = "";
             vendors.forEach(v => {
-                const logo = v.logo_url || 'https://via.placeholder.com/150';
-                grid.innerHTML += `<div class="vendor-mini-card" onclick="window.location.href='index.html?id=${v.id}'"><img src="${logo}" class="vendor-mini-img"><div class="vendor-mini-name">${v.business_name}</div></div>`;
+                const logo = escapeHTML(v.logo_url || 'https://via.placeholder.com/150');
+                grid.insertAdjacentHTML('beforeend', `<div class="vendor-mini-card" onclick="window.location.href='index.html?id=${escapeJS(v.id)}'"><img src="${logo}" class="vendor-mini-img"><div class="vendor-mini-name">${escapeHTML(v.business_name)}</div></div>`);
             });
         }
 
-        // --- Review Actions ---
         function setupStars() {
             const stars = document.querySelectorAll('#star-selector i');
             stars.forEach(star => {
@@ -439,7 +436,6 @@
 
         function closeReviewModal() { document.getElementById('review-modal').style.display = 'none'; }
 
-        // 🚀 EDIT Logic (No limits)
         window.triggerEdit = function(id, text, rating) {
             document.getElementById('modal-title').innerText = "Edit Review";
             document.getElementById('edit-review-id').value = id;
@@ -455,10 +451,8 @@
             document.getElementById('review-modal').style.display = 'flex';
         }
 
-        // 🚀 DELETE Logic (No limits)
         window.triggerDelete = async function(id) {
             if (!confirm("Are you sure you want to permanently delete this review?")) return;
-            
             try {
                 await supabaseClient.from('vendor_reviews').delete().eq('id', id);
                 alert("Review deleted successfully.");

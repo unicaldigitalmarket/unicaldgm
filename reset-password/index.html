@@ -129,8 +129,12 @@
     <script src="../asset/script.js"></script>
 
     <script>
-        // 🚀 REMOVED DUPLICATE SUPABASE KEYS
-        
+        // 🛡️ XSS Sanitizer Function
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
         // Checks if the user actually came from a valid recovery link
         document.addEventListener("DOMContentLoaded", () => {
             supabaseClient.auth.onAuthStateChange((event, session) => {
@@ -161,7 +165,7 @@
             const btn = document.getElementById('submit-btn');
 
             msg.style.display = 'block';
-            msg.className = 'msg-error'; // Default to error style
+            msg.className = 'msg-error';
 
             if (p1.length < 6) {
                 msg.innerText = "Password must be at least 6 characters."; return;

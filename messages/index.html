@@ -113,9 +113,18 @@
 
     <script src="../asset/script.js"></script>
 
-    <script>
-        // 🚀 REMOVED DUPLICATE SUPABASE KEYS
+   <script>
         let currentUser = null;
+
+        // 🛡️ XSS Sanitizers
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+        function escapeJS(str) {
+            if (!str) return '';
+            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+        }
 
         document.addEventListener("DOMContentLoaded", async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -126,20 +135,17 @@
             setupRealtimeInbox();
         });
 
-        // 🚀 ADDED REQUIRED LOGIN FUNCTION FOR BOTTOM NAV
         async function requireLogin(targetUrl) {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) window.location.href = targetUrl;
             else window.location.href = "../login/index.html";
         }
 
-        // Smart Two-Step Fetch to prevent Join Errors
         async function loadInbox() {
             const list = document.getElementById('inbox-list');
             const skeleton = document.getElementById('skeleton-loader');
 
             try {
-                // 1. Fetch all chats involving this user
                 const { data: chats, error } = await supabaseClient
                     .from('chats')
                     .select('*')
@@ -162,26 +168,22 @@
                     return;
                 }
 
-                // 2. Collect all the unique IDs we need to fetch details for
                 const productIds = [...new Set(chats.map(c => c.product_id))];
                 const customerIds = [...new Set(chats.map(c => c.customer_id))];
                 const vendorIds = [...new Set(chats.map(c => c.vendor_id))];
 
-                // 3. Fetch Products, Profiles, and Vendors in parallel
                 const [prodRes, profRes, vendRes] = await Promise.all([
                     supabaseClient.from('products').select('id, name').in('id', productIds),
                     supabaseClient.from('profiles').select('id, full_name, avatar_url').in('id', customerIds),
                     supabaseClient.from('vendors').select('profile_id, business_name, logo_url').in('profile_id', vendorIds)
                 ]);
 
-                // 4. Create quick lookup dictionaries
                 const prodDict = {}; prodRes.data?.forEach(p => prodDict[p.id] = p);
                 const profDict = {}; profRes.data?.forEach(p => profDict[p.id] = p);
                 const vendDict = {}; vendRes.data?.forEach(v => vendDict[v.profile_id] = v);
 
                 list.innerHTML = "";
 
-                // 5. Render the Inbox Cards
                 chats.forEach(chat => {
                     const amICustomer = currentUser.id === chat.customer_id;
                     const productData = prodDict[chat.product_id] || { name: "Unknown Item" };
@@ -190,15 +192,12 @@
                     let displayAvatar = "";
                     let isVerified = false;
 
-                    // Determine what the "other side" of the chat looks like
                     if (amICustomer) {
-                        // I am the buyer. Show me the Vendor's details
                         const vData = vendDict[chat.vendor_id];
                         displayName = vData ? vData.business_name : "Store Vendor";
                         displayAvatar = vData && vData.logo_url ? vData.logo_url : "https://via.placeholder.com/150";
                         isVerified = true;
                     } else {
-                        // I am the vendor. Show me the Customer's details
                         const cData = profDict[chat.customer_id];
                         displayName = cData ? cData.full_name : "Customer";
                         displayAvatar = cData && cData.avatar_url ? cData.avatar_url : "https://via.placeholder.com/150";
@@ -207,19 +206,19 @@
                     const timeAgo = formatChatTime(chat.last_message_time);
                     const lastMsg = chat.last_message_text || "Started a conversation";
 
-                    list.innerHTML += `
-                        <div class="chat-card" onclick="window.location.href='../chats/index.html?chat_id=${chat.id}'">
-                            <img src="${displayAvatar}" class="chat-avatar" onerror="this.src='https://via.placeholder.com/150'">
+                    list.insertAdjacentHTML('beforeend', `
+                        <div class="chat-card" onclick="window.location.href='../chats/index.html?chat_id=${escapeJS(chat.id)}'">
+                            <img src="${escapeHTML(displayAvatar)}" class="chat-avatar" onerror="this.src='https://via.placeholder.com/150'">
                             <div class="chat-info">
                                 <div class="chat-header-row">
-                                    <div class="chat-name">${displayName} ${isVerified ? '<i class="fas fa-check-circle" style="color: #38bdf8; font-size: 11px;"></i>' : ''}</div>
+                                    <div class="chat-name">${escapeHTML(displayName)} ${isVerified ? '<i class="fas fa-check-circle" style="color: #38bdf8; font-size: 11px;"></i>' : ''}</div>
                                     <div class="chat-time">${timeAgo}</div>
                                 </div>
-                                <div class="chat-product"><i class="fas fa-box" style="margin-right:4px;"></i>${productData.name}</div>
-                                <div class="chat-last-msg">${lastMsg}</div>
+                                <div class="chat-product"><i class="fas fa-box" style="margin-right:4px;"></i>${escapeHTML(productData.name)}</div>
+                                <div class="chat-last-msg">${escapeHTML(lastMsg)}</div>
                             </div>
                         </div>
-                    `;
+                    `);
                 });
 
             } catch (err) {
@@ -229,19 +228,17 @@
             }
         }
 
-        // 🚀 REAL-TIME: Instantly reshuffle inbox when a new message arrives!
         function setupRealtimeInbox() {
             supabaseClient.channel('inbox-updates')
                 .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'chats' }, () => {
-                    loadInbox(); // Reload silently in background
+                    loadInbox(); 
                 })
                 .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chats' }, () => {
-                    loadInbox(); // Reload silently in background
+                    loadInbox(); 
                 })
                 .subscribe();
         }
 
-        // Format time like "10:30 AM" or "Yesterday"
         function formatChatTime(dateString) {
             if (!dateString) return "";
             const date = new Date(dateString);

@@ -145,8 +145,6 @@
     <script src="../asset/script.js"></script>
 
     <script>
-        // 🚀 REMOVED THE DUPLICATE SUPABASE INITIALIZATION
-
         let allProducts = [];
         let currentDisplayList = [];
         let itemsLoaded = 0;
@@ -154,6 +152,16 @@
         let isFetchingBatch = false;
         
         let currentCategory = 'All'; 
+
+        // 🛡️ XSS Sanitizers
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+        function escapeJS(str) {
+            if (!str) return '';
+            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+        }
 
         document.addEventListener("DOMContentLoaded", () => {
             fetchMarketItems();
@@ -235,17 +243,17 @@
                 const nextBatch = currentDisplayList.slice(itemsLoaded, itemsLoaded + ITEMS_PER_PAGE);
 
                 nextBatch.forEach(p => {
-                    const imgUrl = (p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/300x300?text=No+Image';
+                    const imgUrl = (p.image_urls && p.image_urls.length > 0) ? escapeHTML(p.image_urls[0]) : 'https://via.placeholder.com/300x300?text=No+Image';
                     const multiImageBadge = (p.image_urls && p.image_urls.length > 1) ? `<div class="multi-img-badge"><i class="far fa-images"></i> ${p.image_urls.length}</div>` : '';
                     const fPrice = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(p.price);
 
                     grid.insertAdjacentHTML('beforeend', `
-                        <div class="product-card" onclick="window.location.href='../product/index.html?id=${p.id}'">
+                        <div class="product-card" onclick="window.location.href='../product/index.html?id=${escapeJS(p.id)}'">
                             <img src="${imgUrl}" class="product-img" onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
                             ${multiImageBadge}
                             <div class="product-price">${fPrice}</div>
-                            <div class="product-title">${p.name}</div>
-                            <div class="product-location"><i class="fas fa-tag"></i> ${p.category}</div>
+                            <div class="product-title">${escapeHTML(p.name)}</div>
+                            <div class="product-location"><i class="fas fa-tag"></i> ${escapeHTML(p.category)}</div>
                         </div>
                     `);
                 });
@@ -290,7 +298,7 @@
             const query = document.getElementById('item-search').value.toLowerCase().trim();
             
             currentDisplayList = allProducts.filter(p => {
-                const matchesSearchText = p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query);
+                const matchesSearchText = (p.name || '').toLowerCase().includes(query) || (p.category || '').toLowerCase().includes(query);
                 const matchesCategory = (currentCategory === 'All') || (p.category === currentCategory);
                 
                 return matchesSearchText && matchesCategory;

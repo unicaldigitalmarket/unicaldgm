@@ -10,62 +10,68 @@
     <link rel="stylesheet" href="../asset/style.css">
 
     <style>
+        :root { --brand-color: #FF7A00; }
+
         .header-top-flex { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
         .page-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; }
         
         .search-container { background: #f1f5f9; border-radius: 12px; display: flex; align-items: center; padding: 10px 15px; margin-bottom: 20px; }
         .search-container input[type="search"] { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; color: var(--text-main); -webkit-appearance: none; }
         
+        /* 🚀 NEW: Fully Responsive & Modern Vendor Grid */
         .vendor-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 20px; }
         
         .vendor-card {
             background: white; border-radius: 16px; padding: 20px 15px; text-align: center;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;
-            transition: transform 0.2s; display: flex; flex-direction: column; align-items: center;
-            height: 100%; justify-content: space-between; overflow: hidden; min-width: 0;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.04); border: 1px solid #f1f5f9;
+            transition: transform 0.2s, box-shadow 0.2s; display: flex; flex-direction: column; align-items: center;
+            height: 100%; justify-content: space-between; overflow: hidden; min-width: 0; position: relative; z-index: 1;
+            cursor: pointer;
         }
-        .vendor-card:active { transform: scale(0.98); }
+        .vendor-card:active { transform: scale(0.96); box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
         
+        /* 🚀 Cool Brand Accent at the top of the card */
+        .card-accent {
+            position: absolute; top: 0; left: 0; width: 100%; height: 50px;
+            background: rgba(255, 122, 0, 0.08); z-index: -1;
+        }
+
         .vendor-logo {
-            width: 60px; height: 60px; border-radius: 50%; object-fit: cover;
-            border: 3px solid #f8fafc; background: #eee; margin-bottom: 10px; flex-shrink: 0;
+            width: 70px; height: 70px; border-radius: 50%; object-fit: cover;
+            border: 3px solid white; background: #eee; margin-bottom: 12px; flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
         }
         
         .vendor-info-wrapper { flex-grow: 1; width: 100%; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
         
-        .vendor-id { 
-            background: #f1f5f9; color: var(--text-muted); font-size: 10px; padding: 3px 8px; 
-            border-radius: 10px; font-family: monospace; font-weight: 800; margin-bottom: 8px; 
-            display: inline-block; align-self: center;
-        }
-        
         .vendor-name { 
-            font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 4px; 
+            font-size: 14px; font-weight: 800; color: var(--text-main); margin-bottom: 6px; 
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; display: block;
         }
         
         .vendor-desc { 
-            font-size: 11px; color: var(--text-muted); line-height: 1.4; 
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; 
-            overflow: hidden; margin-bottom: 12px; word-break: break-word;
+            font-size: 11px; color: var(--text-muted); line-height: 1.5; 
+            display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; 
+            overflow: hidden; margin-bottom: 15px; word-break: break-word;
         }
         
+        /* 🚀 Modern Soft-Tinted Button */
         .visit-btn {
-            background: white; color: var(--brand-color); border: 2px solid var(--brand-color);
-            width: 100%; padding: 8px; border-radius: 20px; font-size: 12px; font-weight: 800;
+            background: rgba(255, 122, 0, 0.1); color: var(--brand-color); border: none;
+            width: 100%; padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 800;
             cursor: pointer; transition: 0.2s; margin-top: auto;
         }
-        .vendor-card:hover .visit-btn { background: var(--brand-color); color: white; }
+        .vendor-card:active .visit-btn { background: var(--brand-color); color: white; }
 
         .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         
         .sk-card { background: white; border-radius: 16px; padding: 20px 15px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; }
-        .sk-avatar { width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px; flex-shrink: 0; }
-        .sk-line-1 { width: 40%; height: 12px; border-radius: 6px; margin-bottom: 10px; }
-        .sk-line-2 { width: 80%; height: 14px; border-radius: 6px; margin-bottom: 8px; }
-        .sk-line-3 { width: 90%; height: 10px; border-radius: 4px; margin-bottom: 15px; }
-        .sk-btn { width: 100%; height: 30px; border-radius: 20px; margin-top: auto; }
+        .sk-avatar { width: 70px; height: 70px; border-radius: 50%; margin-bottom: 12px; flex-shrink: 0; }
+        .sk-line-1 { width: 70%; height: 14px; border-radius: 6px; margin-bottom: 10px; }
+        .sk-line-2 { width: 90%; height: 10px; border-radius: 4px; margin-bottom: 6px; }
+        .sk-line-3 { width: 60%; height: 10px; border-radius: 4px; margin-bottom: 15px; }
+        .sk-btn { width: 100%; height: 35px; border-radius: 12px; margin-top: auto; }
 
         .end-message { text-align: center; padding: 30px 20px 40px; color: #94a3b8; font-size: 13px; font-weight: 600; display: none; }
         .end-message i { font-size: 24px; color: #e2e8f0; margin-bottom: 8px; display: block; }
@@ -76,25 +82,24 @@
         body.dark-mode { background-color: #020617 !important; }
         body.dark-mode .app-container { background: #0f172a !important; }
         
-        /* Header & Search */
         body.dark-mode .header { background: #1e293b !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; }
         body.dark-mode .page-title, body.dark-mode .fa-arrow-left { color: #f1f5f9 !important; }
         body.dark-mode .search-container { background: #0f172a !important; border: 1px solid #334155 !important; }
         body.dark-mode .search-container input { color: #f1f5f9 !important; }
 
-        /* Vendor Cards */
-        body.dark-mode .vendor-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .vendor-card { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 8px 25px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .card-accent { background: rgba(255, 122, 0, 0.05) !important; }
         body.dark-mode .vendor-logo { border-color: #1e293b !important; background: #334155 !important; }
-        body.dark-mode .vendor-id { background: #0f172a !important; color: #94a3b8 !important; border: 1px solid #334155 !important; }
+        
         body.dark-mode .vendor-name { color: #f1f5f9 !important; }
         body.dark-mode .vendor-desc { color: #cbd5e1 !important; }
         
-        /* Visit Button */
-        body.dark-mode .visit-btn { background: #0f172a !important; color: var(--brand-color) !important; border-color: var(--brand-color) !important; }
-        body.dark-mode .vendor-card:hover .visit-btn { background: var(--brand-color) !important; color: white !important; }
+        body.dark-mode .visit-btn { background: #0f172a !important; border: 1px solid #334155 !important; color: var(--brand-color) !important; }
+        body.dark-mode .vendor-card:active .visit-btn { background: var(--brand-color) !important; color: white !important; border-color: var(--brand-color) !important; }
 
-        /* Skeletons & End Message */
         body.dark-mode .sk-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .sk-shimmer { background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%) !important; background-size: 200% 100% !important; }
+        
         body.dark-mode .end-message { color: #94a3b8 !important; }
         body.dark-mode .end-message i { color: #334155 !important; }
     </style>
@@ -120,8 +125,6 @@
             <div class="vendor-grid" id="main-vendor-grid"></div>
 
             <div class="vendor-grid" id="skeleton-loader" style="padding-top: 15px; display: none;">
-                <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div><div class="sk-shimmer sk-btn"></div></div>
-                <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div><div class="sk-shimmer sk-btn"></div></div>
                 <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div><div class="sk-shimmer sk-btn"></div></div>
                 <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div><div class="sk-shimmer sk-btn"></div></div>
                 <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div><div class="sk-shimmer sk-btn"></div></div>
@@ -154,12 +157,20 @@
     <script src="../asset/script.js"></script>
 
     <script>
-        // 🚀 REMOVED DUPLICATE SUPABASE INITIALIZATION
-        
         let allVendors = [];
         let currentDisplayList = [];
         let vendorsLoaded = 0;
         let isFetchingBatch = false;
+
+        // 🛡️ XSS Sanitizers
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+        function escapeJS(str) {
+            if (!str) return '';
+            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+        }
 
         document.addEventListener("DOMContentLoaded", () => {
             fetchActiveVendors();
@@ -232,21 +243,21 @@
                 const nextBatch = currentDisplayList.slice(vendorsLoaded, vendorsLoaded + batchSize);
 
                 nextBatch.forEach(v => {
-                    const logoUrl = v.logo_url || 'https://via.placeholder.com/150x150?text=Logo';
-                    const shortId = "V-" + v.id.substring(0, 5).toUpperCase();
-                    const safeName = v.business_name ? v.business_name : 'Verified Vendor';
-                    const safeDesc = v.description || "Verified Seller on UNICAL Digital Market";
+                    const logoUrl = escapeHTML(v.logo_url || 'https://via.placeholder.com/150x150?text=Logo');
+                    const safeName = escapeHTML(v.business_name ? v.business_name : 'Verified Vendor');
+                    const safeDesc = escapeHTML(v.description || "Verified Seller on UNICAL Digital Market");
+                    const safeId = escapeJS(v.id); // Secure ID for the URL
 
                     let badgeColor = "#38bdf8"; // Default Blue (Verified)
                     if (v.subscription_plan === "Influencer") badgeColor = "#fbbf24"; // Gold
                     if (v.subscription_plan === "Icon") badgeColor = "#1e293b"; // Black/Slate
 
-                    // 🚀 FIX: Corrected the folder path to profile/index.html
+                    // 🚀 FIX: Removed the Vendor ID tag, added sleek accent, updated the link perfectly!
                     grid.insertAdjacentHTML('beforeend', `
-                        <div class="vendor-card" onclick="window.location.href='profile/index.html?id=${v.id}'">
+                        <div class="vendor-card" onclick="window.location.href='profile/index.html?id=${safeId}'">
+                            <div class="card-accent"></div>
                             <img src="${logoUrl}" class="vendor-logo" onerror="this.src='https://via.placeholder.com/150x150?text=Logo'">
                             <div class="vendor-info-wrapper">
-                                <div><span class="vendor-id">${shortId}</span></div>
                                 <div class="vendor-name">${safeName} <i class="fas fa-check-circle" style="color: ${badgeColor};"></i></div>
                                 <div class="vendor-desc">${safeDesc}</div>
                             </div>

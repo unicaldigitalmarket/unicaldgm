@@ -180,11 +180,19 @@
 
     <script src="../asset/script.js"></script>
 
-    <script>
-        // 🚀 REMOVED DUPLICATE SUPABASE LOGIC
-
+   <script>
         let currentProduct = null;
         let slideInterval;
+
+        // 🛡️ XSS Sanitizers
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+        function escapeJS(str) {
+            if (!str) return '';
+            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+        }
 
         function createSlug(title) {
             return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
@@ -230,15 +238,15 @@
                 // 2. FETCH VENDOR
                 const { data: vendor } = await supabaseClient.from('vendors').select('*').eq('id', product.vendor_id).single();
 
-                // 3. POPULATE UI
+                // 3. POPULATE UI (Sanitized)
                 document.getElementById('loader-state').style.display = 'none';
                 document.getElementById('content-state').style.display = 'block';
                 document.getElementById('action-bar').style.display = 'flex';
 
-                document.getElementById('display-title').innerText = product.name;
+                document.getElementById('display-title').innerText = escapeHTML(product.name);
                 document.getElementById('display-price').innerText = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(product.price);
-                document.getElementById('display-category').innerText = product.category;
-                document.getElementById('display-desc').innerText = product.description;
+                document.getElementById('display-category').innerText = escapeHTML(product.category);
+                document.getElementById('display-desc').innerText = escapeHTML(product.description);
 
                 // Load Images into Carousel
                 const gallery = document.getElementById('image-gallery');
@@ -248,8 +256,8 @@
                 const images = (product.image_urls && product.image_urls.length > 0) ? product.image_urls : ['https://via.placeholder.com/600x600?text=No+Image'];
                 
                 images.forEach((img, index) => {
-                    gallery.innerHTML += `<img src="${img}" class="slide-img">`;
-                    dots.innerHTML += `<div class="dot ${index === 0 ? 'active' : ''}"></div>`;
+                    gallery.insertAdjacentHTML('beforeend', `<img src="${escapeHTML(img)}" class="slide-img">`);
+                    dots.insertAdjacentHTML('beforeend', `<div class="dot ${index === 0 ? 'active' : ''}"></div>`);
                 });
 
                 if (images.length > 1) startAutoSlide(); 
@@ -260,12 +268,11 @@
                     if (vendor.subscription_plan === "Influencer") badgeColor = "#fbbf24"; // Gold
                     if (vendor.subscription_plan === "Icon") badgeColor = "#1e293b"; // Black/Slate
 
-                    document.getElementById('v-name').innerHTML = `${vendor.business_name} <i class="fas fa-check-circle" style="color: ${badgeColor};"></i>`;
-                    document.getElementById('v-cat').innerText = vendor.categories ? vendor.categories.split(',')[0] : "Verified Seller";
-                    document.getElementById('v-logo').src = vendor.logo_url || "https://via.placeholder.com/150";
+                    document.getElementById('v-name').innerHTML = `${escapeHTML(vendor.business_name)} <i class="fas fa-check-circle" style="color: ${badgeColor};"></i>`;
+                    document.getElementById('v-cat').innerText = escapeHTML(vendor.categories ? vendor.categories.split(',')[0] : "Verified Seller");
+                    document.getElementById('v-logo').src = escapeHTML(vendor.logo_url) || "https://via.placeholder.com/150";
                     
-                    // 🚀 FIX: CORRECTED THE LINK TO THE VENDOR PROFILE
-                    document.getElementById('vendor-btn').onclick = () => window.location.href = `../vendors/profile/index.html?id=${vendor.id}`;
+                    document.getElementById('vendor-btn').onclick = () => window.location.href = `../vendors/profile/index.html?id=${escapeJS(vendor.id)}`;
 
                     const waBtn = document.getElementById('whatsapp-btn');
                     let phone = vendor.whatsapp_number || "";
@@ -316,24 +323,28 @@
                     .eq('category', category)
                     .eq('status', 'Active')
                     .neq('id', currentId) 
-                    .limit(4); 
+                    .limit(8); // 🚀 UPDATED FROM 4 TO 8 ITEMS!
                 
                 if(!data || data.length === 0) {
                     grid.innerHTML = "<p style='grid-column: span 2; text-align: center; color: #94a3b8; font-size: 13px;'>No similar items right now.</p>";
                     return;
                 }
 
+                grid.innerHTML = ""; // Clear existing before append
+
                 data.forEach(p => {
-                    const imgUrl = (p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/300';
+                    const imgUrl = escapeHTML((p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/300');
                     const fPrice = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(p.price);
+                    const safeName = escapeHTML(p.name);
+                    const safeIdJS = escapeJS(p.id);
                     
-                    grid.innerHTML += `
-                        <div class="related-card" onclick="window.location.href='index.html?id=${p.id}'">
+                    grid.insertAdjacentHTML('beforeend', `
+                        <div class="related-card" onclick="window.location.href='index.html?id=${safeIdJS}'">
                             <img src="${imgUrl}" class="rel-img">
                             <div class="rel-price">${fPrice}</div>
-                            <div class="rel-title">${p.name}</div>
+                            <div class="rel-title">${safeName}</div>
                         </div>
-                    `;
+                    `);
                 });
             } catch(e) { console.error(e); }
         }

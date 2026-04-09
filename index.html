@@ -112,6 +112,7 @@
                         <div class="sk-shimmer sk-line medium"></div>
                     </div>
                 </div>
+                <a href="items/index.html" class="view-all-btn-home">View All Items</a>
             </div>
 
             <div class="section-wrapper">
@@ -131,6 +132,7 @@
                         <div class="sk-shimmer sk-line short"></div>
                     </div>
                 </div>
+                <a href="vendors/index.html" class="view-all-btn-home">View All Vendors</a>
             </div>
 
             <div class="section-wrapper" style="margin-top: 10px;">
@@ -208,13 +210,11 @@
     <script>
         async function checkUnreadNotifications() {
             try {
-                // Get the exact time the user last opened the notifications page
                 const lastSeenStr = localStorage.getItem('last_notif_seen_time') || '2000-01-01T00:00:00.000Z';
-                
                 const { data, error } = await supabaseClient
                     .from('notifications')
                     .select('id')
-                    .gt('created_at', lastSeenStr) // Check if any row was created AFTER the last time they looked
+                    .gt('created_at', lastSeenStr) 
                     .limit(1);
 
                 if (!error && data && data.length > 0) {
@@ -225,7 +225,6 @@
             }
         }
         
-        // Run the check quietly in the background when the home page loads
         document.addEventListener("DOMContentLoaded", () => {
             setTimeout(checkUnreadNotifications, 1000);
         });

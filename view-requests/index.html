@@ -142,9 +142,14 @@
 
     <script src="../asset/script.js"></script>
 
-    <script>
-        // 🚀 REMOVED DUPLICATE SUPABASE KEYS
+   <script>
         let currentUser = null;
+
+        // 🛡️ XSS Sanitizers
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
 
         document.addEventListener("DOMContentLoaded", async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -225,20 +230,24 @@
                     const fPrice = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(req.budget);
                     
                     const userProfile = profileDictionary[req.user_id] || {};
-                    const customerName = userProfile.full_name || "Customer";
                     const rawPhone = userProfile.phone || null;
                     const timeAgo = getTimeAgo(req.created_at);
 
-                    // Dynamic image block
+                    // 🛡️ Apply Sanitization
+                    const safeCustomerName = escapeHTML(userProfile.full_name || "Customer");
+                    const safeName = escapeHTML(req.product_name);
+                    const safeCat = escapeHTML(req.category);
+                    const safeDesc = escapeHTML(req.description);
+
                     let imageHTML = "";
                     if (req.image_url) {
-                        imageHTML = `<img src="${req.image_url}" class="req-img" onclick="openModal('${req.image_url}')" alt="Reference Image">`;
+                        imageHTML = `<img src="${escapeHTML(req.image_url)}" class="req-img" onclick="openModal('${escapeHTML(req.image_url)}')" alt="Reference Image">`;
                     }
 
                     let waButtonHTML = "";
                     if (rawPhone) {
                         const cleanPhone = formatPhoneNumber(rawPhone);
-                        const prefilledMessage = encodeURIComponent(`Hi ${customerName}, I am a vendor on UNICAL Digital Market. I saw your request for '${req.product_name}' (Budget: ${fPrice}) and I can fulfill it!`);
+                        const prefilledMessage = encodeURIComponent(`Hi ${safeCustomerName}, I am a vendor on UNICAL Digital Market. I saw your request for '${req.product_name}' (Budget: ${fPrice}) and I can fulfill it!`);
                         const waLink = `https://wa.me/${cleanPhone}?text=${prefilledMessage}`;
                         
                         waButtonHTML = `<a href="${waLink}" target="_blank" class="wa-btn"><i class="fab fa-whatsapp" style="font-size:16px;"></i> Contact Buyer</a>`;
@@ -246,31 +255,31 @@
                         waButtonHTML = `<button class="wa-btn disabled" disabled><i class="fas fa-phone-slash"></i> No Number Provided</button>`;
                     }
 
-                    container.innerHTML += `
+                    container.insertAdjacentHTML('beforeend', `
                         <div class="req-card">
                             <div class="req-header">
-                                <div class="req-title">${req.product_name}</div>
+                                <div class="req-title">${safeName}</div>
                                 <div class="req-budget">${fPrice}</div>
                             </div>
                             
-                            <div class="req-cat"><i class="fas fa-tag"></i> ${req.category}</div>
+                            <div class="req-cat"><i class="fas fa-tag"></i> ${safeCat}</div>
                             
                             ${imageHTML}
                             
-                            <div class="req-desc">"${req.description}"</div>
+                            <div class="req-desc">"${safeDesc}"</div>
                             
                             <div class="req-footer">
                                 <div class="customer-info">
                                     <i class="fas fa-user-circle" style="font-size:24px;"></i>
                                     <div>
-                                        <div style="color:var(--text-main); font-weight:700;">${customerName}</div>
+                                        <div style="color:var(--text-main); font-weight:700;">${safeCustomerName}</div>
                                         <div style="font-size:10px; font-weight:normal; color:var(--text-muted);">Posted ${timeAgo}</div>
                                     </div>
                                 </div>
                                 ${waButtonHTML}
                             </div>
                         </div>
-                    `;
+                    `);
                 });
 
             } catch (err) {
@@ -280,7 +289,6 @@
             }
         }
 
-        // Modal Functions
         function openModal(imgSrc) {
             document.getElementById('modalImg').src = imgSrc;
             document.getElementById('imageModal').style.display = 'flex';
@@ -291,7 +299,6 @@
             document.getElementById('modalImg').src = '';
         }
 
-        // Close modal if user clicks outside the image
         window.onclick = function(event) {
             const modal = document.getElementById('imageModal');
             if (event.target == modal) {

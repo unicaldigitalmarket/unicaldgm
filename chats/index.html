@@ -162,7 +162,6 @@
     <script src="../asset/script.js"></script>
 
     <script>
-        // 🚀 REMOVED DUPLICATE SUPABASE KEYS
         const EMAILJS_PUB_KEY = 'EhgRXY4ATiEQet7Pf'; 
         const EMAILJS_SERVICE = 'service_1coj3hy';
         const EMAILJS_VENDOR_TEMPLATE = 'template_iq7xyhr'; 
@@ -183,6 +182,16 @@
         const urlVendorId = urlParams.get('vendor_id');
 
         let selectedImageFile = null;
+
+        // 🛡️ XSS Sanitizers
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+        function escapeJS(str) {
+            if (!str) return '';
+            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+        }
 
         document.addEventListener("DOMContentLoaded", async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -237,7 +246,7 @@
                         document.getElementById('disclaimer').style.display = 'block';
                         const { data: prod } = await supabaseClient.from('products').select('name').eq('id', urlProductId).single();
                         if (prod) {
-                            document.getElementById('head-product').innerText = prod.name;
+                            document.getElementById('head-product').innerText = escapeHTML(prod.name);
                         }
                         document.getElementById('head-name').innerText = "Vendor";
                     }
@@ -248,7 +257,6 @@
                     await fetchMessages();
                     subscribeToRealtime();
                     
-                    // 🚀 CLEAR UNREAD BADGE: You opened the chat, so we mark it as read for you!
                     let readUpdate = {};
                     if (currentUser.id === currentChat.vendor_id) readUpdate = { unread_by_vendor: false };
                     if (currentUser.id === currentChat.customer_id) readUpdate = { unread_by_customer: false };
@@ -263,11 +271,11 @@
 
         function setupHeader() {
             if (currentChat && currentChat.products && currentChat.products.name) {
-                document.getElementById('head-product').innerText = currentChat.products.name;
+                document.getElementById('head-product').innerText = escapeHTML(currentChat.products.name);
             }
             
             if (currentChat && currentUser.id === currentChat.vendor_id) {
-                document.getElementById('head-name').innerText = currentChat.customer_name || "Customer";
+                document.getElementById('head-name').innerText = escapeHTML(currentChat.customer_name || "Customer");
             } else {
                 document.getElementById('head-name').innerText = "Store Vendor";
             }
@@ -289,20 +297,21 @@
             
             let imgHTML = "";
             if (msg.image_url) {
-                imgHTML = `<img src="${msg.image_url}" class="msg-img" onclick="window.open('${msg.image_url}', '_blank')">`;
+                imgHTML = `<img src="${escapeHTML(msg.image_url)}" class="msg-img" onclick="window.open('${escapeJS(msg.image_url)}', '_blank')">`;
             }
 
             const timeString = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const safeText = msg.text ? `<div>${escapeHTML(msg.text).replace(/\n/g, '<br>')}</div>` : '';
 
-            box.innerHTML += `
+            box.insertAdjacentHTML('beforeend', `
                 <div class="msg-row ${rowClass} ${autoClass}">
                     <div class="bubble">
                         ${imgHTML}
-                        ${msg.text ? `<div>${msg.text}</div>` : ''}
+                        ${safeText}
                     </div>
                     <div class="msg-time">${timeString}</div>
                 </div>
-            `;
+            `);
         }
 
         function scrollToBottom() {
@@ -317,7 +326,6 @@
                     renderMessage(payload.new);
                     scrollToBottom();
                     
-                    // 🚀 CLEAR UNREAD ON ARRIVAL: If they message you while you are staring at the chat, mark it read instantly!
                     let readUpdate = {};
                     if (currentUser.id === currentChat.vendor_id) readUpdate = { unread_by_vendor: false };
                     if (currentUser.id === currentChat.customer_id) readUpdate = { unread_by_customer: false };
@@ -377,7 +385,7 @@
                         customer_id: currentUser.id,
                         vendor_id: urlVendorId,
                         last_message_text: text || "Sent an image",
-                        unread_by_vendor: true // 🚀 SET UNREAD: Vendor gets the red dot for your first message!
+                        unread_by_vendor: true
                     }]).select().single();
                     
                     if(chatErr) throw chatErr;
@@ -400,20 +408,19 @@
                 else {
                     await insertMessage(text, imgUrl, false);
                     
-                    // 🚀 SET UNREAD: Tell the database to flag the other person with a red dot!
                     const amIVendor = currentUser.id === currentChat.vendor_id;
                     
                     await supabaseClient.from('chats').update({ 
                         last_message_text: text || "Sent an image", 
                         last_message_time: new Date(),
-                        unread_by_customer: amIVendor ? true : false, // If Vendor sends, Customer gets the dot
-                        unread_by_vendor: !amIVendor ? true : false   // If Customer sends, Vendor gets the dot
+                        unread_by_customer: amIVendor ? true : false, 
+                        unread_by_vendor: !amIVendor ? true : false   
                     }).eq('id', activeChatId);
 
                     if (amIVendor && currentChat.vendor_has_replied === false) {
                         await supabaseClient.from('chats').update({ vendor_has_replied: true }).eq('id', activeChatId);
                         
-                        const { data: custEmail, error: rpcErr } = await supabaseClient.rpc('get_customer_email', { uid: currentChat.customer_id });
+                        const { data: custEmail } = await supabaseClient.rpc('get_customer_email', { uid: currentChat.customer_id });
                         if(custEmail) {
                             emailjs.send(EMAILJS_SERVICE, EMAILJS_CUSTOMER_TEMPLATE, { to_email: custEmail }).catch(err => console.error("Customer Email failed:", err));
                         }
@@ -435,7 +442,7 @@
             const msgData = {
                 chat_id: activeChatId,
                 sender_id: currentUser.id,
-                text: text,
+                text: text, // Raw text saved to DB (Escaped when rendering!)
                 image_url: imgUrl,
                 is_auto_message: isAuto
             };

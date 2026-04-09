@@ -312,3 +312,7 @@ body.dark-mode .cat-icon-box {
 body.dark-mode .card .card-price {
     color: var(--blue-accent) !important; 
 }
+.view-all-btn-home { display: block; text-align: center; background: #f1f5f9; color: var(--text-main); font-weight: 800; font-size: 13px; padding: 12px; border-radius: 12px; text-decoration: none; margin-top: 15px; transition: 0.2s; }
+.view-all-btn-home:active { transform: scale(0.98); background: #e2e8f0; }
+body.dark-mode .view-all-btn-home { background: #1e293b !important; color: #f1f5f9 !important; }
+body.dark-mode .view-all-btn-home:active { background: #334155 !important; }

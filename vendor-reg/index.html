@@ -192,59 +192,45 @@
     <script src="../asset/script.js"></script>
 
     <script>
-        // 🚀 REMOVED THE DUPLICATE SUPABASE INITIALIZATION!
         const CLOUD_NAME = "dj6yl36fq"; 
-
         let currentUser = null;
+
+        // 🛡️ XSS Sanitizer Function
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
 
         document.addEventListener("DOMContentLoaded", async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
-            
-            // 1. Kick them out if not logged in at all
-            if (!session) { 
-                window.location.href = "../login/index.html"; 
-                return; 
-            }
-            
+            if (!session) { window.location.href = "../login/index.html"; return; }
             currentUser = session.user;
 
-            // 2. Check if they are ALREADY a vendor
             try {
                 const { data: existingVendor } = await supabaseClient
-                    .from('vendors')
-                    .select('id')
-                    .eq('profile_id', currentUser.id)
-                    .single();
+                    .from('vendors').select('id').eq('profile_id', currentUser.id).single();
 
                 if (existingVendor) {
-                    // They are already a vendor! Boot them to the dashboard.
                     window.location.href = "../add-product/index.html";
                     return;
                 }
-                
-                // If they are NOT a vendor, hide the loading screen and let them register
                 document.getElementById('auth-check-loader').style.display = 'none';
-
             } catch (error) {
-                // If an error happens (usually means no row found), just let them register
                 document.getElementById('auth-check-loader').style.display = 'none';
             }
         });
 
-        // Makes the upload boxes turn green when a file is selected
         function updateFileLabel(input, labelId, boxId) {
             if (input.files && input.files[0]) {
-                document.getElementById(labelId).innerText = "✅ " + input.files[0].name;
+                document.getElementById(labelId).innerText = "✅ " + escapeHTML(input.files[0].name);
                 document.getElementById(boxId).classList.add('has-file');
             }
         }
 
-        // Reusable Cloudinary Uploader
         async function uploadToCloudinary(file) {
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('upload_preset', 'unical_images'); // General image preset
-            
+            formData.append('upload_preset', 'unical_images'); 
             const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
             const data = await res.json();
             if (!res.ok) throw new Error(data.error.message);
@@ -254,8 +240,6 @@
         async function submitRegistration(e) {
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
-            
-            // Gather checkboxes
             const selectedCats = [];
             document.querySelectorAll('.cat-checkbox:checked').forEach(c => selectedCats.push(c.value));
             if(selectedCats.length === 0) return alert("Please select at least one category.");
@@ -263,7 +247,6 @@
             btn.disabled = true;
 
             try {
-                // 1. Upload Images
                 btn.innerText = "Uploading Receipt (1/3)...";
                 const receiptUrl = await uploadToCloudinary(document.getElementById('f-receipt').files[0]);
 
@@ -273,13 +256,11 @@
                 btn.innerText = "Uploading ID (3/3)...";
                 const idUrl = await uploadToCloudinary(document.getElementById('f-id').files[0]);
 
-                // 2. Determine Max Items based on the plan
                 const planStr = document.getElementById('v-plan').value;
-                let maxItems = 5; // Default for Verified
+                let maxItems = 5; 
                 if(planStr === "Influencer") maxItems = 10;
                 if(planStr === "Icon") maxItems = 15;
 
-                // 3. Save to Supabase (Pending Status)
                 btn.innerText = "Submitting Application...";
                 
                 const { error } = await supabaseClient.from('vendors').insert([{
@@ -295,12 +276,11 @@
                     receipt_url: receiptUrl,
                     student_id_url: idUrl,
                     max_items: maxItems,
-                    is_active: false, // PENDING APPROVAL!
+                    is_active: false, 
                     is_suspended: false
                 }]);
 
                 if (error) throw error;
-
                 alert("Application Submitted! You will be redirected to the dashboard to wait for approval.");
                 window.location.href = "../add-product/index.html";
 

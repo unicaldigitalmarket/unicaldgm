@@ -215,12 +215,21 @@ body.dark-mode .menu-btn .menu-text[style*="color: #64748b"] { color: #ef4444 !i
    <script src="../asset/script.js"></script>
 
     <script>
-        // 🚀 We removed the Supabase constants here because script.js already loaded them!
-        
         const CLOUD_NAME = "dj6yl36fq"; 
         const UPLOAD_PRESET = "unical_avatars"; 
         
         let currentUser = null;
+
+        // 🛡️ XSS Sanitizer Function
+        function escapeHTML(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
 
         document.addEventListener("DOMContentLoaded", async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
@@ -231,7 +240,7 @@ body.dark-mode .menu-btn .menu-text[style*="color: #64748b"] { color: #ef4444 !i
             }
 
             currentUser = session.user;
-            document.getElementById('user-email').innerText = currentUser.email;
+            document.getElementById('user-email').innerText = currentUser.email; // innerText is inherently safe
 
             const { data: profileData } = await supabaseClient
                 .from('profiles')
@@ -240,13 +249,15 @@ body.dark-mode .menu-btn .menu-text[style*="color: #64748b"] { color: #ef4444 !i
                 .single();
 
             if (profileData) {
-                document.getElementById('user-name').innerText = profileData.full_name || "UNICAL Student";
+                // Sanitized before setting
+                document.getElementById('user-name').innerText = escapeHTML(profileData.full_name) || "UNICAL Student";
                 if (profileData.avatar_url) {
+                    // Safe to assign to src
                     document.getElementById('user-img').src = profileData.avatar_url;
                 }
             }
 
-            const { data: vendorData, error: vendorError } = await supabaseClient
+            const { data: vendorData } = await supabaseClient
                 .from('vendors')
                 .select('id')
                 .eq('profile_id', currentUser.id)
@@ -304,7 +315,6 @@ body.dark-mode .menu-btn .menu-text[style*="color: #64748b"] { color: #ef4444 !i
 
             try {
                 const compressedFile = await compressImage(file);
-
                 const formData = new FormData();
                 formData.append('file', compressedFile);
                 formData.append('upload_preset', UPLOAD_PRESET); 
@@ -331,8 +341,6 @@ body.dark-mode .menu-btn .menu-text[style*="color: #64748b"] { color: #ef4444 !i
 
           } catch (error) {
                 console.error("Full upload error:", error);
-                
-                // 🚀 FIX: This will now display the EXACT reason the upload failed!
                 let errorMessage = error.message || error.details || "Unknown database error";
                 alert("Upload Failed! Reason: " + errorMessage);
                 
