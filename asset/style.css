@@ -1,6 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
 
 :root {
     --brand-color:#FF7A00; /* Your new Golden Yellow */
@@ -316,3 +317,17 @@ body.dark-mode .card .card-price {
 .view-all-btn-home:active { transform: scale(0.98); background: #e2e8f0; }
 body.dark-mode .view-all-btn-home { background: #1e293b !important; color: #f1f5f9 !important; }
 body.dark-mode .view-all-btn-home:active { background: #334155 !important; }
+
+/* 🚀 AD POPUP DARK MODE FIXES */
+@keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+body.dark-mode .ad-modal-content {
+    background: #0f172a !important;
+    border: 1px solid #334155 !important;
+}
+body.dark-mode #ad-title {
+    color: #f1f5f9 !important;
+}
+body.dark-mode #ad-content {
+    color: #cbd5e1 !important;
+}

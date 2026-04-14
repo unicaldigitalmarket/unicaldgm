@@ -144,59 +144,58 @@
 
     <script src="../asset/script.js"></script>
 
-    <script>
+  <script>
         let allProducts = [];
         let currentDisplayList = [];
         let itemsLoaded = 0;
         const ITEMS_PER_PAGE = 50;
         let isFetchingBatch = false;
-        
         let currentCategory = 'All'; 
-
-        // 🛡️ XSS Sanitizers
-        function escapeHTML(str) {
-            if (!str) return '';
-            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-        }
-        function escapeJS(str) {
-            if (!str) return '';
-            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
-        }
 
         document.addEventListener("DOMContentLoaded", () => {
             fetchMarketItems();
         });
 
-        async function requireLogin(targetUrl) {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) window.location.href = targetUrl;
-            else window.location.href = "../login/index.html";
-        }
-
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-
         async function fetchMarketItems() {
             document.getElementById('skeleton-loader').style.display = 'grid';
             
+            const urlParams = new URLSearchParams(window.location.search);
+            const passedCat = urlParams.get('cat');
+
+            const cachedProducts = sessionStorage.getItem('items_page_data');
+            
+            // 🧠 ONLY use cache if we arrived here via the "Back" button (isBackNavigation is from script.js)
+            if (typeof isBackNavigation !== 'undefined' && isBackNavigation && cachedProducts && !passedCat) {
+                allProducts = JSON.parse(cachedProducts);
+                currentDisplayList = [...allProducts];
+                
+                const savedCount = parseInt(sessionStorage.getItem('items_loaded_count') || ITEMS_PER_PAGE);
+                
+                document.getElementById('skeleton-loader').style.display = 'none';
+                renderHTMLBatch(0, savedCount);
+                itemsLoaded = savedCount;
+                
+                observer.observe(document.getElementById('scroll-sentinel'));
+                return;
+            }
+
             try {
                 const { data, error } = await supabaseClient
                     .from('products')
-                    .select('id, name, price, category, image_urls, status')
-                    .eq('status', 'Active');
+                    .select('id, name, price, category, image_urls, status, is_pinned')
+                    .eq('status', 'Active')
+                    .order('is_pinned', { ascending: false });
 
                 if (error) throw error;
 
-                allProducts = shuffleArray(data);
+                // 🚀 PIN LOGIC: Pinned items at top, unpinned items shuffled below (shuffleArray is from script.js)
+                const pinnedItems = data.filter(p => p.is_pinned === true);
+                const unpinnedItems = shuffleArray(data.filter(p => p.is_pinned !== true));
+
+                allProducts = [...pinnedItems, ...unpinnedItems];
                 currentDisplayList = [...allProducts]; 
                 
-                const urlParams = new URLSearchParams(window.location.search);
-                const passedCat = urlParams.get('cat');
+                sessionStorage.setItem('items_page_data', JSON.stringify(allProducts));
                 
                 if (passedCat) {
                     const pill = Array.from(document.querySelectorAll('.filter-pill')).find(p => p.innerText.includes(passedCat) || p.getAttribute('onclick').includes(`'${passedCat}'`));
@@ -208,9 +207,35 @@
                 observer.observe(document.getElementById('scroll-sentinel'));
 
             } catch (error) {
+                console.error(error);
                 document.getElementById('skeleton-loader').style.display = 'none';
                 document.getElementById('main-items-grid').innerHTML = `<p style="grid-column:span 2; text-align:center; color:red; padding: 40px;">Failed to load items.</p>`;
             }
+        }
+
+        function renderHTMLBatch(startIndex, endIndex) {
+            const grid = document.getElementById('main-items-grid');
+            const batch = currentDisplayList.slice(startIndex, endIndex);
+
+            batch.forEach(p => {
+                const imgUrl = escapeHTML((p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/300x300?text=No+Image');
+                const multiImageBadge = (p.image_urls && p.image_urls.length > 1) ? `<div class="multi-img-badge"><i class="far fa-images"></i> ${p.image_urls.length}</div>` : '';
+                const fPrice = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(p.price);
+                
+                // 🚀 The Featured Badge
+                const pinBadge = p.is_pinned ? `<div style="position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.7); color: white; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; backdrop-filter: blur(4px); z-index: 10;">Featured</div>` : '';
+
+                grid.insertAdjacentHTML('beforeend', `
+                    <div class="product-card" onclick="window.location.href='../product/index.html?id=${escapeJS(p.id)}'" style="position: relative;">
+                        ${pinBadge}
+                        <img src="${imgUrl}" class="product-img" onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
+                        ${multiImageBadge}
+                        <div class="product-price">${fPrice}</div>
+                        <div class="product-title">${escapeHTML(p.name)}</div>
+                        <div class="product-location"><i class="fas fa-tag" style="color: var(--brand-color);"></i> ${escapeHTML(p.category)}</div>
+                    </div>
+                `);
+            });
         }
 
         function loadNextBatch() {
@@ -239,26 +264,12 @@
 
             setTimeout(() => {
                 skeleton.style.display = 'none';
+                
+                renderHTMLBatch(itemsLoaded, itemsLoaded + ITEMS_PER_PAGE);
 
-                const nextBatch = currentDisplayList.slice(itemsLoaded, itemsLoaded + ITEMS_PER_PAGE);
-
-                nextBatch.forEach(p => {
-                    const imgUrl = (p.image_urls && p.image_urls.length > 0) ? escapeHTML(p.image_urls[0]) : 'https://via.placeholder.com/300x300?text=No+Image';
-                    const multiImageBadge = (p.image_urls && p.image_urls.length > 1) ? `<div class="multi-img-badge"><i class="far fa-images"></i> ${p.image_urls.length}</div>` : '';
-                    const fPrice = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(p.price);
-
-                    grid.insertAdjacentHTML('beforeend', `
-                        <div class="product-card" onclick="window.location.href='../product/index.html?id=${escapeJS(p.id)}'">
-                            <img src="${imgUrl}" class="product-img" onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
-                            ${multiImageBadge}
-                            <div class="product-price">${fPrice}</div>
-                            <div class="product-title">${escapeHTML(p.name)}</div>
-                            <div class="product-location"><i class="fas fa-tag"></i> ${escapeHTML(p.category)}</div>
-                        </div>
-                    `);
-                });
-
-                itemsLoaded += nextBatch.length;
+                itemsLoaded += ITEMS_PER_PAGE;
+                sessionStorage.setItem('items_loaded_count', itemsLoaded); 
+                
                 isFetchingBatch = false;
 
                 if (itemsLoaded >= currentDisplayList.length) {
@@ -297,12 +308,17 @@
 
             const query = document.getElementById('item-search').value.toLowerCase().trim();
             
-            currentDisplayList = allProducts.filter(p => {
+            const filteredList = allProducts.filter(p => {
                 const matchesSearchText = (p.name || '').toLowerCase().includes(query) || (p.category || '').toLowerCase().includes(query);
                 const matchesCategory = (currentCategory === 'All') || (p.category === currentCategory);
-                
                 return matchesSearchText && matchesCategory;
             });
+
+            // Keep pinned items at the top of search results
+            const pinnedFiltered = filteredList.filter(p => p.is_pinned === true);
+            const unpinnedFiltered = filteredList.filter(p => p.is_pinned !== true);
+            
+            currentDisplayList = [...pinnedFiltered, ...unpinnedFiltered];
             
             resetAndReload();
             return false;

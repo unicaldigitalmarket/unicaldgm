@@ -114,6 +114,33 @@
             </div>
         </div>
 
+
+        <h4 class="section-title">Ads & Highlights</h4>
+        <div class="dashboard-grid" style="margin-bottom: 30px;">
+
+            <div class="admin-card card-orange">
+                <i class="fas fa-award card-icon" style="color: #f97316;"></i>
+                <div class="card-title">Featured Vendors</div>
+                <div class="card-desc">Pin specific vendors to the top of the "Verified Sellers" page.</div>
+                <button class="open-modal-btn" style="background: #f97316;" onclick="openModal('pinVendorModal', () => { document.getElementById('pin-vendor-results').innerHTML=''; document.getElementById('pin-vendor-search').value=''; })">Manage Pinned Vendors</button>
+            </div>
+
+            <div class="admin-card card-blue">
+                <i class="fas fa-thumbtack card-icon" style="color: #3b82f6;"></i>
+                <div class="card-title">Featured Items</div>
+                <div class="card-desc">Pin specific vendor items to the top of the homepage and category lists.</div>
+                <button class="open-modal-btn" style="background: #3b82f6;" onclick="openModal('featuredModal', () => { document.getElementById('featured-results').innerHTML=''; document.getElementById('featured-search').value=''; })">Manage Pinned Items</button>
+            </div>
+
+            <div class="admin-card" style="border-left: 5px solid #14b8a6;">
+                <i class="fas fa-ad card-icon" style="color: #14b8a6;"></i>
+                <div class="card-title">Ad Popups</div>
+                <div class="card-desc">Create and manage popup ads that display when users visit the homepage.</div>
+                <button class="open-modal-btn" style="background: #14b8a6;" onclick="openModal('adsModal', loadAdminAds)">Manage Ads</button>
+            </div>
+
+        </div>
+
         <h4 class="section-title">Moderation & Content</h4>
         <div class="dashboard-grid">
 
@@ -237,6 +264,63 @@
                 
                 <h3 style="margin-bottom: 15px; color: #334155;">Past Notifications</h3>
                 <div id="admin-notifs-list"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <div id="featuredModal" class="modal-overlay">
+        <div class="modal-body">
+            <div class="modal-header"><h2>📌 Featured Items</h2><button class="close-btn" onclick="closeModal('featuredModal')">&times;</button></div>
+            <div class="modal-content-scroll">
+                <div class="search-group">
+                    <input type="text" id="featured-search" class="admin-input" placeholder="Search Vendor Name or Code...">
+                    <button class="action-btn btn-primary" onclick="searchVendorItems()">Search</button>
+                </div>
+                <div id="featured-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pinVendorModal" class="modal-overlay">
+        <div class="modal-body">
+            <div class="modal-header"><h2>🏆 Featured Vendors</h2><button class="close-btn" onclick="closeModal('pinVendorModal')">&times;</button></div>
+            <div class="modal-content-scroll">
+                <div class="search-group">
+                    <input type="text" id="pin-vendor-search" class="admin-input" placeholder="Search Vendor Name or Code...">
+                    <button class="action-btn btn-primary" onclick="searchPinVendors()">Search</button>
+                </div>
+                <div id="pin-vendor-results"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="adsModal" class="modal-overlay">
+        <div class="modal-body">
+            <div class="modal-header"><h2>📢 Ad Popups Manager</h2><button class="close-btn" onclick="closeModal('adsModal')">&times;</button></div>
+            <div class="modal-content-scroll">
+                <div style="background:white; padding:20px; border-radius:12px; margin-bottom:20px; border: 1px solid #e2e8f0;">
+                    <h3 style="margin-bottom: 15px; color: #0f172a;">Create New Ad Popup</h3>
+                    <input type="text" id="adTitle" class="admin-input" placeholder="Ad Title (e.g., Flash Sale!)">
+                    <textarea id="adContent" class="admin-input" placeholder="Ad text/content..." style="height: 80px; resize: none;"></textarea>
+                    
+                    <div class="vm-grid" style="margin-bottom: 0;">
+                        <div>
+                            <label class="vm-label">Button Text</label>
+                            <input type="text" id="adBtnText" class="admin-input" placeholder="e.g. Learn More">
+                        </div>
+                        <div>
+                            <label class="vm-label">Button Link</label>
+                            <input type="url" id="adBtnLink" class="admin-input" placeholder="https://...">
+                        </div>
+                    </div>
+                    
+                    <label class="vm-label" style="margin-top: 10px;">Ad Image (Optional)</label>
+                    <input type="file" id="adImage" class="admin-input" accept="image/*" style="padding-top: 9px;">
+                    <button class="action-btn btn-primary" id="saveAdBtn" style="width:100%; padding:14px; background: #14b8a6; color: white;" onclick="saveAd()">Publish Ad</button>
+                </div>
+                <h3 style="margin-bottom: 15px; color: #334155;">Active & Past Ads</h3>
+                <div id="modal-ads-list"></div>
             </div>
         </div>
     </div>
@@ -673,6 +757,221 @@
                 loadAdminNotifications();
             }
         };
+
+        // ===============================================
+        // 🚀 FEATURED ITEMS MODULE
+        // ===============================================
+        window.searchVendorItems = async function() {
+            const query = document.getElementById('featured-search').value.toLowerCase().trim();
+            const results = document.getElementById('featured-results');
+            if(!query) return;
+
+            results.innerHTML = '<p style="text-align:center; padding: 20px;"><i class="fas fa-spinner fa-spin" style="color: #FF7A00;"></i> Searching vendors...</p>';
+            
+            try {
+                const { data: vendors } = await supabaseClient.from('vendors').select('id, business_name, vendor_code').or(`business_name.ilike.%${query}%,vendor_code.ilike.%${query}%`).limit(1);
+
+                if (!vendors || vendors.length === 0) {
+                    results.innerHTML = "<p style='text-align:center; color:#ef4444; padding: 20px; background: #fef2f2; border-radius: 12px;'>No vendor found matching that search.</p>";
+                    return;
+                }
+
+                const vendor = vendors[0];
+                const { data: products } = await supabaseClient.from('products').select('*').eq('vendor_id', vendor.id).order('created_at', { ascending: false });
+
+                if (!products || products.length === 0) {
+                    results.innerHTML = `<h3 style="margin-bottom: 15px; font-size: 16px;">Items for ${vendor.business_name}</h3><p style='text-align:center; color:#94a3b8; padding: 20px;'>This vendor has no items posted.</p>`;
+                    return;
+                }
+
+                results.innerHTML = `<h3 style="margin-bottom: 15px; font-size: 16px;">Items for ${vendor.business_name}</h3>`;
+                
+                products.forEach(p => {
+                    const isPinned = p.is_pinned === true;
+                    const imgUrl = (p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/100';
+                    const btnText = isPinned ? 'Unpin Item' : 'Pin to Top';
+                    const btnClass = isPinned ? 'btn-delete' : 'btn-approve';
+                    const badge = isPinned ? '<span style="background:#eff6ff; color:#3b82f6; padding:3px 8px; border-radius:8px; font-size:10px; font-weight:bold; margin-left: 5px;">PINNED</span>' : '';
+
+                    results.innerHTML += `
+                        <div class="list-item" style="border-left: 4px solid ${isPinned ? '#3b82f6' : '#e2e8f0'};">
+                            <div style="display:flex; gap:15px; align-items: center;">
+                                <img src="${imgUrl}" style="width:60px;height:60px;object-fit:cover;border-radius:10px; border: 1px solid #cbd5e1;">
+                                <div style="flex:1;">
+                                    <div class="item-title" style="margin-bottom: 2px;">${p.name} ${badge}</div>
+                                    <div class="item-meta" style="margin-bottom: 0;">${p.category} • ₦${p.price}</div>
+                                </div>
+                            </div>
+                            <div class="action-row">
+                                <button class="action-btn ${btnClass}" onclick="togglePin('${p.id}', ${!isPinned})">${btnText}</button>
+                            </div>
+                        </div>`;
+                });
+            } catch(e) { results.innerHTML = "<p style='color:red;'>Search failed. Check console.</p>"; }
+        }
+
+        window.togglePin = async function(productId, newState) {
+            try {
+                const { error } = await supabaseClient.from('products').update({ is_pinned: newState }).eq('id', productId);
+                if (error) throw error;
+                searchVendorItems(); 
+            } catch(e) { 
+                alert("Failed to pin item: " + e.message); 
+            }
+        }
+
+        // ===============================================
+        // 🚀 FEATURED VENDORS MODULE
+        // ===============================================
+        window.searchPinVendors = async function() {
+            const query = document.getElementById('pin-vendor-search').value.toLowerCase().trim();
+            const results = document.getElementById('pin-vendor-results');
+            if(!query) return;
+
+            results.innerHTML = '<p style="text-align:center; padding: 20px;"><i class="fas fa-spinner fa-spin" style="color: #FF7A00;"></i> Searching vendors...</p>';
+            
+            try {
+                const { data: vendors, error } = await supabaseClient.from('vendors')
+                    .select('id, business_name, vendor_code, logo_url, is_pinned')
+                    .or(`business_name.ilike.%${query}%,vendor_code.ilike.%${query}%`);
+
+                if (error) throw error;
+                if (!vendors || vendors.length === 0) {
+                    results.innerHTML = "<p style='text-align:center; color:#ef4444; padding: 20px; background: #fef2f2; border-radius: 12px;'>No vendor found matching that search.</p>";
+                    return;
+                }
+
+                results.innerHTML = "";
+                vendors.forEach(v => {
+                    const isPinned = v.is_pinned === true;
+                    const imgUrl = v.logo_url || 'https://via.placeholder.com/100';
+                    const btnText = isPinned ? 'Unpin Vendor' : 'Pin Vendor';
+                    const btnClass = isPinned ? 'btn-delete' : 'btn-approve';
+                    const badge = isPinned ? '<span style="background:#fff7ed; color:#ea580c; padding:3px 8px; border-radius:8px; font-size:10px; font-weight:bold; margin-left: 5px;">PINNED</span>' : '';
+
+                    results.innerHTML += `
+                        <div class="list-item" style="border-left: 4px solid ${isPinned ? '#ea580c' : '#e2e8f0'};">
+                            <div style="display:flex; gap:15px; align-items: center;">
+                                <img src="${imgUrl}" style="width:60px;height:60px;object-fit:cover;border-radius:10px; border: 1px solid #cbd5e1;">
+                                <div style="flex:1;">
+                                    <div class="item-title" style="margin-bottom: 2px;">${v.business_name} ${badge}</div>
+                                    <div class="item-meta" style="margin-bottom: 0;">Code: ${v.vendor_code || 'N/A'}</div>
+                                </div>
+                            </div>
+                            <div class="action-row">
+                                <button class="action-btn ${btnClass}" onclick="toggleVendorPin('${v.id}', ${!isPinned})">${btnText}</button>
+                            </div>
+                        </div>`;
+                });
+            } catch(e) { 
+                results.innerHTML = "<p style='color:red;'>Search failed. Check console.</p>"; 
+            }
+        }
+
+        window.toggleVendorPin = async function(vendorId, newState) {
+            try {
+                const { error } = await supabaseClient.from('vendors').update({ is_pinned: newState }).eq('id', vendorId);
+                if (error) throw error;
+                searchPinVendors(); 
+            } catch(e) { 
+                alert("Failed to pin/unpin vendor: " + e.message); 
+            }
+        }
+
+        // ===============================================
+        // 🚀 AD POPUPS MODULE
+        // ===============================================
+        window.loadAdminAds = async function() {
+            const list = document.getElementById('modal-ads-list');
+            list.innerHTML = '<p style="text-align:center; padding: 20px;">Loading ads...</p>';
+            try {
+                const { data } = await supabaseClient.from('ads').select('*').order('created_at', { ascending: false });
+                if (!data || data.length === 0) { list.innerHTML = "<p style='text-align:center; padding: 20px; color:#64748b;'>No ads created yet.</p>"; return; }
+                
+                list.innerHTML = "";
+                data.forEach(a => {
+                    const isActive = a.is_active;
+                    const statusBadge = isActive ? `<span style="background:#ecfdf5; color:#10b981; padding:3px 8px; border-radius:8px; font-size:10px; font-weight:bold;">ACTIVE</span>` : `<span style="background:#fef2f2; color:#ef4444; padding:3px 8px; border-radius:8px; font-size:10px; font-weight:bold;">INACTIVE</span>`;
+                    
+                    list.innerHTML += `
+                        <div class="list-item" style="border-left: 4px solid ${isActive ? '#14b8a6' : '#ef4444'};">
+                            <div style="display:flex; gap:15px;">
+                                ${a.image_url ? `<img src="${a.image_url}" style="width:60px;height:60px;object-fit:cover;border-radius:10px; border: 1px solid #cbd5e1;">` : ''}
+                                <div style="flex:1;">
+                                    <div class="item-title" style="margin-bottom: 2px;">${a.title} ${statusBadge}</div>
+                                    <div class="item-meta" style="margin-bottom: 5px;">Link: ${a.button_link || 'None'}</div>
+                                </div>
+                            </div>
+                            <div class="action-row">
+                                <button class="action-btn ${isActive ? 'btn-suspend' : 'btn-approve'}" onclick="toggleAdStatus('${a.id}', ${!isActive})">
+                                    ${isActive ? 'Deactivate' : 'Activate'}
+                                </button>
+                                <button class="action-btn btn-delete" onclick="deleteAd('${a.id}')">Delete</button>
+                            </div>
+                        </div>`;
+                });
+            } catch (e) { console.error(e); }
+        }
+
+        window.saveAd = async function() {
+            const btn = document.getElementById('saveAdBtn');
+            const title = document.getElementById('adTitle').value.trim();
+            const content = document.getElementById('adContent').value.trim();
+            const btnText = document.getElementById('adBtnText').value.trim() || 'Learn More';
+            const btnLink = document.getElementById('adBtnLink').value.trim();
+            const fileInput = document.getElementById('adImage');
+            const file = fileInput.files[0];
+
+            if(!title || !content) return alert("Title and Content are required.");
+
+            btn.innerHTML = 'Saving...';
+            btn.disabled = true;
+
+            try {
+                let imgUrl = null;
+                if(file) {
+                    btn.innerHTML = 'Uploading Image...';
+                    // Reusing your existing blog image uploader logic
+                    imgUrl = await uploadBlogImage(file); 
+                }
+                
+                const payload = { title, content, button_text: btnText, button_link: btnLink, is_active: true };
+                if(imgUrl) payload.image_url = imgUrl;
+
+                const { error } = await supabaseClient.from('ads').insert([payload]);
+                if(error) throw error;
+                
+                alert("Ad Published Successfully!");
+                
+                document.getElementById('adTitle').value = "";
+                document.getElementById('adContent').value = "";
+                document.getElementById('adBtnText').value = "";
+                document.getElementById('adBtnLink').value = "";
+                document.getElementById('adImage').value = "";
+                
+                loadAdminAds();
+            } catch(e) {
+                alert("Error saving ad: " + e.message);
+            } finally {
+                btn.innerHTML = 'Publish Ad';
+                btn.disabled = false;
+            }
+        }
+
+        window.toggleAdStatus = async function(id, newState) {
+            try {
+                await supabaseClient.from('ads').update({ is_active: newState }).eq('id', id);
+                loadAdminAds();
+            } catch(e) { alert("Failed to update status"); }
+        }
+
+        window.deleteAd = async function(id) {
+            if(!confirm("Delete this ad permanently?")) return;
+            try {
+                await supabaseClient.from('ads').delete().eq('id', id);
+                loadAdminAds();
+            } catch(e) { alert("Failed to delete ad"); }
+        }
     </script>
 </body>
 </html>
