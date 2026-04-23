@@ -10,60 +10,103 @@
     <link rel="stylesheet" href="../asset/style.css">
 
     <style>
-        :root { --brand-color: #FF7A00; }
+        :root { 
+            --brand-color: #FF7A00; /* UNICAL Orange */
+        }
+        
+        /* 🚀 Sticky Header Background */
+        .blog-header-wrapper {
+            position: sticky;
+            top: 0;
+            background: #f8fafc;
+            z-index: 100;
+            padding: 15px 20px 5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border-bottom: 1px solid #e2e8f0;
+        }
 
         .header-top-flex { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
         .page-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; }
         
-        .search-container { background: #f1f5f9; border-radius: 12px; display: flex; align-items: center; padding: 12px 15px; margin-bottom: 15px;}
+        .search-container { background: white; border-radius: 12px; display: flex; align-items: center; padding: 14px 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 15px;}
         .search-container input { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; color: var(--text-main); }
         
+        /* Category Chips */
         .chip-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
         .chip-scroll::-webkit-scrollbar { display: none; }
         .chip { padding: 8px 16px; background: white; border: 1px solid #e2e8f0; border-radius: 20px; font-size: 12px; font-weight: 600; color: var(--text-muted); white-space: nowrap; cursor: pointer; transition: 0.2s; }
-        .chip.active { background: var(--brand-color); color: white; border-color: var(--brand-color); box-shadow: 0 4px 10px rgba(255, 122, 0, 0.2); }
+        .chip.active { background: var(--brand-color); color: white; border-color: var(--brand-color); }
 
-        .news-card { background: white; border-radius: 20px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: 1px solid #f1f5f9; transition: transform 0.2s; cursor: pointer; display: flex; flex-direction: column; }
+        /* Cool Horizontal News Card Layout (AFIT Style) */
+        .news-card { 
+            background: white; border-radius: 16px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); 
+            border: 1px solid #f1f5f9; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; 
+            display: flex; gap: 15px; padding: 12px; align-items: center;
+        }
         .news-card:active { transform: scale(0.98); }
         
-        .news-cover { width: 100%; height: 180px; object-fit: cover; display: block; background: #e2e8f0; }
-        .news-content { padding: 20px; }
+        .news-cover { 
+            width: 95px; height: 95px; border-radius: 12px; object-fit: cover; 
+            background: #f8fafc; flex-shrink: 0; border: 1px solid #f1f5f9;
+        }
         
-        .blog-meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; }
-        .cat-badge { color: var(--brand-color); background: rgba(255, 122, 0, 0.1); padding: 4px 10px; border-radius: 8px; }
+        .news-content { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; }
         
-        .blog-title { font-size: 18px; font-weight: 900; color: var(--text-main); margin: 0 0 8px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .blog-snippet { font-size: 13px; color: #64748b; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 15px; }
+        .blog-meta { display: flex; justify-content: space-between; align-items: center; font-size: 10px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; margin-bottom: 6px; }
+        .cat-badge { color: var(--brand-color); background: rgba(255, 122, 0, 0.1); padding: 4px 8px; border-radius: 6px; letter-spacing: 0.5px;}
         
-        .interaction-row { display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 1px solid #f1f5f9; }
-        .stats-group { display: flex; gap: 15px; }
-        .stat-item { display: flex; align-items: center; gap: 5px; color: var(--text-muted); font-size: 12px; font-weight: 700; }
-        .stat-item i { font-size: 14px; color: #94a3b8; }
-        .read-btn { color: var(--brand-color); font-weight: 800; font-size: 13px; display: flex; align-items: center; gap: 5px; }
+        .blog-title { font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 4px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .blog-snippet { font-size: 12px; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 8px;}
+        
+        /* Interaction Row */
+        .interaction-row { display: flex; justify-content: space-between; align-items: center; }
+        .stats-group { display: flex; gap: 12px; }
+        .stat-item { display: flex; align-items: center; gap: 4px; color: #94a3b8; font-size: 11px; font-weight: 700; }
+        .stat-item i { font-size: 12px; transition: 0.2s; }
+        .liked { color: #ef4444 !important; }
+        
+        .share-btn { 
+            color: var(--text-muted); background: #f1f5f9; width: 28px; height: 28px; border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 12px; transition: 0.2s;
+        }
+        .share-btn:active { transform: scale(0.9); background: #e2e8f0; }
 
-        .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        /* 🚀 SKELETON LOADER STYLES */
+        .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .sk-news-cover { width: 95px; height: 95px; border-radius: 12px; flex-shrink: 0; }
 
-        /* 🌙 DARK MODE FIXES FOR CAMPUS NEWS */
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES FOR CAMPUS NEWS        */
+        /* ========================================= */
         body.dark-mode { background-color: #020617 !important; }
         body.dark-mode .app-container { background: #0f172a !important; }
         body.dark-mode .page-title, body.dark-mode .back-btn { color: #f1f5f9 !important; }
+        
+        /* 🚀 FIX: Dark Mode Sticky Header */
+        body.dark-mode .blog-header-wrapper { background: #0f172a !important; border-bottom-color: #334155 !important; }
+        
         body.dark-mode .search-container { background: #1e293b !important; border: 1px solid #334155 !important; box-shadow: none !important; }
         body.dark-mode .search-container input { color: #f1f5f9 !important; }
         body.dark-mode .chip { background: #1e293b !important; border-color: #334155 !important; color: #94a3b8 !important; }
         body.dark-mode .chip.active { background: var(--brand-color) !important; color: white !important; border-color: var(--brand-color) !important; }
+        
         body.dark-mode .news-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .news-cover { border-color: #334155 !important; background: #0f172a !important;}
         body.dark-mode .blog-title { color: #f1f5f9 !important; }
         body.dark-mode .blog-snippet { color: #cbd5e1 !important; }
-        body.dark-mode .interaction-row { border-top-color: #334155 !important; }
-        body.dark-mode .stat-item { color: #94a3b8 !important; }
+        body.dark-mode .cat-badge { background: rgba(255, 122, 0, 0.15) !important; } /* Adapted to Unical Orange */
+        body.dark-mode .share-btn { background: #334155 !important; color: #cbd5e1 !important; }
+        body.dark-mode .share-btn:active { background: #475569 !important; }
+        
+        body.dark-mode .sk-shimmer { background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%) !important; background-size: 200% 100% !important; }
     </style>
 </head>
 <body>
 
     <div class="app-container">
         
-        <div class="header" style="background: transparent; border: none; padding-bottom: 5px;">
+        <div class="blog-header-wrapper">
             <div class="header-top-flex">
                 <a href="../index.html" class="back-btn" style="color: var(--text-main); font-size: 20px;"><i class="fas fa-arrow-left"></i></a>
                 <h1 class="page-title">Campus News</h1>
@@ -76,7 +119,7 @@
 
         <div class="content-area" style="padding: 0 20px 90px;">
             
-            <div class="chip-scroll">
+            <div class="chip-scroll" style="margin-top: 15px;">
                 <div class="chip active" onclick="setCategory('All', this)">All News</div>
                 <div class="chip" onclick="setCategory('News', this)">News</div>
                 <div class="chip" onclick="setCategory('Academics', this)">Academics</div>
@@ -84,15 +127,48 @@
                 <div class="chip" onclick="setCategory('Events', this)">Events</div>
             </div>
 
-            <div id="blog-list" style="margin-top: 15px;">
-                <div class="news-card"><div class="sk-shimmer" style="height: 180px;"></div><div class="news-content"><div class="sk-shimmer" style="height: 20px; width: 80%; margin-bottom: 10px;"></div><div class="sk-shimmer" style="height: 15px; width: 100%; margin-bottom: 5px;"></div><div class="sk-shimmer" style="height: 15px; width: 60%;"></div></div></div>
-            </div>
+            <div id="blog-list" style="margin-top: 20px;">
+                <div class="news-card" style="cursor: default;">
+                    <div class="sk-shimmer sk-news-cover"></div>
+                    <div class="news-content" style="padding: 0;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 8px;">
+                            <div class="sk-shimmer" style="width: 45px; height: 16px;"></div>
+                            <div class="sk-shimmer" style="width: 60px; height: 12px;"></div>
+                        </div>
+                        <div class="sk-shimmer" style="width: 100%; height: 16px; margin-bottom: 6px;"></div>
+                        <div class="sk-shimmer" style="width: 75%; height: 16px; margin-bottom: 12px;"></div>
+                        <div class="sk-shimmer" style="width: 100%; height: 12px; margin-bottom: 15px;"></div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div class="sk-shimmer" style="width: 110px; height: 14px;"></div>
+                            <div class="sk-shimmer" style="width: 28px; height: 28px; border-radius: 50%;"></div>
+                        </div>
+                    </div>
+                </div>
 
+                <div class="news-card" style="cursor: default;">
+                    <div class="sk-shimmer sk-news-cover"></div>
+                    <div class="news-content" style="padding: 0;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 8px;">
+                            <div class="sk-shimmer" style="width: 55px; height: 16px;"></div>
+                            <div class="sk-shimmer" style="width: 50px; height: 12px;"></div>
+                        </div>
+                        <div class="sk-shimmer" style="width: 90%; height: 16px; margin-bottom: 6px;"></div>
+                        <div class="sk-shimmer" style="width: 60%; height: 16px; margin-bottom: 12px;"></div>
+                        <div class="sk-shimmer" style="width: 95%; height: 12px; margin-bottom: 15px;"></div>
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div class="sk-shimmer" style="width: 90px; height: 14px;"></div>
+                            <div class="sk-shimmer" style="width: 28px; height: 28px; border-radius: 50%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="bottom-nav">
             <a href="../index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
-            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')"><i class="fas fa-comment-dots"></i><span class="red-dot msg-dot"></span><span>Messages</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')">
+                <i class="fas fa-comment-dots"></i><span class="red-dot msg-dot"></span><span>Messages</span>
+            </a>
             <div class="nav-fab" onclick="requireLogin('../add-product/index.html')"><i class="fas fa-plus"></i></div>
             <a href="#" class="nav-item" onclick="requireLogin('../saved/index.html')"><i class="fas fa-heart"></i><span>Saved</span></a>
             <a href="#" class="nav-item" onclick="requireLogin('../account/index.html')"><i class="fas fa-user"></i><span>Account</span></a>
@@ -103,23 +179,32 @@
     <script src="../asset/script.js"></script>
 
     <script>
+        let currentUser = null;
         let allBlogs = [];
         let activeCategory = 'All';
 
-        // 🛡️ XSS Sanitizer Function
+        // 🛡️ XSS Sanitizers
         function escapeHTML(str) {
-            if (str === null || str === undefined) return '';
-            return String(str)
-                .replace(/&/g, '&amp;')
-                .replace(/</g, '&lt;')
-                .replace(/>/g, '&gt;')
-                .replace(/"/g, '&quot;')
-                .replace(/'/g, '&#039;');
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+        function escapeJS(str) {
+            if (!str) return '';
+            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
         }
 
-        document.addEventListener("DOMContentLoaded", () => {
+        document.addEventListener("DOMContentLoaded", async () => {
+            // Fetch User for Likes tracking
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) currentUser = session.user;
+            
             fetchBlogs();
         });
+
+        async function requireLogin(targetUrl) {
+            if (currentUser) window.location.href = targetUrl;
+            else window.location.href = "../login/index.html";
+        }
 
         async function fetchBlogs() {
             try {
@@ -133,6 +218,7 @@
                 renderBlogs();
 
             } catch (error) {
+                console.error(error);
                 document.getElementById('blog-list').innerHTML = `<p style="color:red; text-align:center;">Failed to load news.</p>`;
             }
         }
@@ -140,10 +226,11 @@
         function renderBlogs() {
             const container = document.getElementById('blog-list');
             const query = document.getElementById('blog-search').value.toLowerCase();
+            
             container.innerHTML = "";
 
             const filtered = allBlogs.filter(b => {
-                const matchesSearch = b.title.toLowerCase().includes(query) || b.snippet.toLowerCase().includes(query);
+                const matchesSearch = b.title.toLowerCase().includes(query) || (b.snippet && b.snippet.toLowerCase().includes(query));
                 const matchesCat = activeCategory === 'All' || b.category === activeCategory;
                 return matchesSearch && matchesCat;
             });
@@ -151,43 +238,52 @@
             if (filtered.length === 0) {
                 container.innerHTML = `
                     <div style="text-align:center; padding: 40px 20px;">
-                        <i class="fas fa-newspaper" style="font-size: 40px; color: var(--text-muted); margin-bottom: 15px;"></i>
-                        <h3 style="color: var(--text-main); margin: 0 0 5px;">No Updates Found</h3>
-                        <p style="color: var(--text-muted); font-size: 13px;">Check back later for more campus news.</p>
+                        <i class="fas fa-newspaper" style="font-size:40px; color:#cbd5e1; margin-bottom:15px;"></i>
+                        <h3 style="color:var(--text-main); margin:0 0 5px; font-size: 16px;">No news found</h3>
+                        <p style="color:var(--text-muted); font-size:13px;">Try selecting a different category or adjusting your search.</p>
                     </div>
                 `;
                 return;
             }
 
             filtered.forEach(b => {
+                const isLiked = currentUser && b.likes && b.likes.includes(currentUser.id);
+                const likeClass = isLiked ? 'fas fa-heart liked' : 'far fa-heart';
                 const likeCount = b.likes ? b.likes.length : 0;
                 const commentCount = (b.blog_comments && b.blog_comments.length > 0) ? b.blog_comments[0].count : 0;
                 
-                // Routes perfectly to the new page
-                const postUrl = `../blog-content/index.html?id=${encodeURIComponent(b.id)}`;
+                // 🛡️ XSS Protection applied to outputs
+                const safeTitle = escapeHTML(b.title);
+                const safeSnippet = escapeHTML(b.snippet || '');
+                const safeCat = escapeHTML(b.category || 'News');
+                
+                const dateObj = new Date(b.created_at);
+                const shortDate = `${dateObj.toLocaleString('en-US', { month: 'short' })} ${dateObj.getDate()}`;
 
-                container.innerHTML += `
-                    <div class="news-card" onclick="window.location.href='${postUrl}'">
-                        <img src="${escapeHTML(b.image_url) || 'https://via.placeholder.com/600x300'}" class="news-cover" onerror="this.src='https://via.placeholder.com/600x300'">
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="news-card" onclick="window.location.href='../blog-content/index.html?id=${escapeJS(b.id)}'">
+                        <img src="${escapeHTML(b.image_url) || 'https://via.placeholder.com/100'}" class="news-cover" onerror="this.src='https://via.placeholder.com/100'">
                         <div class="news-content">
                             <div class="blog-meta">
-                                <span class="cat-badge">${escapeHTML(b.category || 'News')}</span>
-                                <span>${new Date(b.created_at).toLocaleDateString()}</span>
+                                <span class="cat-badge">${safeCat}</span>
+                                <span class="blog-date">${shortDate}</span>
                             </div>
-                            <h3 class="blog-title">${escapeHTML(b.title)}</h3>
-                            <div class="blog-snippet">${escapeHTML(b.snippet)}</div>
+                            <h3 class="blog-title">${safeTitle}</h3>
+                            <div class="blog-snippet">${safeSnippet}</div>
                             
                             <div class="interaction-row">
                                 <div class="stats-group">
-                                    <div class="stat-item"><i class="far fa-heart"></i> ${likeCount}</div>
+                                    <div class="stat-item" onclick="event.stopPropagation(); toggleLike('${escapeJS(b.id)}')">
+                                        <i class="${likeClass}"></i> ${likeCount}
+                                    </div>
                                     <div class="stat-item"><i class="far fa-comment"></i> ${commentCount}</div>
                                     <div class="stat-item"><i class="far fa-eye"></i> ${b.views || 0}</div>
                                 </div>
-                                <div class="read-btn">Read More <i class="fas fa-arrow-right"></i></div>
+                                <div class="share-btn" onclick="event.stopPropagation(); shareBlog('${escapeJS(b.id)}', '${escapeJS(b.title)}', '${escapeJS(b.snippet)}')"><i class="fas fa-share-alt"></i></div>
                             </div>
                         </div>
                     </div>
-                `;
+                `);
             });
         }
 
@@ -199,6 +295,42 @@
         }
 
         window.filterBlogs = function() { renderBlogs(); }
+
+        window.toggleLike = async function(blogId) {
+            if (!currentUser) {
+                alert("Please log in to like posts.");
+                window.location.href = "../login/index.html";
+                return;
+            }
+
+            const b = allBlogs.find(x => x.id === blogId);
+            let currentLikes = b.likes || [];
+            
+            if (currentLikes.includes(currentUser.id)) currentLikes = currentLikes.filter(id => id !== currentUser.id);
+            else currentLikes.push(currentUser.id);
+
+            b.likes = currentLikes; renderBlogs();
+            try { await supabaseClient.from('blogs').update({ likes: currentLikes }).eq('id', blogId); } 
+            catch (error) { console.error("Like failed to sync."); }
+        }
+
+        window.shareBlog = function(blogId, title, snippet) {
+            const url = `${window.location.origin}/blog-content/index.html?id=${blogId}`;
+            const safeSnippet = snippet ? snippet : 'Read the latest update on UNICAL Digital Market.';
+            
+            const shareText = `*${title}*\n\n${safeSnippet}\n\nRead the full article on UNICAL Digital Market:\n${url}`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: "UNICAL Market News",
+                    text: `*${title}*\n${safeSnippet}\n\nRead the full article on UNICAL Digital Market:`,
+                    url: url
+                }).catch(err => console.log('Share cancelled', err));
+            } else {
+                const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+                window.open(waUrl, '_blank');
+            }
+        }
     </script>
 </body>
 </html>

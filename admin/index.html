@@ -3,173 +3,215 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Command Center | UNICAL Market</title>
+    <title>UNICAL Command Center | Admin</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../asset/style.css">
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
-        body { background-color: #f1f5f9; color: #1e293b; padding-bottom: 50px; }
-        
-        /* HEADER */
-        .admin-header {
-            background: #0f172a; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100;
+        :root {
+            --bg-color: #f8fafc;
+            --brand-color: #FF7A00; /* UNICAL Orange */
+            --brand-dark: #1e293b;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --surface: #ffffff;
+            --border: #e2e8f0;
         }
-        .admin-header h3 { margin: 0; font-size: 18px; font-weight: 800; }
-        .admin-subtitle { font-size: 10px; color: #38bdf8; letter-spacing: 1px; text-transform: uppercase; font-weight: 800; }
-        .exit-btn { color: white; text-decoration: none; border: 1px solid rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; }
 
-        #security-check { height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .spinner { font-size: 40px; color: #38bdf8; margin-bottom: 15px; animation: spin 1s linear infinite; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        
+        /* 🚀 FIX: Override style.css flexbox to fix the broken layout */
+        body { display: block !important; background-color: var(--bg-color); color: var(--text-main); padding-bottom: 50px; }
+        
+        /* SLEEK HEADER */
+        .admin-header {
+            background: var(--brand-dark); color: white; padding: 20px 25px; 
+            display: flex; justify-content: space-between; align-items: center; 
+            position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 25px rgba(0,0,0,0.15);
+        }
+        .header-brand { display: flex; align-items: center; gap: 12px; }
+        .header-icon { background: var(--brand-color); width: 36px; height: 36px; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 16px; box-shadow: 0 4px 10px rgba(255,122,0,0.4); }
+        .admin-header h3 { margin: 0; font-size: 18px; font-weight: 900; letter-spacing: -0.5px;}
+        .admin-subtitle { font-size: 11px; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .exit-btn { background: rgba(255,255,255,0.1); color: white; text-decoration: none; padding: 8px 16px; border-radius: 12px; font-size: 12px; font-weight: 800; transition: 0.2s; }
+        .exit-btn:hover { background: rgba(255,255,255,0.2); }
+
+        /* LOADING STATE */
+        #security-check { height: 90vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .spinner { font-size: 45px; color: var(--brand-color); margin-bottom: 20px; animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        .container { max-width: 1000px; margin: 20px auto; padding: 0 20px; display: none; }
-        .section-title { font-size: 18px; font-weight: 800; margin: 20px 0 15px; color: #334155; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; display: none; }
+        .section-title { font-size: 16px; font-weight: 900; margin: 30px 0 15px; color: var(--brand-dark); text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 8px; }
 
-        /* DASHBOARD GRID */
+        /* REDESIGNED DASHBOARD GRID */
         .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-        .admin-card { background: white; padding: 25px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; display: flex; flex-direction: column; }
+        .admin-card { background: var(--surface); padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); border: 1px solid var(--border); transition: transform 0.2s; display: flex; flex-direction: column; }
+        .admin-card:hover { transform: translateY(-3px); box-shadow: 0 15px 35px rgba(0,0,0,0.05); }
         
-        /* Card Colors */
-        .card-yellow { border-left: 5px solid #eab308; }
-        .card-purple { border-left: 5px solid #a855f7; }
-        .card-blue { border-left: 5px solid #3b82f6; }
-        .card-red { border-left: 5px solid #ef4444; }
-        .card-green { border-left: 5px solid #10b981; }
-        .card-orange { border-left: 5px solid #FF7A00; }
+        .card-icon-wrapper { width: 50px; height: 50px; border-radius: 14px; display: flex; justify-content: center; align-items: center; font-size: 22px; margin-bottom: 15px; }
+        .card-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; color: var(--text-main); }
+        .card-desc { font-size: 13px; color: var(--text-muted); margin-bottom: 25px; line-height: 1.5; flex-grow: 1; }
 
-        .card-icon { font-size: 30px; margin-bottom: 15px; }
-        .card-title { font-size: 16px; font-weight: 800; margin-bottom: 10px; }
-        .card-desc { font-size: 13px; color: #64748b; margin-bottom: 20px; flex-grow: 1; }
+        .open-modal-btn { border: none; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; transition: 0.2s; width: 100%; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .open-modal-btn:active { transform: scale(0.97); }
 
-        .open-modal-btn { background: #0f172a; color: white; border: none; padding: 12px; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.2s; width: 100%; }
-        .open-modal-btn:active { transform: scale(0.98); }
+        /* Card Themes */
+        .theme-blue .card-icon-wrapper { background: #eff6ff; color: #3b82f6; } .theme-blue .open-modal-btn { background: #3b82f6; color: white; }
+        .theme-green .card-icon-wrapper { background: #ecfdf5; color: #10b981; } .theme-green .open-modal-btn { background: #10b981; color: white; }
+        .theme-red .card-icon-wrapper { background: #fef2f2; color: #ef4444; } .theme-red .open-modal-btn { background: #ef4444; color: white; }
+        .theme-yellow .card-icon-wrapper { background: #fefce8; color: #eab308; } .theme-yellow .open-modal-btn { background: #eab308; color: white; }
+        .theme-purple .card-icon-wrapper { background: #faf5ff; color: #a855f7; } .theme-purple .open-modal-btn { background: #a855f7; color: white; }
+        .theme-orange .card-icon-wrapper { background: #fff7ed; color: #f97316; } .theme-orange .open-modal-btn { background: #f97316; color: white; }
+        .theme-teal .card-icon-wrapper { background: #f0fdfa; color: #14b8a6; } .theme-teal .open-modal-btn { background: #14b8a6; color: white; }
 
         /* MODALS */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
-        .modal-body { background: #f8fafc; width: 100%; max-width: 600px; max-height: 85vh; border-radius: 20px; display: flex; flex-direction: column; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
-        .modal-header { background: white; padding: 20px; border-radius: 20px 20px 0 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; flex-shrink: 0; }
-        .modal-header h2 { font-size: 18px; margin: 0; color: #0f172a; }
-        .close-btn { background: none; border: none; font-size: 24px; color: #94a3b8; cursor: pointer; }
-        .modal-content-scroll { padding: 20px; overflow-y: auto; flex-grow: 1; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: flex-end; }
+        @media (min-width: 768px) { .modal-overlay { align-items: center; padding: 20px; } }
+        
+        .modal-body { background: var(--bg-color); width: 100%; max-width: 600px; max-height: 90vh; border-radius: 24px 24px 0 0; display: flex; flex-direction: column; box-shadow: 0 -10px 40px rgba(0,0,0,0.2); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        @media (min-width: 768px) { .modal-body { border-radius: 24px; max-height: 85vh; box-shadow: 0 20px 50px rgba(0,0,0,0.2); } }
+        
+        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .modal-header { background: var(--surface); padding: 20px 25px; border-radius: 24px 24px 0 0; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+        .modal-header h2 { font-size: 18px; margin: 0; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+        .close-btn { background: #f1f5f9; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 18px; color: var(--text-muted); cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
+        .close-btn:active { background: #e2e8f0; }
+        
+        .modal-content-scroll { padding: 20px 25px; overflow-y: auto; flex-grow: 1; }
 
         /* FORMS & LIST ITEMS */
-        .admin-input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; background: white; outline: none; margin-bottom: 15px; }
-        .search-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        .admin-input { width: 100%; padding: 14px; border: 2px solid var(--border); border-radius: 12px; font-size: 14px; background: var(--surface); outline: none; margin-bottom: 15px; transition: 0.2s; }
+        .admin-input:focus { border-color: var(--brand-color); }
+        
+        .search-group { display: flex; gap: 10px; margin-bottom: 25px; }
         .search-group .admin-input { margin-bottom: 0; }
         
-        .list-item { background: white; padding: 15px; border-radius: 12px; margin-bottom: 15px; border: 1px solid #e2e8f0; }
-        .item-title { font-size: 15px; font-weight: 800; color: #0f172a; margin-bottom: 5px; }
-        .item-meta { font-size: 12px; color: #64748b; margin-bottom: 8px; }
-        .item-data-box { background: #f1f5f9; padding: 10px; border-radius: 8px; font-size: 12px; color: #334155; margin-bottom: 10px; }
-        .item-data-box a { color: #3b82f6; text-decoration: none; font-weight: 800; }
+        .list-item { background: var(--surface); padding: 20px; border-radius: 16px; margin-bottom: 15px; border: 1px solid var(--border); box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+        .item-title { font-size: 16px; font-weight: 800; color: var(--text-main); margin-bottom: 5px; }
+        .item-meta { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; font-weight: 600; }
         
-        .action-row { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; border-top: 1px solid #f1f5f9; padding-top: 10px; }
-        .action-btn { padding: 8px 16px; border: none; border-radius: 8px; font-weight: 800; font-size: 12px; cursor: pointer; }
+        .item-data-box { background: #f8fafc; padding: 12px; border-radius: 10px; font-size: 13px; color: var(--text-main); margin-bottom: 15px; border: 1px solid #e2e8f0; }
+        .item-data-box a { color: var(--brand-color); text-decoration: none; font-weight: 800; }
+        
+        .action-row { display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px; }
+        .action-btn { padding: 10px 18px; border: none; border-radius: 10px; font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.2s; }
+        .action-btn:active { transform: scale(0.96); }
+        
         .btn-approve { background: #10b981; color: white; }
         .btn-edit { background: #eab308; color: white; }
-        .btn-delete { background: #ef4444; color: white; }
-        .btn-suspend { background: #ef4444; color: white; }
-        .btn-unsuspend { background: #3b82f6; color: white; }
-        .btn-primary { background: #0f172a; color: white; }
+        .btn-delete { background: #fef2f2; color: #ef4444; }
+        .btn-suspend { background: #fef2f2; color: #ef4444; }
+        .btn-unsuspend { background: #eff6ff; color: #3b82f6; }
+        .btn-primary { background: var(--brand-dark); color: white; }
 
-        /* VENDOR MANAGER INPUTS */
-        .vm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
-        .vm-label { font-size: 10px; font-weight: bold; color: #64748b; text-transform: uppercase; margin-bottom: 4px; display: block; }
-        .vm-input { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; }
+        .vm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        .vm-label { font-size: 11px; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; display: block; }
+        .vm-input { width: 100%; padding: 12px; border: 2px solid var(--border); border-radius: 10px; font-size: 14px; outline: none; background: #f8fafc; }
+        .vm-input:focus { border-color: var(--brand-color); background: white; }
+        
+        .status-badge { font-size: 10px; font-weight: 800; padding: 4px 10px; border-radius: 12px; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
 
     <div class="admin-header">
-        <div><h3>⚡ Super Admin</h3><div class="admin-subtitle">Command Center</div></div>
-        <a href="../index.html" class="exit-btn">Exit</a>
+        <div class="header-brand">
+            <div class="header-icon"><i class="fas fa-shield-alt"></i></div>
+            <div>
+                <h3>Admin Portal</h3>
+                <div class="admin-subtitle">UNICAL Command Center</div>
+            </div>
+        </div>
+        <a href="../index.html" class="exit-btn"><i class="fas fa-sign-out-alt"></i> Exit</a>
     </div>
 
     <div id="security-check">
-        <i class="fas fa-circle-notch spinner"></i><div style="font-weight: 800; color: #475569;">Verifying Clearance...</div>
+        <i class="fas fa-fingerprint spinner"></i>
+        <div style="font-weight: 800; font-size: 16px; color: var(--brand-dark);">Authenticating...</div>
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 5px;">Checking Security Clearance</div>
     </div>
 
     <div id="admin-content" class="container">
-        <h4 class="section-title">Store Approvals & Limits</h4>
+        
+        <h4 class="section-title"><i class="fas fa-store"></i> Store Approvals & Limits</h4>
         <div class="dashboard-grid">
             
-            <div class="admin-card card-blue">
-                <i class="fas fa-clipboard-check card-icon" style="color: #3b82f6;"></i>
+            <div class="admin-card theme-blue">
+                <div class="card-icon-wrapper"><i class="fas fa-clipboard-check"></i></div>
                 <div class="card-title">Vendor Approvals</div>
                 <div class="card-desc">Review new store applications, check payment receipts and ID cards, and approve them.</div>
-                <button class="open-modal-btn" style="background: #3b82f6;" onclick="openModal('approvalModal', loadApprovals)">Review Pending</button>
+                <button class="open-modal-btn" onclick="openModal('approvalModal', loadApprovals)">Review Pending</button>
             </div>
 
-            <div class="admin-card card-green">
-                <i class="fas fa-user-cog card-icon" style="color: #10b981;"></i>
+            <div class="admin-card theme-green">
+                <div class="card-icon-wrapper"><i class="fas fa-user-cog"></i></div>
                 <div class="card-title">Vendor Manager</div>
-                <div class="card-desc">Upgrade/downgrade plans (Verified, Influencer, Icon), edit max slots, and update emails.</div>
-                <button class="open-modal-btn" style="background: #10b981;" onclick="openModal('managerModal', () => { document.getElementById('manager-results').innerHTML=''; document.getElementById('manager-search').value=''; })">Open Manager</button>
+                <div class="card-desc">Assign custom Vendor IDs (e.g., V001), update plans, edit max slots, and manage emails.</div>
+                <button class="open-modal-btn" onclick="openModal('managerModal', () => { document.getElementById('manager-results').innerHTML=''; document.getElementById('manager-search').value=''; })">Open Manager</button>
             </div>
         </div>
 
-
-        <h4 class="section-title">Ads & Highlights</h4>
-        <div class="dashboard-grid" style="margin-bottom: 30px;">
-
-            <div class="admin-card card-orange">
-                <i class="fas fa-award card-icon" style="color: #f97316;"></i>
-                <div class="card-title">Featured Vendors</div>
-                <div class="card-desc">Pin specific vendors to the top of the "Verified Sellers" page.</div>
-                <button class="open-modal-btn" style="background: #f97316;" onclick="openModal('pinVendorModal', () => { document.getElementById('pin-vendor-results').innerHTML=''; document.getElementById('pin-vendor-search').value=''; })">Manage Pinned Vendors</button>
-            </div>
-
-            <div class="admin-card card-blue">
-                <i class="fas fa-thumbtack card-icon" style="color: #3b82f6;"></i>
-                <div class="card-title">Featured Items</div>
-                <div class="card-desc">Pin specific vendor items to the top of the homepage and category lists.</div>
-                <button class="open-modal-btn" style="background: #3b82f6;" onclick="openModal('featuredModal', () => { document.getElementById('featured-results').innerHTML=''; document.getElementById('featured-search').value=''; })">Manage Pinned Items</button>
-            </div>
-
-            <div class="admin-card" style="border-left: 5px solid #14b8a6;">
-                <i class="fas fa-ad card-icon" style="color: #14b8a6;"></i>
-                <div class="card-title">Ad Popups</div>
-                <div class="card-desc">Create and manage popup ads that display when users visit the homepage.</div>
-                <button class="open-modal-btn" style="background: #14b8a6;" onclick="openModal('adsModal', loadAdminAds)">Manage Ads</button>
-            </div>
-
-        </div>
-
-        <h4 class="section-title">Moderation & Content</h4>
+        <h4 class="section-title"><i class="fas fa-bullhorn"></i> Ads & Highlights</h4>
         <div class="dashboard-grid">
 
-            <div class="admin-card card-red">
-                <i class="fas fa-user-slash card-icon" style="color: #ef4444;"></i>
+            <div class="admin-card theme-orange">
+                <div class="card-icon-wrapper"><i class="fas fa-award"></i></div>
+                <div class="card-title">Featured Vendors</div>
+                <div class="card-desc">Pin specific vendors to the top of the "Verified Sellers" page.</div>
+                <button class="open-modal-btn" onclick="openModal('pinVendorModal', () => { document.getElementById('pin-vendor-results').innerHTML=''; document.getElementById('pin-vendor-search').value=''; })">Manage Pinned Vendors</button>
+            </div>
+
+            <div class="admin-card theme-blue">
+                <div class="card-icon-wrapper"><i class="fas fa-thumbtack"></i></div>
+                <div class="card-title">Featured Items</div>
+                <div class="card-desc">Pin specific vendor items to the top of the homepage and category lists.</div>
+                <button class="open-modal-btn" onclick="openModal('featuredModal', () => { document.getElementById('featured-results').innerHTML=''; document.getElementById('featured-search').value=''; })">Manage Pinned Items</button>
+            </div>
+
+            <div class="admin-card theme-teal">
+                <div class="card-icon-wrapper"><i class="fas fa-ad"></i></div>
+                <div class="card-title">Ad Popups</div>
+                <div class="card-desc">Create and manage popup ads that display when users visit the homepage.</div>
+                <button class="open-modal-btn" onclick="openModal('adsModal', loadAdminAds)">Manage Ads</button>
+            </div>
+
+        </div>
+
+        <h4 class="section-title"><i class="fas fa-shield-virus"></i> Moderation & Content</h4>
+        <div class="dashboard-grid">
+
+            <div class="admin-card theme-red">
+                <div class="card-icon-wrapper"><i class="fas fa-user-slash"></i></div>
                 <div class="card-title">Vendor Control</div>
                 <div class="card-desc">Suspend fraudulent vendors. Their profiles and all their items will vanish from the site.</div>
-                <button class="open-modal-btn" style="background: #ef4444;" onclick="openModal('controlModal', () => { document.getElementById('control-results').innerHTML=''; document.getElementById('control-search').value=''; })">Open Control</button>
+                <button class="open-modal-btn" onclick="openModal('controlModal', () => { document.getElementById('control-results').innerHTML=''; document.getElementById('control-search').value=''; })">Open Control</button>
             </div>
 
-            <div class="admin-card card-yellow">
-                <i class="fas fa-star card-icon" style="color: #eab308;"></i>
+            <div class="admin-card theme-yellow">
+                <div class="card-icon-wrapper"><i class="fas fa-star"></i></div>
                 <div class="card-title">Review Manager</div>
                 <div class="card-desc">Approve pending student reviews to make them visible on the home page, or delete spam.</div>
-                <button class="open-modal-btn" style="background: #eab308;" onclick="openModal('reviewModal', loadAdminReviews)">Open Manager</button>
+                <button class="open-modal-btn" onclick="openModal('reviewModal', loadAdminReviews)">Open Manager</button>
             </div>
 
-            <div class="admin-card card-purple">
-                <i class="fas fa-newspaper card-icon" style="color: #a855f7;"></i>
+            <div class="admin-card theme-purple">
+                <div class="card-icon-wrapper"><i class="fas fa-newspaper"></i></div>
                 <div class="card-title">Blog & News Manager</div>
                 <div class="card-desc">Write, edit, and publish campus news and updates directly to the marketplace.</div>
-                <button class="open-modal-btn" style="background: #a855f7;" onclick="openModal('blogModal', loadAdminBlogs)">Open Manager</button>
+                <button class="open-modal-btn" onclick="openModal('blogModal', loadAdminBlogs)">Open Manager</button>
             </div>
             
-            <div class="admin-card card-orange">
-                <i class="fas fa-bell card-icon" style="color: #FF7A00;"></i>
+            <div class="admin-card theme-orange">
+                <div class="card-icon-wrapper"><i class="fas fa-bell"></i></div>
                 <div class="card-title">Notification Center</div>
                 <div class="card-desc">Send system alerts, promos, and announcements to all users or specific individuals.</div>
-                <button class="open-modal-btn" style="background: #FF7A00;" onclick="openModal('notifModal', loadAdminNotifications)">Open Center</button>
+                <button class="open-modal-btn" onclick="openModal('notifModal', loadAdminNotifications)">Open Center</button>
             </div>
 
         </div>
@@ -177,18 +219,18 @@
 
     <div id="approvalModal" class="modal-overlay">
         <div class="modal-body">
-            <div class="modal-header"><h2>📋 Pending Approvals</h2><button class="close-btn" onclick="closeModal('approvalModal')">&times;</button></div>
+            <div class="modal-header"><h2><i class="fas fa-clipboard-check" style="color:#3b82f6;"></i> Pending Approvals</h2><button class="close-btn" onclick="closeModal('approvalModal')"><i class="fas fa-times"></i></button></div>
             <div class="modal-content-scroll" id="approval-list"></div>
         </div>
     </div>
 
     <div id="controlModal" class="modal-overlay">
         <div class="modal-body">
-            <div class="modal-header"><h2>🚫 Vendor Control</h2><button class="close-btn" onclick="closeModal('controlModal')">&times;</button></div>
+            <div class="modal-header"><h2><i class="fas fa-ban" style="color:#ef4444;"></i> Vendor Control</h2><button class="close-btn" onclick="closeModal('controlModal')"><i class="fas fa-times"></i></button></div>
             <div class="modal-content-scroll">
                 <div class="search-group">
-                    <input type="text" id="control-search" class="admin-input" placeholder="Search by Business Name or Email...">
-                    <button class="action-btn btn-primary" onclick="searchVendors('control')">Search</button>
+                    <input type="text" id="control-search" class="admin-input" placeholder="Search Business Name or Email...">
+                    <button class="action-btn btn-primary" onclick="searchVendors('control')"><i class="fas fa-search"></i></button>
                 </div>
                 <div id="control-results"></div>
             </div>
@@ -197,25 +239,30 @@
 
     <div id="managerModal" class="modal-overlay">
         <div class="modal-body">
-            <div class="modal-header"><h2>⚙️ Vendor Manager</h2><button class="close-btn" onclick="closeModal('managerModal')">&times;</button></div>
+            <div class="modal-header"><h2><i class="fas fa-user-cog" style="color:#10b981;"></i> Vendor Manager</h2><button class="close-btn" onclick="closeModal('managerModal')"><i class="fas fa-times"></i></button></div>
             <div class="modal-content-scroll">
                 <div class="search-group">
-                    <input type="text" id="manager-search" class="admin-input" placeholder="Search by Business Name or Email...">
-                    <button class="action-btn btn-primary" onclick="searchVendors('manager')">Search</button>
+                    <input type="text" id="manager-search" class="admin-input" placeholder="Search Business Name or Email...">
+                    <button class="action-btn btn-primary" onclick="searchVendors('manager')"><i class="fas fa-search"></i></button>
                 </div>
                 <div id="manager-results"></div>
             </div>
         </div>
     </div>
 
-    <div id="reviewModal" class="modal-overlay"><div class="modal-body"><div class="modal-header"><h2>⭐ Review Approvals</h2><button class="close-btn" onclick="closeModal('reviewModal')">&times;</button></div><div class="modal-content-scroll" id="modal-reviews-list"></div></div></div>
+    <div id="reviewModal" class="modal-overlay">
+        <div class="modal-body">
+            <div class="modal-header"><h2><i class="fas fa-star" style="color:#eab308;"></i> Review Approvals</h2><button class="close-btn" onclick="closeModal('reviewModal')"><i class="fas fa-times"></i></button></div>
+            <div class="modal-content-scroll" id="modal-reviews-list"></div>
+        </div>
+    </div>
     
     <div id="blogModal" class="modal-overlay">
         <div class="modal-body">
-            <div class="modal-header"><h2>📰 Blog Manager</h2><button class="close-btn" onclick="closeModal('blogModal')">&times;</button></div>
+            <div class="modal-header"><h2><i class="fas fa-newspaper" style="color:#a855f7;"></i> Blog Manager</h2><button class="close-btn" onclick="closeModal('blogModal')"><i class="fas fa-times"></i></button></div>
             <div class="modal-content-scroll">
-                <div style="background:white; padding:20px; border-radius:12px; margin-bottom:20px;">
-                    <h3 style="margin-bottom: 15px;" id="blogFormTitle">Create New Post</h3>
+                <div style="background:white; padding:20px; border-radius:16px; margin-bottom:25px; border: 1px solid var(--border);">
+                    <h3 style="margin-bottom: 15px; font-size: 16px; font-weight: 800;" id="blogFormTitle">Create New Post</h3>
                     <input type="hidden" id="editBlogId">
                     <input type="text" id="blogTitle" class="admin-input" placeholder="Post Title">
                     <select id="blogCategory" class="admin-input">
@@ -224,71 +271,71 @@
                         <option value="Gossip">Gossip</option>
                         <option value="Events">Events</option>
                     </select>
-                    <textarea id="blogSnippet" class="admin-input" placeholder="Short Snippet" style="height: 60px;"></textarea>
+                    <textarea id="blogSnippet" class="admin-input" placeholder="Short Snippet (Displays on homepage)" style="height: 60px;"></textarea>
                     <textarea id="blogContent" class="admin-input" placeholder="Full article content..." style="height: 150px;"></textarea>
+                    
+                    <label class="vm-label">Cover Image</label>
                     <input type="file" id="blogImage" class="admin-input" accept="image/*">
+                    
                     <button class="action-btn btn-primary" id="saveBlogBtn" style="width:100%; padding:14px;" onclick="saveBlog()">Publish Post</button>
-                    <button class="action-btn btn-delete" id="cancelEditBtn" style="width: 100%; margin-top: 10px; display: none;" onclick="resetBlogForm()">Cancel Edit</button>
+                    <button class="action-btn" id="cancelEditBtn" style="width: 100%; margin-top: 10px; display: none; background: #e2e8f0; color: #0f172a;" onclick="resetBlogForm()">Cancel Edit</button>
                 </div>
                 <div id="modal-blogs-list"></div>
             </div>
         </div>
     </div>
 
-    <div id="notifModal" class="modal-overlay">
-        <div class="modal-body">
-            <div class="modal-header">
-                <h2>🔔 Notification Center</h2>
-                <button class="close-btn" onclick="closeModal('notifModal')">&times;</button>
-            </div>
-            <div class="modal-content-scroll">
-                <div style="background:white; padding:20px; border-radius:12px; margin-bottom:20px; border: 1px solid #e2e8f0;">
-                    <h3 style="margin-bottom: 15px; color: #0f172a;">Send New Notification</h3>
-                    
-                    <input type="text" id="notifTitle" class="admin-input" placeholder="Notification Title (e.g., 'Flash Sale!')">
-                    
-                    <select id="notifType" class="admin-input">
-                        <option value="system">System Message (Grey Icon)</option>
-                        <option value="promo">Promo / Announcement (Orange Icon)</option>
-                        <option value="alert">Alert / Warning (Red Icon)</option>
-                        <option value="success">Success / Update (Green Icon)</option>
-                    </select>
-                    
-                    <textarea id="notifMessage" class="admin-input" placeholder="Write your notification message here..." style="height: 80px; resize: none;"></textarea>
-                    
-                    <div class="item-meta" style="margin-bottom: 5px;">Optional: Enter a specific User's Account ID to send privately. Leave blank to send to EVERYONE.</div>
-                    <input type="text" id="notifUserId" class="admin-input" placeholder="Target User ID (Leave blank for All Users)">
-                    
-                    <button class="action-btn btn-primary" id="sendNotifBtn" style="width:100%; padding:14px; background: #FF7A00;" onclick="sendNotification()">Broadcast Notification</button>
-                </div>
-                
-                <h3 style="margin-bottom: 15px; color: #334155;">Past Notifications</h3>
-                <div id="admin-notifs-list"></div>
-            </div>
-        </div>
-    </div>
-
-
     <div id="featuredModal" class="modal-overlay">
         <div class="modal-body">
-            <div class="modal-header"><h2>📌 Featured Items</h2><button class="close-btn" onclick="closeModal('featuredModal')">&times;</button></div>
+            <div class="modal-header"><h2><i class="fas fa-thumbtack" style="color:#3b82f6;"></i> Featured Items Manager</h2><button class="close-btn" onclick="closeModal('featuredModal')"><i class="fas fa-times"></i></button></div>
             <div class="modal-content-scroll">
                 <div class="search-group">
                     <input type="text" id="featured-search" class="admin-input" placeholder="Search Vendor Name or Code...">
-                    <button class="action-btn btn-primary" onclick="searchVendorItems()">Search</button>
+                    <button class="action-btn btn-primary" onclick="searchVendorItems()"><i class="fas fa-search"></i></button>
                 </div>
                 <div id="featured-results"></div>
             </div>
         </div>
     </div>
 
+    <div id="notifModal" class="modal-overlay">
+        <div class="modal-body">
+            <div class="modal-header"><h2><i class="fas fa-bell" style="color:#f97316;"></i> Notification Center</h2><button class="close-btn" onclick="closeModal('notifModal')"><i class="fas fa-times"></i></button></div>
+            <div class="modal-content-scroll">
+                <div style="background:white; padding:20px; border-radius:16px; margin-bottom:25px; border: 1px solid var(--border);">
+                    <h3 style="margin-bottom: 15px; font-size: 16px; font-weight: 800;">Send New Broadcast</h3>
+                    
+                    <input type="text" id="notifTitle" class="admin-input" placeholder="Notification Title (e.g., 'Flash Sale!')">
+                    <select id="notifType" class="admin-input">
+                        <option value="system">System Message (Grey Icon)</option>
+                        <option value="promo">Promo / Announcement (Orange Icon)</option>
+                        <option value="alert">Alert / Warning (Red Icon)</option>
+                        <option value="success">Success / Update (Green Icon)</option>
+                    </select>
+                    <textarea id="notifMessage" class="admin-input" placeholder="Write your notification message here..." style="height: 80px; resize: none;"></textarea>
+                    
+                    <div style="background: #f8fafc; padding: 12px; border-radius: 10px; border: 1px dashed #cbd5e1; margin-bottom: 15px;">
+                        <label class="vm-label">Target Specific User (Optional)</label>
+                        <div style="font-size: 11px; color: #64748b; margin-bottom: 8px;">Enter a User ID to send privately. Leave blank to notify EVERYONE.</div>
+                        <input type="text" id="notifUserId" class="admin-input" style="margin-bottom: 0; padding: 10px;" placeholder="User ID">
+                    </div>
+                    
+                    <button class="action-btn" id="sendNotifBtn" style="width:100%; padding:14px; background: #f97316; color: white;" onclick="sendNotification()"><i class="fas fa-paper-plane"></i> Send Notification</button>
+                </div>
+                
+                <h3 style="margin-bottom: 15px; font-size: 16px; font-weight: 800;">Past Broadcasts</h3>
+                <div id="admin-notifs-list"></div>
+            </div>
+        </div>
+    </div>
+
     <div id="pinVendorModal" class="modal-overlay">
         <div class="modal-body">
-            <div class="modal-header"><h2>🏆 Featured Vendors</h2><button class="close-btn" onclick="closeModal('pinVendorModal')">&times;</button></div>
+            <div class="modal-header"><h2><i class="fas fa-award" style="color:#f97316;"></i> Featured Vendors</h2><button class="close-btn" onclick="closeModal('pinVendorModal')"><i class="fas fa-times"></i></button></div>
             <div class="modal-content-scroll">
                 <div class="search-group">
                     <input type="text" id="pin-vendor-search" class="admin-input" placeholder="Search Vendor Name or Code...">
-                    <button class="action-btn btn-primary" onclick="searchPinVendors()">Search</button>
+                    <button class="action-btn btn-primary" onclick="searchPinVendors()"><i class="fas fa-search"></i></button>
                 </div>
                 <div id="pin-vendor-results"></div>
             </div>
@@ -297,12 +344,12 @@
 
     <div id="adsModal" class="modal-overlay">
         <div class="modal-body">
-            <div class="modal-header"><h2>📢 Ad Popups Manager</h2><button class="close-btn" onclick="closeModal('adsModal')">&times;</button></div>
+            <div class="modal-header"><h2><i class="fas fa-ad" style="color:#14b8a6;"></i> Ad Popups Manager</h2><button class="close-btn" onclick="closeModal('adsModal')"><i class="fas fa-times"></i></button></div>
             <div class="modal-content-scroll">
-                <div style="background:white; padding:20px; border-radius:12px; margin-bottom:20px; border: 1px solid #e2e8f0;">
-                    <h3 style="margin-bottom: 15px; color: #0f172a;">Create New Ad Popup</h3>
+                <div style="background:white; padding:20px; border-radius:16px; margin-bottom:25px; border: 1px solid var(--border);">
+                    <h3 style="margin-bottom: 15px; font-size: 16px; font-weight: 800;">Create New Ad Popup</h3>
                     <input type="text" id="adTitle" class="admin-input" placeholder="Ad Title (e.g., Flash Sale!)">
-                    <textarea id="adContent" class="admin-input" placeholder="Ad text/content..." style="height: 80px; resize: none;"></textarea>
+                    <textarea id="adContent" class="admin-input" placeholder="Ad text/content..." style="height: 80px;"></textarea>
                     
                     <div class="vm-grid" style="margin-bottom: 0;">
                         <div>
@@ -315,40 +362,44 @@
                         </div>
                     </div>
                     
-                    <label class="vm-label" style="margin-top: 10px;">Ad Image (Optional)</label>
-                    <input type="file" id="adImage" class="admin-input" accept="image/*" style="padding-top: 9px;">
-                    <button class="action-btn btn-primary" id="saveAdBtn" style="width:100%; padding:14px; background: #14b8a6; color: white;" onclick="saveAd()">Publish Ad</button>
+                    <label class="vm-label">Ad Image (Optional)</label>
+                    <input type="file" id="adImage" class="admin-input" accept="image/*">
+                    <button class="action-btn btn-primary" id="saveAdBtn" style="width:100%; padding:14px; background: #14b8a6;" onclick="saveAd()"><i class="fas fa-paper-plane"></i> Publish Ad</button>
                 </div>
-                <h3 style="margin-bottom: 15px; color: #334155;">Active & Past Ads</h3>
+                <h3 style="margin-bottom: 15px; font-size: 16px; font-weight: 800;">Active & Past Ads</h3>
                 <div id="modal-ads-list"></div>
             </div>
         </div>
     </div>
 
-   <script>
-        const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    <script src="../asset/script.js"></script>
+
+    <script>
+        // UNICAL CLOUDINARY
         const CLOUD_NAME = "dj6yl36fq"; 
 
-        // 0. STRICT SECURITY CLEARANCE
         document.addEventListener("DOMContentLoaded", async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (!session) { window.location.href = "../login/index.html"; return; }
             
             const { data } = await supabaseClient.from('admin_users').select('*').eq('email', session.user.email).single();
+            
             if (data) {
                 setTimeout(() => { 
                     document.getElementById('security-check').style.display = 'none'; 
                     document.getElementById('admin-content').style.display = 'block'; 
-                }, 800); 
+                }, 1000); 
             } else {
-                document.body.innerHTML = `<h2 style='text-align:center; margin-top:100px; color:#ef4444;'>⛔ ACCESS DENIED</h2>`;
-                setTimeout(() => { window.location.href = "../index.html"; }, 2000);
+                document.body.innerHTML = `
+                    <div style="height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #0f172a;">
+                        <i class="fas fa-user-shield" style="font-size: 60px; color: #ef4444; margin-bottom: 20px;"></i>
+                        <h2 style='color:white; font-weight: 900;'>ACCESS DENIED</h2>
+                        <p style='color: #94a3b8; font-size: 14px; margin-top: 10px;'>Your email is not registered as an Admin.</p>
+                        <button onclick="window.location.href='../index.html'" style="margin-top: 20px; padding: 10px 20px; border-radius: 10px; border: none; background: #FF7A00; color: white; font-weight: bold; cursor: pointer;">Return to Market</button>
+                    </div>`;
             }
         });
 
-        // MODAL CONTROLS
         window.openModal = function(id, fetchFunc) { 
             document.getElementById(id).style.display = 'flex'; 
             document.body.style.overflow = 'hidden'; 
@@ -359,64 +410,66 @@
             document.body.style.overflow = 'auto'; 
         }
 
-        // 1. VENDOR APPROVALS MODULE
+        // ===============================================
+        // 🚀 ADMIN MODULES
+        // ===============================================
         window.loadApprovals = async function() {
             const list = document.getElementById('approval-list');
-            list.innerHTML = '<p style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Loading pending applications...</p>';
+            list.innerHTML = '<p style="text-align:center; padding: 40px; color: #64748b;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #3b82f6; margin-bottom: 10px; display: block;"></i> Loading pending applications...</p>';
             try {
                 const { data, error } = await supabaseClient.from('vendors').select('*').eq('is_active', false);
                 if (error) throw error;
-                
                 const pending = data.filter(v => v.is_suspended !== true);
 
-                if (pending.length === 0) { list.innerHTML = "<p style='text-align:center; color:#94a3b8; margin-top:20px;'>No pending applications.</p>"; return; }
+                if (pending.length === 0) { list.innerHTML = "<p style='text-align:center; color:#94a3b8; padding: 40px;'>No pending applications right now.</p>"; return; }
 
                 list.innerHTML = "";
                 pending.forEach(v => {
                     const userEmail = v.email || 'No email attached';
-                    
                     list.innerHTML += `
                         <div class="list-item" style="border-left: 4px solid #3b82f6;">
                             <div class="item-title">${v.business_name}</div>
-                            <div class="item-meta"><i class="fas fa-envelope"></i> ${userEmail} | <i class="fas fa-phone"></i> ${v.whatsapp_number || 'N/A'}</div>
-                            
+                            <div class="item-meta"><i class="fas fa-id-badge" style="color:#3b82f6;"></i> ${v.vendor_code || 'N/A'} | <i class="fas fa-phone"></i> ${v.whatsapp_number || 'N/A'}</div>
                             <div class="item-data-box">
-                                <b>Plan:</b> ${v.subscription_plan}<br>
-                                <b>Categories:</b> ${v.categories}<br>
-                                <b>Requested Slots:</b> ${v.max_items}
+                                <b>Requested Plan:</b> ${v.subscription_plan}<br>
+                                <b>Location:</b> ${v.location || 'N/A'}<br>
+                                <b>Categories:</b> ${v.categories}
                             </div>
-                            
-                            <div style="display:flex; gap:15px; font-size:12px; margin-bottom:10px;">
-                                <a href="${v.receipt_url}" target="_blank" style="color:#10b981; font-weight:bold;"><i class="fas fa-file-invoice-dollar"></i> View Receipt</a>
-                                <a href="${v.student_id_url}" target="_blank" style="color:#8b5cf6; font-weight:bold;"><i class="fas fa-id-badge"></i> View ID Card</a>
+                            <div style="display:flex; gap:15px; font-size:13px; margin-bottom:15px; flex-wrap: wrap;">
+                                <a href="${v.receipt_url}" target="_blank" style="color:#10b981; background: #ecfdf5; padding: 6px 12px; border-radius: 8px;"><i class="fas fa-file-invoice-dollar"></i> View Receipt</a>
+                                <a href="${v.student_id_url}" target="_blank" style="color:#8b5cf6; background: #faf5ff; padding: 6px 12px; border-radius: 8px;"><i class="fas fa-id-card"></i> View ID Card</a>
                             </div>
-
                             <div class="action-row">
-                                <button class="action-btn btn-approve" onclick="approveVendor('${v.id}')">Approve Vendor</button>
+                                <button class="action-btn btn-approve" onclick="approveVendor('${v.id}')"><i class="fas fa-check"></i> Approve Vendor</button>
                             </div>
                         </div>`;
                 });
-            } catch (error) { 
-                list.innerHTML = "<p style='color:red; text-align:center;'>Failed to load. Check console for details.</p>"; 
-            }
+            } catch (error) { list.innerHTML = "<p style='color:red; text-align:center;'>Failed to load. Check console for details.</p>"; }
         }
 
         window.approveVendor = async function(id) {
-            if(!confirm("Approve this vendor? They will immediately get access to their dashboard.")) return;
-            try {
-                await supabaseClient.from('vendors').update({ is_active: true, is_suspended: false }).eq('id', id);
-                alert("Vendor Approved!");
-                loadApprovals(); 
-            } catch(e) { alert("Failed to approve."); }
-        }
+            if(!confirm("Approve this vendor? They will immediately get access to their dashboard and can start posting items.")) return;
+            event.target.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Approving...';
+            event.target.disabled = true;
 
-        // 2 & 3. VENDOR SEARCH (For Control & NEW Manager)
+            try {
+                const { error } = await supabaseClient.from('vendors').update({ is_active: true, is_suspended: false }).eq('id', id);
+                if (error) throw error;
+                alert("Vendor Approved successfully!");
+                loadApprovals(); 
+            } catch(e) { 
+                alert("Failed to approve due to a system error."); 
+                event.target.innerHTML = '<i class="fas fa-check"></i> Approve Vendor';
+                event.target.disabled = false;
+            }
+        }
+        
         window.searchVendors = async function(mode) {
             const query = document.getElementById(`${mode}-search`).value.toLowerCase().trim();
             const results = document.getElementById(`${mode}-results`);
             if(!query) return;
 
-            results.innerHTML = '<p style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> Searching...</p>';
+            results.innerHTML = '<p style="text-align:center; padding: 20px;"><i class="fas fa-spinner fa-spin" style="color: var(--brand-color);"></i> Searching database...</p>';
             
             try {
                 const { data, error } = await supabaseClient.from('vendors').select('*');
@@ -425,10 +478,11 @@
                 const matches = data.filter(v => {
                     const nameMatch = v.business_name && v.business_name.toLowerCase().includes(query);
                     const emailMatch = v.email && v.email.toLowerCase().includes(query);
-                    return nameMatch || emailMatch;
+                    const codeMatch = v.vendor_code && v.vendor_code.toLowerCase().includes(query);
+                    return nameMatch || emailMatch || codeMatch;
                 });
 
-                if (matches.length === 0) { results.innerHTML = "<p style='text-align:center; color:#ef4444;'>No vendor found.</p>"; return; }
+                if (matches.length === 0) { results.innerHTML = "<p style='text-align:center; color:#ef4444; padding: 20px; background: #fef2f2; border-radius: 12px;'>No vendor found matching that search.</p>"; return; }
 
                 results.innerHTML = "";
                 matches.forEach(v => {
@@ -437,37 +491,43 @@
                     if (mode === 'control') {
                         const isSuspended = v.is_suspended === true;
                         const borderColor = isSuspended ? '#ef4444' : '#10b981';
-                        const statusTxt = isSuspended ? '<span style="color:#ef4444; font-weight:bold;">SUSPENDED</span>' : '<span style="color:#10b981; font-weight:bold;">ACTIVE</span>';
+                        const statusTxt = isSuspended ? '<span class="status-badge" style="background:#fef2f2; color:#ef4444;">SUSPENDED</span>' : '<span class="status-badge" style="background:#ecfdf5; color:#10b981;">ACTIVE</span>';
                         
                         results.innerHTML += `
                             <div class="list-item" style="border-left: 4px solid ${borderColor};">
-                                <div style="display:flex; justify-content:space-between;">
-                                    <div class="item-title">${v.business_name}</div>
+                                <div style="display:flex; justify-content:space-between; align-items: center; margin-bottom: 5px;">
+                                    <div class="item-title" style="margin:0;">${v.business_name}</div>
                                     <div>${statusTxt}</div>
                                 </div>
-                                <div class="item-meta">${userEmail || 'No email attached'}</div>
+                                <div class="item-meta">${v.vendor_code || 'N/A'} • ${userEmail || 'No email attached'}</div>
                                 <div class="action-row">
                                     ${isSuspended 
-                                        ? `<button class="action-btn btn-unsuspend" onclick="toggleVendorSuspend('${v.id}', true)">Restore Vendor</button>` 
-                                        : `<button class="action-btn btn-suspend" onclick="toggleVendorSuspend('${v.id}', false)">Suspend Vendor</button>`
+                                        ? `<button class="action-btn btn-unsuspend" onclick="toggleVendorSuspend('${v.id}', true)"><i class="fas fa-undo"></i> Restore Vendor</button>` 
+                                        : `<button class="action-btn btn-suspend" onclick="toggleVendorSuspend('${v.id}', false)"><i class="fas fa-ban"></i> Suspend Vendor</button>`
                                     }
                                 </div>
                             </div>`;
                     
                     } else if (mode === 'manager') {
                         const plan = v.subscription_plan || 'Verified';
-                        
                         results.innerHTML += `
                             <div class="list-item" style="border-left: 4px solid #10b981;">
                                 <div class="item-title">${v.business_name}</div>
-                                <hr style="border:0; border-top:1px solid #f1f5f9; margin: 10px 0;">
+                                <hr style="border:0; border-top:1px solid var(--border); margin: 15px 0;">
                                 
                                 <div class="vm-grid">
+                                    <div>
+                                        <label class="vm-label">Vendor Code / ID</label>
+                                        <input type="text" id="vm-code-${v.id}" class="vm-input" value="${v.vendor_code || ''}" placeholder="e.g. V001">
+                                    </div>
                                     <div>
                                         <label class="vm-label">Max Items (Slots)</label>
                                         <input type="number" id="vm-slots-${v.id}" class="vm-input" value="${v.max_items || 0}">
                                     </div>
-                                    <div>
+                                </div>
+
+                                <div class="vm-grid">
+                                    <div style="grid-column: span 2;">
                                         <label class="vm-label">Subscription Plan</label>
                                         <select id="vm-plan-${v.id}" class="vm-input">
                                             <option value="Verified" ${plan === 'Verified' ? 'selected' : ''}>Verified (Blue Badge)</option>
@@ -477,26 +537,24 @@
                                     </div>
                                 </div>
                                 
-                                <div style="margin-bottom: 10px;">
+                                <div style="margin-bottom: 15px;">
                                     <label class="vm-label">Contact Email</label>
                                     <input type="email" id="vm-email-${v.id}" class="vm-input" value="${userEmail}">
                                 </div>
 
-                                <button class="open-modal-btn" style="background:#10b981; padding:10px;" onclick="updateVendorDetails('${v.id}')">
+                                <button class="action-btn" style="background:#10b981; color:white; width: 100%; padding: 14px; font-size: 14px;" onclick="updateVendorDetails('${v.id}')">
                                     <i class="fas fa-save"></i> Save Updates
                                 </button>
                             </div>`;
                     }
                 });
 
-            } catch(e) { 
-                results.innerHTML = "<p style='color:red;'>Search failed. Check console.</p>"; 
-            }
+            } catch(e) { results.innerHTML = "<p style='color:red;'>Search failed. Check console.</p>"; }
         }
 
         window.toggleVendorSuspend = async function(vendorId, isCurrentlySuspended) {
             const actionStr = isCurrentlySuspended ? "RESTORE" : "SUSPEND";
-            if(!confirm(`Are you sure you want to ${actionStr} this vendor and all their items?`)) return;
+            if(!confirm(`Are you sure you want to ${actionStr} this vendor? \n\nSuspending hides all their active products from the marketplace.`)) return;
 
             try {
                 const newActive = isCurrentlySuspended ? true : false;
@@ -512,14 +570,17 @@
         }
 
         window.updateVendorDetails = async function(vendorId) {
+            const newCode = document.getElementById(`vm-code-${vendorId}`).value.trim();
             const newSlots = document.getElementById(`vm-slots-${vendorId}`).value;
             const newPlan = document.getElementById(`vm-plan-${vendorId}`).value;
             const newEmail = document.getElementById(`vm-email-${vendorId}`).value.trim();
 
             if(!newSlots || newSlots < 0) return alert("Enter a valid number for slots.");
+            if(!newCode) return alert("Vendor Code cannot be empty.");
             
             try {
                 await supabaseClient.from('vendors').update({ 
+                    vendor_code: newCode,
                     max_items: parseInt(newSlots),
                     subscription_plan: newPlan,
                     email: newEmail
@@ -527,32 +588,34 @@
                 
                 alert("Vendor details updated successfully!");
             } catch(e) { 
-                alert("Failed to update details. Check console.");
-                console.error(e);
+                alert("Failed to update details. Code might already be in use.");
             }
         }
 
-        // 4. REVIEWS MODULE
         window.loadAdminReviews = async function() {
             const list = document.getElementById('modal-reviews-list'); 
-            list.innerHTML = '<p style="text-align:center;">Loading reviews...</p>';
+            list.innerHTML = '<p style="text-align:center; padding:20px;">Loading reviews...</p>';
             try {
                 const { data } = await supabaseClient.from('reviews').select('id, rating, review_text, status, profiles(full_name)').order('created_at', { ascending: false });
-                if (!data || data.length === 0) { list.innerHTML = "<p style='text-align:center;'>No reviews found.</p>"; return; }
+                if (!data || data.length === 0) { list.innerHTML = "<p style='text-align:center; padding:20px;'>No reviews found.</p>"; return; }
+                
                 list.innerHTML = "";
                 data.forEach(r => {
                     const isPending = r.status === 'pending';
-                    const badge = isPending ? `<span class="status-badge status-pending" style="background:#fef3c7; color:#d97706; padding:3px 8px; border-radius:10px; font-size:10px; font-weight:bold;">PENDING</span>` : `<span class="status-badge status-approved" style="background:#d1fae5; color:#059669; padding:3px 8px; border-radius:10px; font-size:10px; font-weight:bold;">LIVE</span>`;
+                    const badge = isPending 
+                        ? `<span class="status-badge" style="background:#fefce8; color:#eab308; border: 1px solid #fef08a;">PENDING</span>` 
+                        : `<span class="status-badge" style="background:#ecfdf5; color:#10b981; border: 1px solid #a7f3d0;">LIVE</span>`;
+                    
                     list.innerHTML += `
-                        <div class="list-item" style="${isPending ? 'border-left: 4px solid #f59e0b;' : 'border-left: 4px solid #10b981;'}">
-                            <div class="item-header" style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                                <div><div class="item-title">${r.profiles?.full_name||"Unknown User"}</div><div class="item-meta">${r.rating} Stars</div></div>
+                        <div class="list-item" style="${isPending ? 'border-left: 4px solid #eab308;' : 'border-left: 4px solid #10b981;'}">
+                            <div style="display:flex; justify-content:space-between; margin-bottom:10px; align-items: center;">
+                                <div><div class="item-title" style="margin:0;">${r.profiles?.full_name||"Unknown User"}</div><div class="item-meta" style="margin:0; color:#eab308;"><i class="fas fa-star"></i> ${r.rating}/5</div></div>
                                 ${badge}
                             </div>
-                            <div style="font-size:13px; color:#475569; font-style:italic;">"${r.review_text}"</div>
+                            <div style="font-size:14px; color:var(--text-muted); line-height: 1.5; background: #f8fafc; padding: 12px; border-radius: 10px;">"${r.review_text}"</div>
                             <div class="action-row">
-                                ${isPending ? `<button class="action-btn btn-approve" onclick="approveReview('${r.id}')">Approve</button>` : ''}
-                                <button class="action-btn btn-delete" onclick="deleteReview('${r.id}')">Delete</button>
+                                ${isPending ? `<button class="action-btn btn-approve" onclick="approveReview('${r.id}')"><i class="fas fa-check"></i> Approve</button>` : ''}
+                                <button class="action-btn btn-delete" onclick="deleteReview('${r.id}')"><i class="fas fa-trash"></i> Delete</button>
                             </div>
                         </div>`;
                 });
@@ -560,55 +623,53 @@
         }
         
         window.approveReview = async function(id) { 
-            if(confirm("Approve and make public?")){ 
+            if(confirm("Approve and make public on the homepage?")){ 
                 await supabaseClient.from('reviews').update({ status: 'approved' }).eq('id', id); 
                 loadAdminReviews(); 
             } 
         }
         window.deleteReview = async function(id) { 
-            if(confirm("Permanently delete?")){ 
+            if(confirm("Permanently delete this review?")){ 
                 await supabaseClient.from('reviews').delete().eq('id', id); 
                 loadAdminReviews(); 
             } 
         }
 
-        // 5. BLOGS MODULE
         window.loadAdminBlogs = async function() {
             const list = document.getElementById('modal-blogs-list'); 
-            list.innerHTML = '<p style="text-align:center;">Loading posts...</p>';
+            list.innerHTML = '<p style="text-align:center; padding: 20px;">Loading posts...</p>';
             try {
                 const { data } = await supabaseClient.from('blogs').select('*').order('created_at', { ascending: false });
-                if (!data || data.length === 0) { list.innerHTML = "<p style='text-align:center;'>No posts yet.</p>"; return; }
+                if (!data || data.length === 0) { list.innerHTML = "<p style='text-align:center; padding: 20px;'>No posts published yet.</p>"; return; }
                 
                 list.innerHTML = "";
                 data.forEach(b => {
                     const sT = b.title.replace(/'/g, "\\'").replace(/"/g, '&quot;'); 
-                    const sS = b.snippet.replace(/'/g, "\\'").replace(/"/g, '&quot;'); 
-                    const sC = b.content.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                    const sS = b.snippet ? b.snippet.replace(/'/g, "\\'").replace(/"/g, '&quot;') : ''; 
+                    const sC = b.content ? b.content.replace(/'/g, "\\'").replace(/"/g, '&quot;') : '';
                     
                     list.innerHTML += `
                         <div class="list-item">
                             <div style="display:flex; gap:15px;">
-                                <img src="${b.image_url||'https://via.placeholder.com/100'}" style="width:60px;height:60px;object-fit:cover;border-radius:8px;">
+                                <img src="${b.image_url||'https://via.placeholder.com/100'}" style="width:70px;height:70px;object-fit:cover;border-radius:12px; border: 1px solid var(--border);">
                                 <div style="flex:1;">
-                                    <div class="item-title">${b.title}</div>
-                                    <div class="item-meta">${b.category} | 👁️ ${b.views || 0}</div>
+                                    <div class="item-title" style="margin-bottom: 2px;">${b.title}</div>
+                                    <div class="item-meta" style="margin-bottom: 5px;">${b.category} • ${new Date(b.created_at).toLocaleDateString()}</div>
                                 </div>
                             </div>
                             <div class="action-row">
-                                <button class="action-btn btn-edit" onclick="editBlog('${b.id}', '${sT}', '${b.category}', '${sS}', '${sC}')">Edit</button>
-                                <button class="action-btn btn-delete" onclick="deleteBlog('${b.id}')">Delete</button>
+                                <button class="action-btn" style="background:#f1f5f9; color: var(--text-main);" onclick="editBlog('${b.id}', '${sT}', '${b.category}', '${sS}', '${sC}')"><i class="fas fa-pen"></i> Edit</button>
+                                <button class="action-btn btn-delete" onclick="deleteBlog('${b.id}')"><i class="fas fa-trash"></i> Delete</button>
                             </div>
                         </div>`;
                 });
             } catch (e) { console.error(e); }
         }
         
-        async function uploadBlogImage(file) {
+        async function uploadImage(file) {
             const formData = new FormData(); 
             formData.append('file', file); 
             formData.append('upload_preset', 'unical_images');
-            
             const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
             const data = await res.json(); 
             if(!res.ok) throw new Error(data.error.message);
@@ -626,28 +687,29 @@
             const file = fileInput.files[0];
 
             if(!title || !content || !snippet) return alert("Title, Snippet, and Content are required");
-            if(!id && !file) return alert("Upload a cover image for new posts.");
+            if(!id && !file) return alert("Please upload a cover image for new posts.");
 
-            btn.innerText = "Processing..."; btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...'; 
+            btn.disabled = true;
 
             try {
                 let imgUrl = null; 
                 if(file) {
-                    btn.innerText = "Uploading Image...";
-                    imgUrl = await uploadBlogImage(file);
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading Image...';
+                    imgUrl = await uploadImage(file);
                 }
                 
                 const payload = { title, category, snippet, content }; 
                 if(imgUrl) payload.image_url = imgUrl;
 
                 if(id) {
-                    btn.innerText = "Updating...";
+                    btn.innerHTML = '<i class="fas fa-save"></i> Updating...';
                     await supabaseClient.from('blogs').update(payload).eq('id', id); 
-                    alert("Post Updated!");
+                    alert("Post Updated Successfully!");
                 } else {
-                    btn.innerText = "Publishing...";
+                    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Publishing...';
                     await supabaseClient.from('blogs').insert([payload]); 
-                    alert("Post Published!");
+                    alert("New Post Published!");
                 }
                 
                 resetBlogForm(); 
@@ -667,7 +729,7 @@
             document.getElementById('blogSnippet').value = s; 
             document.getElementById('blogContent').value = cont; 
             
-            document.getElementById('blogFormTitle').innerText = "Edit Post";
+            document.getElementById('blogFormTitle').innerText = "Edit Existing Post";
             document.getElementById('saveBlogBtn').innerText = "Update Post";
             document.getElementById('cancelEditBtn').style.display = 'block'; 
             
@@ -676,8 +738,12 @@
 
         window.deleteBlog = async function(id) { 
             if(confirm("Delete post permanently?")){ 
-                await supabaseClient.from('blogs').delete().eq('id', id); 
-                loadAdminBlogs(); 
+                try {
+                    await supabaseClient.from('blogs').delete().eq('id', id); 
+                    loadAdminBlogs(); 
+                } catch(e) {
+                    alert("Failed to delete post: " + e.message);
+                }
             } 
         }
 
@@ -694,33 +760,30 @@
             document.getElementById('cancelEditBtn').style.display = 'none'; 
         }
 
-        // 🚀 6. NEW: NOTIFICATIONS MODULE
         window.loadAdminNotifications = async function() {
             const list = document.getElementById('admin-notifs-list');
-            list.innerHTML = '<p style="text-align:center;">Loading notifications...</p>';
+            list.innerHTML = '<p style="text-align:center; padding: 20px;">Loading notifications...</p>';
             try {
                 const { data } = await supabaseClient.from('notifications').select('*').order('created_at', { ascending: false });
-                if (!data || data.length === 0) { list.innerHTML = "<p style='text-align:center;'>No past notifications.</p>"; return; }
+                if (!data || data.length === 0) { list.innerHTML = "<p style='text-align:center; padding: 20px;'>No past notifications.</p>"; return; }
                 
                 list.innerHTML = "";
                 data.forEach(n => {
-                    // 🚀 FIX: Correctly handling string escaping here!
-                    const target = n.user_id ? `<span style='color:#ef4444; font-weight:bold;'>User ID: ${n.user_id.substring(0,8)}...</span>` : `<span style='color:#10b981; font-weight:bold;'>ALL USERS</span>`;
+                    const target = n.user_id ? `<span style='color:#ef4444; font-weight:bold;'><i class="fas fa-lock"></i> Private (User: ${n.user_id.substring(0,8)}...)</span>` : `<span style='color:#10b981; font-weight:bold;'><i class="fas fa-globe"></i> GLOBAL BROADCAST</span>`;
+                    
                     list.innerHTML += `
                         <div class="list-item">
                             <div style="display:flex; justify-content:space-between; align-items:flex-start;">
                                 <div style="flex:1;">
-                                    <div class="item-title">${n.title} <span style="font-size:10px; background:#e2e8f0; padding:2px 6px; border-radius:4px; margin-left:5px;">${n.type.toUpperCase()}</span></div>
-                                    <div class="item-meta">Target: ${target} | ${new Date(n.created_at).toLocaleDateString()}</div>
-                                    <div style="font-size:13px; color:#475569;">${n.message}</div>
+                                    <div class="item-title">${n.title} <span class="status-badge" style="background:#e2e8f0; color:#475569; margin-left:5px;">${n.type.toUpperCase()}</span></div>
+                                    <div class="item-meta">${target} • ${new Date(n.created_at).toLocaleDateString()}</div>
+                                    <div style="font-size:13px; color:var(--text-muted); background: #f8fafc; padding: 10px; border-radius: 8px;">${n.message}</div>
                                 </div>
-                                <button class="action-btn btn-delete" onclick="deleteNotification('${n.id}')" style="margin-left: 10px;">Delete</button>
+                                <button class="close-btn" style="background:#fef2f2; color:#ef4444; margin-left: 15px;" onclick="deleteNotification('${n.id}')"><i class="fas fa-trash"></i></button>
                             </div>
                         </div>`;
                 });
-            } catch (e) { 
-                list.innerHTML = "<p style='color:red; text-align:center;'>Error loading notifications.</p>"; 
-            }
+            } catch (e) { list.innerHTML = "<p style='color:red; text-align:center;'>Error loading notifications.</p>"; }
         };
 
         window.sendNotification = async function() {
@@ -733,11 +796,12 @@
             if (!title || !message) return alert("Title and Message are required!");
             if (userId === "") userId = null;
 
-            btn.innerText = "Sending..."; btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...'; 
+            btn.disabled = true;
 
             try {
                 await supabaseClient.from('notifications').insert([{ title, message, type, user_id: userId }]);
-                alert("Notification Sent Successfully!");
+                alert("Notification Broadcasted Successfully!");
                 
                 document.getElementById('notifTitle').value = "";
                 document.getElementById('notifMessage').value = "";
@@ -745,28 +809,28 @@
                 
                 loadAdminNotifications();
             } catch (e) {
-                alert("Error sending notification. Make sure the User ID is valid.");
+                alert("Error sending notification.");
             } finally {
-                btn.innerText = "Broadcast Notification"; btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Send Notification'; 
+                btn.disabled = false;
             }
         };
 
         window.deleteNotification = async function(id) {
-            if (confirm("Delete this notification? It will be removed from user inboxes.")) {
-                await supabaseClient.from('notifications').delete().eq('id', id);
-                loadAdminNotifications();
+            if (confirm("Delete this notification? It will be permanently removed from user inboxes.")) {
+                try {
+                    await supabaseClient.from('notifications').delete().eq('id', id);
+                    loadAdminNotifications();
+                } catch(e) { alert("Failed to delete notification: " + e.message); }
             }
         };
 
-        // ===============================================
-        // 🚀 FEATURED ITEMS MODULE
-        // ===============================================
         window.searchVendorItems = async function() {
             const query = document.getElementById('featured-search').value.toLowerCase().trim();
             const results = document.getElementById('featured-results');
             if(!query) return;
 
-            results.innerHTML = '<p style="text-align:center; padding: 20px;"><i class="fas fa-spinner fa-spin" style="color: #FF7A00;"></i> Searching vendors...</p>';
+            results.innerHTML = '<p style="text-align:center; padding: 20px;"><i class="fas fa-spinner fa-spin" style="color: var(--brand-color);"></i> Searching vendors...</p>';
             
             try {
                 const { data: vendors } = await supabaseClient.from('vendors').select('id, business_name, vendor_code').or(`business_name.ilike.%${query}%,vendor_code.ilike.%${query}%`).limit(1);
@@ -789,14 +853,14 @@
                 products.forEach(p => {
                     const isPinned = p.is_pinned === true;
                     const imgUrl = (p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/100';
-                    const btnText = isPinned ? 'Unpin Item' : 'Pin to Top';
+                    const btnText = isPinned ? '<i class="fas fa-thumbtack"></i> Unpin Item' : '<i class="fas fa-thumbtack"></i> Pin to Top';
                     const btnClass = isPinned ? 'btn-delete' : 'btn-approve';
-                    const badge = isPinned ? '<span style="background:#eff6ff; color:#3b82f6; padding:3px 8px; border-radius:8px; font-size:10px; font-weight:bold; margin-left: 5px;">PINNED</span>' : '';
+                    const badge = isPinned ? '<span class="status-badge" style="background:#eff6ff; color:#3b82f6; margin-left: 5px;">PINNED</span>' : '';
 
                     results.innerHTML += `
                         <div class="list-item" style="border-left: 4px solid ${isPinned ? '#3b82f6' : '#e2e8f0'};">
                             <div style="display:flex; gap:15px; align-items: center;">
-                                <img src="${imgUrl}" style="width:60px;height:60px;object-fit:cover;border-radius:10px; border: 1px solid #cbd5e1;">
+                                <img src="${imgUrl}" style="width:60px;height:60px;object-fit:cover;border-radius:10px; border: 1px solid var(--border);">
                                 <div style="flex:1;">
                                     <div class="item-title" style="margin-bottom: 2px;">${p.name} ${badge}</div>
                                     <div class="item-meta" style="margin-bottom: 0;">${p.category} • ₦${p.price}</div>
@@ -810,25 +874,23 @@
             } catch(e) { results.innerHTML = "<p style='color:red;'>Search failed. Check console.</p>"; }
         }
 
-        window.togglePin = async function(productId, newState) {
+       window.togglePin = async function(productId, newState) {
             try {
                 const { error } = await supabaseClient.from('products').update({ is_pinned: newState }).eq('id', productId);
                 if (error) throw error;
                 searchVendorItems(); 
             } catch(e) { 
                 alert("Failed to pin item: " + e.message); 
+                console.error(e);
             }
         }
 
-        // ===============================================
-        // 🚀 FEATURED VENDORS MODULE
-        // ===============================================
         window.searchPinVendors = async function() {
             const query = document.getElementById('pin-vendor-search').value.toLowerCase().trim();
             const results = document.getElementById('pin-vendor-results');
             if(!query) return;
 
-            results.innerHTML = '<p style="text-align:center; padding: 20px;"><i class="fas fa-spinner fa-spin" style="color: #FF7A00;"></i> Searching vendors...</p>';
+            results.innerHTML = '<p style="text-align:center; padding: 20px;"><i class="fas fa-spinner fa-spin" style="color: var(--brand-color);"></i> Searching vendors...</p>';
             
             try {
                 const { data: vendors, error } = await supabaseClient.from('vendors')
@@ -845,14 +907,14 @@
                 vendors.forEach(v => {
                     const isPinned = v.is_pinned === true;
                     const imgUrl = v.logo_url || 'https://via.placeholder.com/100';
-                    const btnText = isPinned ? 'Unpin Vendor' : 'Pin Vendor';
+                    const btnText = isPinned ? '<i class="fas fa-thumbtack"></i> Unpin Vendor' : '<i class="fas fa-thumbtack"></i> Pin Vendor';
                     const btnClass = isPinned ? 'btn-delete' : 'btn-approve';
-                    const badge = isPinned ? '<span style="background:#fff7ed; color:#ea580c; padding:3px 8px; border-radius:8px; font-size:10px; font-weight:bold; margin-left: 5px;">PINNED</span>' : '';
+                    const badge = isPinned ? '<span class="status-badge" style="background:#fff7ed; color:#ea580c; margin-left: 5px;">PINNED</span>' : '';
 
                     results.innerHTML += `
                         <div class="list-item" style="border-left: 4px solid ${isPinned ? '#ea580c' : '#e2e8f0'};">
                             <div style="display:flex; gap:15px; align-items: center;">
-                                <img src="${imgUrl}" style="width:60px;height:60px;object-fit:cover;border-radius:10px; border: 1px solid #cbd5e1;">
+                                <img src="${imgUrl}" style="width:60px;height:60px;object-fit:cover;border-radius:10px; border: 1px solid var(--border);">
                                 <div style="flex:1;">
                                     <div class="item-title" style="margin-bottom: 2px;">${v.business_name} ${badge}</div>
                                     <div class="item-meta" style="margin-bottom: 0;">Code: ${v.vendor_code || 'N/A'}</div>
@@ -868,35 +930,33 @@
             }
         }
 
-        window.toggleVendorPin = async function(vendorId, newState) {
+      window.toggleVendorPin = async function(vendorId, newState) {
             try {
                 const { error } = await supabaseClient.from('vendors').update({ is_pinned: newState }).eq('id', vendorId);
                 if (error) throw error;
                 searchPinVendors(); 
             } catch(e) { 
                 alert("Failed to pin/unpin vendor: " + e.message); 
+                console.error(e);
             }
         }
 
-        // ===============================================
-        // 🚀 AD POPUPS MODULE
-        // ===============================================
         window.loadAdminAds = async function() {
             const list = document.getElementById('modal-ads-list');
             list.innerHTML = '<p style="text-align:center; padding: 20px;">Loading ads...</p>';
             try {
                 const { data } = await supabaseClient.from('ads').select('*').order('created_at', { ascending: false });
-                if (!data || data.length === 0) { list.innerHTML = "<p style='text-align:center; padding: 20px; color:#64748b;'>No ads created yet.</p>"; return; }
+                if (!data || data.length === 0) { list.innerHTML = "<p style='text-align:center; padding: 20px;'>No ads created yet.</p>"; return; }
                 
                 list.innerHTML = "";
                 data.forEach(a => {
                     const isActive = a.is_active;
-                    const statusBadge = isActive ? `<span style="background:#ecfdf5; color:#10b981; padding:3px 8px; border-radius:8px; font-size:10px; font-weight:bold;">ACTIVE</span>` : `<span style="background:#fef2f2; color:#ef4444; padding:3px 8px; border-radius:8px; font-size:10px; font-weight:bold;">INACTIVE</span>`;
+                    const statusBadge = isActive ? `<span class="status-badge" style="background:#ecfdf5; color:#10b981;">ACTIVE</span>` : `<span class="status-badge" style="background:#fef2f2; color:#ef4444;">INACTIVE</span>`;
                     
                     list.innerHTML += `
                         <div class="list-item" style="border-left: 4px solid ${isActive ? '#14b8a6' : '#ef4444'};">
                             <div style="display:flex; gap:15px;">
-                                ${a.image_url ? `<img src="${a.image_url}" style="width:60px;height:60px;object-fit:cover;border-radius:10px; border: 1px solid #cbd5e1;">` : ''}
+                                ${a.image_url ? `<img src="${a.image_url}" style="width:60px;height:60px;object-fit:cover;border-radius:10px; border: 1px solid var(--border);">` : ''}
                                 <div style="flex:1;">
                                     <div class="item-title" style="margin-bottom: 2px;">${a.title} ${statusBadge}</div>
                                     <div class="item-meta" style="margin-bottom: 5px;">Link: ${a.button_link || 'None'}</div>
@@ -904,9 +964,9 @@
                             </div>
                             <div class="action-row">
                                 <button class="action-btn ${isActive ? 'btn-suspend' : 'btn-approve'}" onclick="toggleAdStatus('${a.id}', ${!isActive})">
-                                    ${isActive ? 'Deactivate' : 'Activate'}
+                                    <i class="fas ${isActive ? 'fa-ban' : 'fa-check'}"></i> ${isActive ? 'Deactivate' : 'Activate'}
                                 </button>
-                                <button class="action-btn btn-delete" onclick="deleteAd('${a.id}')">Delete</button>
+                                <button class="action-btn btn-delete" onclick="deleteAd('${a.id}')"><i class="fas fa-trash"></i> Delete</button>
                             </div>
                         </div>`;
                 });
@@ -924,15 +984,14 @@
 
             if(!title || !content) return alert("Title and Content are required.");
 
-            btn.innerHTML = 'Saving...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
             btn.disabled = true;
 
             try {
                 let imgUrl = null;
                 if(file) {
-                    btn.innerHTML = 'Uploading Image...';
-                    // Reusing your existing blog image uploader logic
-                    imgUrl = await uploadBlogImage(file); 
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading Image...';
+                    imgUrl = await uploadImage(file); 
                 }
                 
                 const payload = { title, content, button_text: btnText, button_link: btnLink, is_active: true };
@@ -953,7 +1012,7 @@
             } catch(e) {
                 alert("Error saving ad: " + e.message);
             } finally {
-                btn.innerHTML = 'Publish Ad';
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Publish Ad';
                 btn.disabled = false;
             }
         }

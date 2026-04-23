@@ -10,80 +10,110 @@
     <link rel="stylesheet" href="../../asset/style.css">
 
     <style>
-        body, html { background: #f8fafc; margin: 0; padding: 0; }
-        .app-container { padding-bottom: 80px; position: relative; }
-        
-        /* 🚀 FIX: Solid Top Bar Background */
-        .sticky-top-bar { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
-        .back-btn-overlay, .share-btn-overlay { background: #f1f5f9; color: #1e293b; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: none; font-size: 16px; cursor: pointer; transition: 0.2s; }
-        .back-btn-overlay:active, .share-btn-overlay:active { transform: scale(0.9); background: #e2e8f0; }
+        :root { --brand-color: #FF7A00; } /* UNICAL Orange */
 
-        /* Watermark Background (Pushed down to clear the new top bar) */
-        .profile-cover { margin-top: 70px; background: #e2e8f0; height: 120px; position: relative; border-radius: 0 0 30px 30px; overflow: hidden; display: flex; justify-content: center; align-items: center; }
-        .profile-cover::before { content: "UNICAL DGM"; position: absolute; font-size: 45px; font-weight: 900; color: rgba(0,0,0,0.04); transform: rotate(-10deg); white-space: nowrap; pointer-events: none; }
-
-        .profile-card { background: white; margin: -50px 20px 20px; border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: relative; text-align: center; border: 1px solid #f1f5f9; }
-        .v-logo { width: 100px; height: 100px; border-radius: 50%; border: 5px solid white; background: #eee; object-fit: cover; margin-top: -50px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        /* 🚀 MODERN APP LAYOUT */
+        body, html { background: #f8fafc; margin: 0; padding: 0; overflow-x: hidden; }
+        .app-container { padding-bottom: 80px; position: relative; min-height: 100vh; background: #f8fafc; }
         
-        .v-name { font-size: 22px; font-weight: 900; color: #1e293b; margin: 10px 0 5px; display: flex; justify-content: center; align-items: center; gap: 6px; }
-        .v-categories { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 10px; }
-        .cat-tag { background: #eff6ff; color: #2563EB; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 20px; text-transform: uppercase; }
-        
-        /* 🚀 FIX: Store Location */
-        .v-location { font-size: 12px; color: #64748b; font-weight: 600; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 5px; }
+        /* 🚀 STICKY TOP BAR */
+        .sticky-top-bar { 
+            position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; 
+            display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; 
+            z-index: 1000; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03); box-sizing: border-box;
+        }
+        .icon-btn-overlay { 
+            background: #f1f5f9; color: #1e293b; width: 40px; height: 40px; border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; border: none; 
+            font-size: 16px; cursor: pointer; transition: 0.2s; 
+        }
+        .icon-btn-overlay:active { transform: scale(0.9); background: #e2e8f0; }
 
-        .v-desc { font-size: 13px; color: #475569; line-height: 1.6; margin-bottom: 20px; }
-        
-        .v-actions { display: flex; flex-direction: column; align-items: center; gap: 10px; }
-        .btn-wa { background: #25D366; color: white; padding: 10px 20px; border-radius: 25px; font-weight: 800; font-size: 13px; border: none; cursor: pointer; display: inline-flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2); text-decoration: none; width: auto; min-width: 180px; transition: 0.2s; }
-        .btn-wa:active { transform: scale(0.95); }
-        .report-btn { display: inline-flex; align-items: center; gap: 5px; color: #ef4444; font-size: 12px; font-weight: 600; text-decoration: none; margin-top: 10px; background: #fef2f2; padding: 6px 12px; border-radius: 12px; }
+        /* 🚀 PREMIUM COVER PHOTO */
+        .profile-cover { 
+            margin-top: 60px; height: 140px; position: relative; 
+            background: linear-gradient(135deg, var(--brand-color), #1e293b); 
+            border-radius: 0 0 30px 30px; overflow: hidden; 
+            display: flex; justify-content: center; align-items: center; 
+        }
+        .profile-cover::before { 
+            content: "UNICAL DGM"; position: absolute; font-size: 45px; font-weight: 900; 
+            color: rgba(255,255,255,0.05); transform: rotate(-10deg); white-space: nowrap; pointer-events: none; 
+        }
 
-        /* Reviews Section */
-        .reviews-section { background: white; margin: 0 20px 20px; border-radius: 20px; padding: 20px; border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        /* 🚀 FLOATING PROFILE CARD */
+        .profile-card { 
+            background: white; margin: -60px 20px 20px; border-radius: 24px; padding: 25px 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.04); position: relative; text-align: center; 
+            border: 1px solid #f1f5f9; 
+        }
+        .v-logo { 
+            width: 100px; height: 100px; border-radius: 50%; border: 4px solid white; 
+            background: #f8fafc; object-fit: cover; margin-top: -60px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08); 
+        }
+        .v-name { font-size: 22px; font-weight: 900; color: var(--text-main); margin: 10px 0 5px; display: flex; justify-content: center; align-items: center; gap: 6px; }
+        .v-categories { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 12px; }
+        .cat-tag { background: #eff6ff; color: var(--brand-color); font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 20px; text-transform: uppercase; }
+        .v-location { font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 15px; display: flex; justify-content: center; align-items: center; gap: 5px; }
+        .v-desc { font-size: 13px; color: #475569; line-height: 1.6; margin-bottom: 25px; background: #f8fafc; padding: 15px; border-radius: 16px; }
+        
+        .v-actions { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+        .btn-wa { background: #25D366; color: white; padding: 14px 24px; border-radius: 16px; font-weight: 800; font-size: 14px; border: none; cursor: pointer; display: inline-flex; justify-content: center; align-items: center; gap: 8px; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3); text-decoration: none; width: 100%; transition: 0.2s; }
+        .btn-wa:active { transform: scale(0.98); }
+        .report-btn { color: #ef4444; font-size: 12px; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 5px; }
+
+        /* 🚀 REVIEWS SECTION */
+        .reviews-section { background: white; margin: 0 20px 25px; border-radius: 24px; padding: 20px; border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
         .rev-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .rev-title { font-size: 16px; font-weight: 800; color: #1e293b; margin: 0; }
-        .write-rev-btn { background: #FF7A00; color: white; border: none; padding: 8px 16px; border-radius: 12px; font-weight: 800; font-size: 12px; cursor: pointer; box-shadow: 0 4px 10px rgba(245, 166, 35, 0.2); }
+        .rev-title { font-size: 16px; font-weight: 800; color: var(--text-main); margin: 0; }
+        .write-rev-btn { background: #fffbeb; color: #f59e0b; border: 1px solid #fde68a; padding: 8px 16px; border-radius: 12px; font-weight: 800; font-size: 12px; cursor: pointer; transition: 0.2s; }
+        .write-rev-btn:active { transform: scale(0.95); }
         
-        .rating-big { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; }
-        .rating-num { font-size: 32px; font-weight: 900; color: #1e293b; }
-        .rating-stars { color: #F5A623; font-size: 16px; }
-        .rating-count { font-size: 12px; color: #64748b; font-weight: 600; }
+        .rating-big { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .rating-num { font-size: 36px; font-weight: 900; color: var(--text-main); line-height: 1; }
+        .rating-stars { color: #F5A623; font-size: 16px; margin-bottom: 2px; }
+        .rating-count { font-size: 12px; color: var(--text-muted); font-weight: 600; }
 
         .reviews-list { display: flex; overflow-x: auto; gap: 15px; padding-bottom: 10px; scrollbar-width: none; scroll-snap-type: x mandatory; }
         .reviews-list::-webkit-scrollbar { display: none; }
-        .rev-card { min-width: 260px; background: #f8fafc; padding: 15px; border-radius: 16px; scroll-snap-align: start; border: 1px solid #e2e8f0; position: relative; }
-        .r-name { font-size: 13px; font-weight: 800; color: #1e293b; margin-bottom: 2px; }
+        
+        /* 🚀 GRID BLOWOUT FIX FOR REVIEW CARDS */
+        .rev-card { min-width: 260px; max-width: 260px; background: #f8fafc; padding: 15px; border-radius: 16px; scroll-snap-align: start; border: 1px solid #e2e8f0; position: relative; box-sizing: border-box; overflow: hidden; }
+        .r-name { font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .r-stars { color: #F5A623; font-size: 10px; margin-bottom: 8px; }
         .r-text { font-size: 13px; color: #475569; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 
-        /* Grids */
-        .section-heading { font-size: 18px; font-weight: 800; color: #1e293b; margin: 30px 20px 15px; display: flex; align-items: center; gap: 8px; }
+        /* 🚀 DYNAMIC GRIDS */
+        .section-heading { font-size: 16px; font-weight: 900; color: var(--text-main); margin: 30px 20px 15px; display: flex; align-items: center; gap: 8px; }
         .items-grid, .vendors-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 20px; }
         
-        .product-card { background: white; border-radius: 16px; padding: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); cursor: pointer; border: 1px solid #f1f5f9; }
+        /* 🚀 GRID BLOWOUT FIX FOR PRODUCT CARDS */
+        .product-card { background: white; border-radius: 16px; padding: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); cursor: pointer; border: 1px solid #f1f5f9; width: 100%; min-width: 0; box-sizing: border-box; overflow: hidden; }
         .product-img { width: 100%; height: 140px; object-fit: cover; border-radius: 10px; background: #eee; margin-bottom: 10px; }
-        .product-price { font-size: 15px; font-weight: 800; color: #FF7A00; margin-bottom: 4px; }
-        .product-title { font-size: 12px; font-weight: 600; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .product-price { font-size: 15px; font-weight: 800; color: var(--brand-color); margin-bottom: 4px; }
+        .product-title { font-size: 12px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
 
-        .vendor-mini-card { background: white; border-radius: 16px; padding: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; cursor: pointer; }
+        /* 🚀 GRID BLOWOUT FIX FOR VENDOR CARDS */
+        .vendor-mini-card { background: white; border-radius: 16px; padding: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; cursor: pointer; width: 100%; min-width: 0; box-sizing: border-box; overflow: hidden; }
         .vendor-mini-img { width: 60px; height: 60px; border-radius: 50%; margin-bottom: 10px; border: 2px solid #f1f5f9; object-fit: cover; }
-        .vendor-mini-name { font-size: 13px; font-weight: 800; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .vendor-mini-name { font-size: 13px; font-weight: 800; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
 
-        /* 🚀 FIX: View All Buttons */
-        .view-all-btn { display: block; text-align: center; background: #f1f5f9; color: #1e293b; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 13px; text-decoration: none; margin: 20px 20px 0; transition: 0.2s; }
-        .view-all-btn:active { transform: scale(0.98); background: #e2e8f0; }
+        .view-all-btn { display: block; text-align: center; background: white; color: var(--text-main); padding: 15px; border-radius: 16px; font-weight: 800; font-size: 13px; text-decoration: none; margin: 20px 20px 0; border: 1px solid #e2e8f0; transition: 0.2s; }
+        .view-all-btn:active { transform: scale(0.98); background: #f8fafc; }
 
-        /* Modal */
-        .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 5000; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); }
-        .modal-content { background: white; width: 100%; max-width: 400px; border-radius: 24px; padding: 25px; position: relative; text-align: center; }
+        /* 🚀 MODAL OVERLAY */
+        .modal-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 5000; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px); box-sizing: border-box;}
+        .modal-content { background: white; width: 100%; max-width: 400px; border-radius: 24px; padding: 25px; position: relative; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: popUp 0.3s ease-out;}
+        @keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .close-modal { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #94a3b8; cursor: pointer; }
         
         .star-selector { display: flex; justify-content: center; gap: 10px; margin: 20px 0; font-size: 35px; color: #e2e8f0; cursor: pointer; }
         .star-selector i.active { color: #F5A623; }
-        .rev-input { width: 100%; height: 100px; padding: 15px; border-radius: 12px; border: 1px solid #cbd5e1; font-size: 14px; resize: none; margin-bottom: 20px; background: #f8fafc; outline: none; }
-        .rev-input:focus { border-color: #F5A623; }
-        .submit-btn { background: #2563EB; color: white; width: 100%; padding: 15px; border: none; border-radius: 12px; font-weight: 800; font-size: 15px; cursor: pointer; }
+        .rev-input { width: 100%; height: 100px; padding: 15px; border-radius: 16px; border: 1px solid #cbd5e1; font-size: 14px; resize: none; margin-bottom: 20px; background: #f8fafc; outline: none; box-sizing: border-box; font-family: inherit;}
+        .rev-input:focus { border-color: #F5A623; background: white;}
+        .submit-btn { background: var(--brand-color); color: white; width: 100%; padding: 15px; border: none; border-radius: 14px; font-weight: 800; font-size: 15px; cursor: pointer; }
 
         /* Skeletons */
         .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
@@ -98,23 +128,24 @@
         body.dark-mode { background-color: #020617 !important; }
         body.dark-mode .app-container { background: #020617 !important; }
         
-        body.dark-mode .sticky-top-bar { background: rgba(15, 23, 42, 0.95) !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .sticky-top-bar { background: rgba(15, 23, 42, 0.95) !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; border-bottom: 1px solid #334155; }
         body.dark-mode .sticky-top-bar div { color: #f1f5f9 !important; }
-        body.dark-mode .back-btn-overlay, body.dark-mode .share-btn-overlay { background: #1e293b !important; color: #f1f5f9 !important; }
+        body.dark-mode .icon-btn-overlay { background: #1e293b !important; color: #f1f5f9 !important; }
         
-        body.dark-mode .profile-cover { background: #1e293b !important; }
+        body.dark-mode .profile-cover { background: linear-gradient(135deg, #FF7A00, #0f172a) !important; }
         body.dark-mode .profile-cover::before { color: rgba(255,255,255,0.02) !important; }
         
-        body.dark-mode .profile-card { background: #0f172a !important; border-color: #334155 !important; }
+        body.dark-mode .profile-card { background: #0f172a !important; border-color: #334155 !important; box-shadow: none !important;}
         body.dark-mode .v-logo { border-color: #0f172a !important; background: #1e293b !important; }
         body.dark-mode .v-name { color: #f1f5f9 !important; }
         body.dark-mode .v-location { color: #94a3b8 !important; }
-        body.dark-mode .v-desc { color: #cbd5e1 !important; }
-        body.dark-mode .cat-tag { background: #1e293b !important; color: #60a5fa !important; }
-        body.dark-mode .report-btn { background: rgba(239, 68, 68, 0.1) !important; border: 1px solid #ef4444 !important; }
+        body.dark-mode .v-desc { color: #cbd5e1 !important; background: #1e293b !important; }
+        body.dark-mode .cat-tag { background: #1e293b !important; color: var(--brand-color) !important; }
+        body.dark-mode .report-btn { color: #ef4444 !important; }
 
-        body.dark-mode .reviews-section { background: #0f172a !important; border-color: #334155 !important; }
+        body.dark-mode .reviews-section { background: #0f172a !important; border-color: #334155 !important; box-shadow: none !important;}
         body.dark-mode .rev-title { color: #f1f5f9 !important; }
+        body.dark-mode .write-rev-btn { background: #1e293b !important; border-color: #334155 !important; }
         body.dark-mode .rating-num { color: #f1f5f9 !important; }
         body.dark-mode .rating-count { color: #94a3b8 !important; }
         body.dark-mode .rev-card { background: #1e293b !important; border-color: #334155 !important; }
@@ -123,33 +154,40 @@
 
         body.dark-mode .section-heading { color: #f1f5f9 !important; }
         
-        body.dark-mode .product-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .product-card { background: #1e293b !important; border-color: #334155 !important; box-shadow: none !important; }
         body.dark-mode .product-img { background: #334155 !important; }
         body.dark-mode .product-title { color: #f1f5f9 !important; }
+        body.dark-mode .product-card .card-price { color: var(--brand-color) !important; } 
 
-        body.dark-mode .vendor-mini-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .vendor-mini-card { background: #1e293b !important; border-color: #334155 !important; box-shadow: none !important;}
         body.dark-mode .vendor-mini-name { color: #f1f5f9 !important; }
         body.dark-mode .vendor-mini-img { border-color: #1e293b !important; }
 
-        body.dark-mode .view-all-btn { background: #1e293b !important; color: #f1f5f9 !important; }
+        body.dark-mode .view-all-btn { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
         body.dark-mode .view-all-btn:active { background: #334155 !important; }
 
-        body.dark-mode .modal-content { background: #0f172a !important; }
+        body.dark-mode .modal-content { background: #0f172a !important; border: 1px solid #334155; }
         body.dark-mode #modal-title { color: #f1f5f9 !important; }
         body.dark-mode .rev-input { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
         
         /* Dark Mode Skeletons */
         body.dark-mode .sk-vendor, body.dark-mode .sk-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .sk-shimmer { background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%) !important; background-size: 200% 100% !important; }
     </style>
 </head>
 <body>
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
 
     <div class="app-container">
         
         <div class="sticky-top-bar">
-            <button class="back-btn-overlay" onclick="window.history.back()"><i class="fas fa-arrow-left"></i></button>
-            <div style="font-weight: 800; font-size: 16px; color: #1e293b;">Vendor Store</div>
-            <button class="share-btn-overlay" onclick="shareStore()"><i class="fas fa-share-alt"></i></button>
+            <button class="icon-btn-overlay" onclick="smartBack()"><i class="fas fa-arrow-left"></i></button>
+            <div style="font-weight: 800; font-size: 16px;">Store Profile</div>
+            <button class="icon-btn-overlay" onclick="shareStore()"><i class="fas fa-share-alt"></i></button>
         </div>
 
         <div class="profile-cover"></div>
@@ -165,8 +203,8 @@
             
             <div class="section-heading"><div class="sk-shimmer sk-line" style="width: 150px; height: 20px; margin:0;"></div></div>
             <div class="items-grid">
-                <div class="product-card"><div class="sk-shimmer" style="height:140px; border-radius:10px;"></div></div>
-                <div class="product-card"><div class="sk-shimmer" style="height:140px; border-radius:10px;"></div></div>
+                <div class="product-card"><div class="sk-shimmer" style="height:140px; border-radius:10px;"></div><div class="sk-shimmer sk-line" style="width: 50%;"></div><div class="sk-shimmer sk-line" style="width: 80%;"></div></div>
+                <div class="product-card"><div class="sk-shimmer" style="height:140px; border-radius:10px;"></div><div class="sk-shimmer sk-line" style="width: 50%;"></div><div class="sk-shimmer sk-line" style="width: 80%;"></div></div>
             </div>
 
             <div class="section-heading" style="margin-top: 40px;"><div class="sk-shimmer sk-line" style="width: 180px; height: 20px; margin:0;"></div></div>
@@ -187,7 +225,7 @@
                 <div class="v-desc" id="v-desc">...</div>
 
                 <div class="v-actions">
-                    <a href="#" id="wa-link" target="_blank" class="btn-wa"><i class="fab fa-whatsapp" style="font-size: 16px;"></i> Message Shop</a>
+                    <a href="#" id="wa-link" target="_blank" class="btn-wa"><i class="fab fa-whatsapp" style="font-size: 18px;"></i> Message Store</a>
                     <a href="../../report/index.html" id="report-link" class="report-btn"><i class="fas fa-flag"></i> Report Vendor</a>
                 </div>
             </div>
@@ -209,14 +247,14 @@
                 <div class="reviews-list" id="reviews-list"></div>
             </div>
 
-            <div class="section-heading"><i class="fas fa-shopping-bag" style="color: #2563EB;"></i> Store Items <span id="store-items-count" style="color: #64748b; font-size: 14px; font-weight: 600; margin-left: 5px;">(0)</span></div>
+            <div class="section-heading"><i class="fas fa-shopping-bag" style="color: var(--brand-color);"></i> Store Items <span id="store-items-count" style="color: var(--text-muted); font-size: 14px; font-weight: 600; margin-left: 5px;">(0)</span></div>
             <div class="items-grid" id="store-items"></div>
 
             <div class="section-heading" style="margin-top: 40px;"><i class="fas fa-compass" style="color: #F5A623;"></i> Explore More Items</div>
             <div class="items-grid" id="explore-items"></div>
             <a href="../../items/index.html" class="view-all-btn">View All Market Items</a>
 
-            <div class="section-heading" style="margin-top: 40px;"><i class="fas fa-store" style="color: #1e293b;"></i> Discover Other Vendors</div>
+            <div class="section-heading" style="margin-top: 40px;"><i class="fas fa-store" style="color: #10b981;"></i> Discover Other Vendors</div>
             <div class="vendors-grid" id="other-vendors"></div>
             <a href="../../vendors/index.html" class="view-all-btn" style="margin-bottom: 20px;">View All Vendors</a>
         </div>
@@ -224,8 +262,8 @@
         <div class="modal-bg" id="review-modal">
             <div class="modal-content">
                 <div class="close-modal" onclick="closeReviewModal()">&times;</div>
-                <h3 style="margin: 0 0 5px; font-size: 20px;" id="modal-title">Rate this Shop</h3>
-                <p style="font-size: 13px; color: #64748b; margin: 0;">Help other students buy safely.</p>
+                <h3 style="margin: 0 0 5px; font-size: 20px; color: var(--text-main);" id="modal-title">Rate this Shop</h3>
+                <p style="font-size: 13px; color: var(--text-muted); margin: 0;">Help other students buy safely.</p>
                 
                 <div class="star-selector" id="star-selector">
                     <i class="fas fa-star" data-val="1"></i>
@@ -259,6 +297,24 @@
         function escapeJS(str) {
             if (!str) return '';
             return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+        }
+
+        // 🎲 Randomizer Function
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        // 🚀 SMART BACK BUTTON
+        window.smartBack = function() {
+            if (window.history.length <= 1 || document.referrer === "" || document.referrer.includes('wa.me') || !document.referrer.includes(window.location.host)) {
+                window.location.href = "../../index.html"; 
+            } else {
+                window.history.back(); 
+            }
         }
 
         document.addEventListener("DOMContentLoaded", async () => {
@@ -384,24 +440,44 @@
             });
         }
 
+        // 🚀 SMART EXPLORE ITEMS (Shuffles and limits to 16)
         async function loadExploreItems() {
             const grid = document.getElementById('explore-items');
-            const { data: products } = await supabaseClient.from('products').select('*').neq('vendor_id', vendorId).eq('status', 'Active').limit(16);
-            if (!products) return;
+            
+            const { data: products } = await supabaseClient.from('products')
+                .select('*')
+                .neq('vendor_id', vendorId)
+                .eq('status', 'Active')
+                .limit(50); 
+            
+            if (!products || products.length === 0) return;
+            
+            const randomizedItems = shuffleArray(products).slice(0, 16);
+
             grid.innerHTML = "";
-            products.forEach(p => {
+            randomizedItems.forEach(p => {
                 const img = escapeHTML((p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/300');
                 const price = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(p.price);
                 grid.insertAdjacentHTML('beforeend', `<div class="product-card" onclick="window.location.href='../../product/index.html?id=${escapeJS(p.id)}'"><img src="${img}" class="product-img"><div class="product-price">${price}</div><div class="product-title">${escapeHTML(p.name)}</div></div>`);
             });
         }
 
+        // 🚀 SMART DISCOVER VENDORS (Shuffles and limits to 8)
         async function loadOtherVendors() {
             const grid = document.getElementById('other-vendors');
-            const { data: vendors } = await supabaseClient.from('vendors').select('*').neq('id', vendorId).eq('is_active', true).limit(8);
-            if (!vendors) return;
+            
+            const { data: vendors } = await supabaseClient.from('vendors')
+                .select('*')
+                .neq('id', vendorId)
+                .eq('is_active', true)
+                .limit(30);
+            
+            if (!vendors || vendors.length === 0) return;
+            
+            const randomizedVendors = shuffleArray(vendors).slice(0, 8);
+
             grid.innerHTML = "";
-            vendors.forEach(v => {
+            randomizedVendors.forEach(v => {
                 const logo = escapeHTML(v.logo_url || 'https://via.placeholder.com/150');
                 grid.insertAdjacentHTML('beforeend', `<div class="vendor-mini-card" onclick="window.location.href='index.html?id=${escapeJS(v.id)}'"><img src="${logo}" class="vendor-mini-img"><div class="vendor-mini-name">${escapeHTML(v.business_name)}</div></div>`);
             });

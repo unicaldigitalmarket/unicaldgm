@@ -320,8 +320,8 @@ async function fetchBlogs() {
         const postDate = new Date(b.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         const niceSlug = b.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') + '--' + b.id;
 
-        list.insertAdjacentHTML('beforeend', `
-            <div class="blog-card" onclick="window.location.href='blog-content/index.html?post=${encodeURIComponent(niceSlug)}'">
+       list.insertAdjacentHTML('beforeend', `
+            <div class="blog-card" onclick="window.location.href='blog-content/index.html?id=${escapeJS(b.id)}'">
                 <img src="${imgUrl}" class="blog-img" onerror="this.src='https://via.placeholder.com/100'">
                 <div class="blog-info">
                     <div class="blog-cat-row">
@@ -433,12 +433,46 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+// =========================================
+// ⚙️ SERVICE WORKER REGISTRATION
+// =========================================
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.getRegistrations().then(function(registrations) {
-        for(let registration of registrations) {
-            if(registration.active.scriptURL.includes('wrong-sw.js')) {
-                registration.unregister();
-            }
-        }
+    window.addEventListener('load', () => {
+        // Register your actual service worker file
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => console.log('Service Worker Registered successfully!', reg.scope))
+            .catch(err => console.error('Service Worker Registration Failed!', err));
     });
+}
+
+// =========================================
+// 🚀 PWA INSTALL PROMPT LOGIC
+// =========================================
+let deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent Chrome from showing the mini-infobar automatically
+    e.preventDefault();
+    // Stash the event so it can be triggered later.
+    deferredPrompt = e;
+});
+
+// This is the function triggered by your button in index.html
+function downloadApp() {
+    if (deferredPrompt) {
+        // Show the native install prompt
+        deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        deferredPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted the PWA install prompt');
+            } else {
+                console.log('User dismissed the PWA install prompt');
+            }
+            deferredPrompt = null;
+        });
+    } else {
+        // Fallback message if the app is already installed or the browser doesn't support it
+        alert("The app is already installed or your browser doesn't support direct installation. Try using Chrome or Safari!");
+    }
 }

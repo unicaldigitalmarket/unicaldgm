@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Account Settings | UNICAL Market</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+
+    <style>
+        :root {
+            --brand-color: #FF7A00; /* UNICAL Orange */
+        }
+
+        .header-top-flex { display: flex; align-items: center; gap: 15px; margin-bottom: 5px; }
+        .page-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; }
+        
+        .form-card { background: white; padding: 25px 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 25px; border: 1px solid #f1f5f9; }
+        .form-group { margin-bottom: 18px; position: relative; }
+        .form-label { display: block; font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
+        
+        .form-input { width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 14px; background: #f8fafc; outline: none; box-sizing: border-box; transition: 0.2s; color: var(--text-main); }
+        .form-input:focus { border-color: var(--brand-color); background: white; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.1); }
+        
+        .toggle-password { position: absolute; right: 15px; top: 38px; color: #94a3b8; cursor: pointer; font-size: 15px; transition: 0.2s; }
+        .toggle-password:active { transform: scale(0.9); }
+
+        .save-btn { background: var(--brand-color); color: white; border: none; width: 100%; padding: 16px; border-radius: 14px; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 8px 20px rgba(255, 122, 0, 0.3); display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .save-btn:active { transform: scale(0.96); }
+        .save-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .section-header-title { font-size: 16px; font-weight: 800; color: var(--text-main); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+
+        #msg-box { font-size: 13px; font-weight: 700; padding: 14px; border-radius: 12px; margin-bottom: 20px; text-align: center; display: none; }
+        .msg-error { color: #ef4444; background: #fef2f2; border: 1px solid #fecaca; }
+        .msg-success { color: #10b981; background: #ecfdf5; border: 1px solid #a7f3d0; }
+
+        #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .spinner { width: 45px; height: 45px; border: 4px solid #e2e8f0; border-top-color: var(--brand-color); border-radius: 50%; animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES                        */
+        /* ========================================= */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .app-container { background: #0f172a !important; }
+        body.dark-mode .header { background: #1e293b !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; border-bottom: 1px solid #334155; }
+        body.dark-mode .page-title, body.dark-mode .fa-arrow-left, body.dark-mode .section-header-title { color: #f1f5f9 !important; }
+        
+        body.dark-mode #loading-overlay { background: #020617 !important; }
+        
+        body.dark-mode .form-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .form-label { color: #cbd5e1 !important; }
+        body.dark-mode .form-input { background: #0f172a !important; border-color: #334155 !important; color: #f1f5f9 !important; }
+        body.dark-mode .form-input:focus { border-color: var(--brand-color) !important; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.15) !important; }
+        
+        body.dark-mode #msg-box.msg-error { background: rgba(239, 68, 68, 0.1) !important; border-color: #ef4444 !important; color: #fca5a5 !important; }
+        body.dark-mode #msg-box.msg-success { background: rgba(16, 185, 129, 0.1) !important; border-color: #10b981 !important; color: #6ee7b7 !important; }
+    </style>
+</head>
+<body>
+
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p style="margin-top: 15px; font-weight: 700; color: var(--text-muted); font-size: 14px;">Loading Settings...</p>
+    </div>
+
+    <div class="app-container">
+        
+        <div class="header">
+            <div class="header-top-flex">
+                <button onclick="window.history.back()" style="background:none; border:none; font-size:20px; color:var(--text-main); cursor:pointer;"><i class="fas fa-arrow-left"></i></button>
+                <h1 class="page-title">Account Settings</h1>
+            </div>
+        </div>
+
+        <div class="content-area" style="padding: 20px 20px 90px;">
+            
+            <div id="msg-box"></div>
+
+            <form id="settings-form" onsubmit="saveSettings(event)">
+                
+                <div class="form-card">
+                    <div class="section-header-title"><i class="fas fa-user" style="color: var(--brand-color);"></i> Personal Details</div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" id="user-name" class="form-input" placeholder="e.g. John Doe" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" id="user-phone" class="form-input" placeholder="e.g. 08012345678" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email Address (Cannot be changed)</label>
+                        <input type="email" id="user-email" class="form-input" disabled style="opacity: 0.6; cursor: not-allowed;">
+                    </div>
+                </div>
+
+                <div class="form-card">
+                    <div class="section-header-title"><i class="fas fa-shield-alt" style="color: #10b981;"></i> Security</div>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: -15px; margin-bottom: 15px; line-height: 1.4;">Leave these fields blank if you do not want to change your password.</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <input type="password" id="new-pass" class="form-input" placeholder="Enter new password">
+                        <i class="fas fa-eye toggle-password" onclick="toggleVis('new-pass', this)"></i>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" id="confirm-pass" class="form-input" placeholder="Type it again">
+                        <i class="fas fa-eye toggle-password" onclick="toggleVis('confirm-pass', this)"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="save-btn" id="save-btn">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <script src="../asset/script.js"></script>
+
+    <script>
+        let currentUser = null;
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                window.location.href = "../login/index.html";
+                return;
+            }
+            currentUser = session.user;
+            loadUserData();
+        });
+
+        function toggleVis(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = "password";
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function showMsg(text, isError = false) {
+            const msgBox = document.getElementById('msg-box');
+            msgBox.innerHTML = isError ? `<i class="fas fa-exclamation-triangle"></i> ` : `<i class="fas fa-check-circle"></i> `;
+            msgBox.appendChild(document.createTextNode(text)); 
+            
+            msgBox.className = isError ? 'msg-error' : 'msg-success';
+            msgBox.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function loadUserData() {
+            try {
+                document.getElementById('user-email').value = currentUser.email;
+
+                const { data, error } = await supabaseClient
+                    .from('profiles')
+                    .select('full_name, phone_number')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (error) throw error;
+
+                if (data) {
+                    if (data.full_name) document.getElementById('user-name').value = data.full_name;
+                    if (data.phone_number) document.getElementById('user-phone').value = data.phone_number;
+                }
+
+                document.getElementById('loading-overlay').style.display = 'none';
+
+            } catch (error) {
+                console.error(error);
+                showMsg("Failed to load your profile data.", true);
+                document.getElementById('loading-overlay').style.display = 'none';
+            }
+        }
+
+        window.saveSettings = async function(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('save-btn');
+            const newName = document.getElementById('user-name').value.trim();
+            const newPhone = document.getElementById('user-phone').value.trim();
+            const pass1 = document.getElementById('new-pass').value;
+            const pass2 = document.getElementById('confirm-pass').value;
+
+            document.getElementById('msg-box').style.display = 'none';
+
+            if (pass1 || pass2) {
+                if (pass1.length < 6) return showMsg("Password must be at least 6 characters.", true);
+                if (pass1 !== pass2) return showMsg("Passwords do not match.", true);
+            }
+
+            if (!newName) return showMsg("Full Name cannot be empty.", true);
+            if (!newPhone) return showMsg("Phone Number cannot be empty.", true);
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+            try {
+               const { error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .update({ full_name: newName, phone_number: newPhone })
+                    .eq('id', currentUser.id);
+
+                if (profileError) throw profileError;
+
+                if (pass1) {
+                    const { error: authError } = await supabaseClient.auth.updateUser({
+                        password: pass1
+                    });
+                    if (authError) throw authError;
+                }
+
+                showMsg("Settings updated successfully!");
+                
+                document.getElementById('new-pass').value = '';
+                document.getElementById('confirm-pass').value = '';
+
+            } catch (error) {
+                console.error(error);
+                showMsg(error.message || "An error occurred while saving.", true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+            }
+        }
+    </script>
+</body>
+</html>

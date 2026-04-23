@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>About Us | UNICAL Market</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+
+    <style>
+        :root { --brand-color: #FF7A00; }
+        
+        .page-header { position: sticky; top: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); z-index: 100; display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid #f1f5f9; gap: 15px; }
+        .back-btn { background: #f1f5f9; color: var(--text-main); width: 38px; height: 38px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: none; font-size: 16px; cursor: pointer; transition: 0.2s; }
+        .back-btn:active { transform: scale(0.9); }
+        .page-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0; }
+        
+        .doc-content { padding: 20px; padding-bottom: 40px; }
+        .hero-icon-wrapper { text-align: center; margin-bottom: 25px; padding: 20px 0; }
+        .hero-icon { font-size: 60px; color: var(--brand-color); background: rgba(255, 122, 0, 0.1); width: 120px; height: 120px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; }
+        
+        .doc-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .doc-h2 { font-size: 16px; font-weight: 800; color: var(--text-main); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
+        .doc-h2 i { color: var(--brand-color); font-size: 18px; }
+        .doc-p { font-size: 14px; color: #475569; line-height: 1.6; margin-bottom: 15px; }
+        .doc-p:last-child { margin-bottom: 0; }
+        
+        .doc-ul { list-style: none; padding: 0; margin: 0 0 15px 0; }
+        .doc-li { font-size: 14px; color: #475569; line-height: 1.6; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 10px; }
+        .doc-li i { color: var(--brand-color); font-size: 12px; margin-top: 5px; flex-shrink: 0; }
+
+        /* 🌙 DARK MODE FIXES */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .app-container { background: #0f172a !important; }
+        body.dark-mode .page-header { background: rgba(15,23,42,0.95) !important; border-bottom-color: #334155 !important; }
+        body.dark-mode .back-btn { background: #1e293b !important; color: #f1f5f9 !important; }
+        body.dark-mode .page-title, body.dark-mode .doc-h2 { color: #f1f5f9 !important; }
+        body.dark-mode .doc-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .doc-p, body.dark-mode .doc-li { color: #cbd5e1 !important; }
+        body.dark-mode .hero-icon { background: rgba(255, 122, 0, 0.15) !important; }
+    </style>
+</head>
+<body>
+    <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
+
+    <div class="app-container">
+        
+        <div class="page-header">
+            <button class="back-btn" onclick="window.history.back()"><i class="fas fa-arrow-left"></i></button>
+            <h1 class="page-title">About Us</h1>
+        </div>
+
+        <div class="doc-content">
+            <div class="hero-icon-wrapper">
+                <div class="hero-icon"><i class="fas fa-users"></i></div>
+            </div>
+
+            <div class="doc-card">
+                <h2 class="doc-h2"><i class="fas fa-info-circle"></i> Who We Are</h2>
+                <p class="doc-p"><strong>UnicalDGM (Unical Digital Marketing)</strong> is a student-driven digital ecosystem built to empower, promote, and scale businesses within the University of Calabar community and beyond.</p>
+                <p class="doc-p">We exist to bridge the gap between student entrepreneurs, digital visibility, and real business growth. At UnicalDGM, we understand that many student-owned businesses struggle, not because they lack quality products or services, but because they lack the right exposure, strategy, and digital presence. That’s where we come in.</p>
+            </div>
+
+            <div class="doc-card">
+                <h2 class="doc-h2"><i class="fas fa-briefcase"></i> What We Do</h2>
+                <p class="doc-p">We provide a centralised platform where student entrepreneurs can:</p>
+                <ul class="doc-ul">
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> Showcase their products and services to a wider audience</li>
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> Build a strong and credible online presence</li>
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> Connect with potential customers and collaborators</li>
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> Learn practical, result-driven marketing strategies</li>
+                </ul>
+                <p class="doc-p">Beyond visibility, we are building a learning and growth community. Through conferences, trainings, and expert-led sessions, we equip students with modern business and digital marketing knowledge that goes beyond the classroom.</p>
+            </div>
+
+            <div class="doc-card">
+                <h2 class="doc-h2"><i class="fas fa-eye"></i> Our Vision</h2>
+                <p class="doc-p">To be the platform where businesses are not just listed, but truly seen, trusted, and chosen.</p>
+            </div>
+
+            <div class="doc-card">
+                <h2 class="doc-h2"><i class="fas fa-bullseye"></i> Our Mission</h2>
+                <p class="doc-p">To help student entrepreneurs grow by providing:</p>
+                <ul class="doc-ul">
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> Strategic digital exposure</li>
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> Practical business education</li>
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> A supportive and growth-focused community</li>
+                </ul>
+            </div>
+
+            <div class="doc-card">
+                <h2 class="doc-h2"><i class="fas fa-fire"></i> Why UnicalDGM?</h2>
+                <p class="doc-p">Because we’re not just another platform, we are a movement. A movement that believes:</p>
+                <ul class="doc-ul">
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> Students can build profitable businesses while in school</li>
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> Visibility is just as important as product quality</li>
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> The right knowledge and strategy can change everything</li>
+                </ul>
+                <p class="doc-p"><strong>We are here to ensure that no good business stays hidden.</strong></p>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

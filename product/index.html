@@ -10,107 +10,123 @@
     <link rel="stylesheet" href="../asset/style.css">
 
     <style>
-        /* --- PRODUCT PAGE STYLES --- */
+        :root { --brand-color: #FF7A00; } /* UNICAL Orange */
+
+        /* --- PRODUCT PAGE STYLES (AFIT REDESIGN) --- */
         body { background: #e0e0e0; }
         .app-container { padding-bottom: 80px; } 
         
-        /* Standard Header */
+        /* Redesigned Header */
         .header { background: white; padding: 15px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
         .header-flex { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .header-title-group { display: flex; align-items: center; gap: 15px; }
         .page-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0; }
         
+        /* New: Rounded Square Action Buttons */
         .action-icon-btn {
-            background: #f1f5f9; color: var(--text-main); width: 38px; height: 38px; 
-            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            background: #f1f5f9; color: var(--text-main); width: 40px; height: 40px; 
+            border-radius: 12px; display: flex; justify-content: center; align-items: center;
             border: none; font-size: 16px; cursor: pointer; transition: 0.2s;
         }
-        .action-icon-btn:active { transform: scale(0.9); }
+        .action-icon-btn:active { transform: scale(0.9); background: #e2e8f0; }
 
         /* Image Carousel */
-        .carousel-container { position: relative; width: 100%; height: 320px; background: white; border-bottom: 1px solid #f1f5f9; }
+        .carousel-container { position: relative; width: 100%; height: 340px; background: white; border-bottom: 1px solid #f1f5f9; }
         .image-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; height: 100%; scroll-behavior: smooth; }
         .image-slider::-webkit-scrollbar { display: none; }
         .slide-img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; scroll-snap-align: center; }
         
         .carousel-dots { position: absolute; bottom: 15px; left: 0; width: 100%; display: flex; justify-content: center; gap: 6px; }
         .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.5); transition: 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
-        .dot.active { background: white; width: 20px; border-radius: 4px; }
+        .dot.active { background: white; width: 24px; border-radius: 4px; }
 
-        /* Product Details */
-        .product-info-box { background: white; padding: 20px; }
-        .p-price { font-size: 24px; font-weight: 800; color: #FF7A00; margin-bottom: 5px; }
-        .p-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin-bottom: 10px; line-height: 1.3; }
-        .p-category { display: inline-block; background: #f1f5f9; color: var(--text-muted); font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 20px; text-transform: uppercase; margin-bottom: 15px; }
+        /* Product Details - Reordered layout */
+        .product-info-box { background: white; padding: 25px 20px; border-radius: 0 0 24px 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .p-category { display: inline-block; background: #fff7ed; color: var(--brand-color); font-size: 11px; font-weight: 800; padding: 6px 12px; border-radius: 8px; text-transform: uppercase; margin-bottom: 12px; }
+        .p-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; line-height: 1.3; }
+        .p-price { font-size: 26px; font-weight: 800; color: var(--brand-color); margin-bottom: 5px; }
         
-        .section-title { font-size: 15px; font-weight: 800; color: var(--text-main); margin: 20px 0 10px; }
-        .p-desc { font-size: 14px; color: #475569; line-height: 1.6; white-space: pre-wrap; }
+        .section-title { font-size: 16px; font-weight: 800; color: var(--text-main); margin: 25px 0 12px; display: flex; align-items: center; gap: 8px; }
+        .p-desc { font-size: 14px; color: #475569; line-height: 1.6; white-space: pre-wrap; background: #f8fafc; padding: 15px; border-radius: 12px; }
 
-        /* Vendor Mini-Card */
-        .vendor-strip { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 15px; display: flex; align-items: center; justify-content: space-between; margin: 20px 0; cursor: pointer; transition: 0.2s; }
+        /* Redesigned Vendor Card */
+        .vendor-strip { background: #fff7ed; border: 1px solid #ffedd5; border-radius: 16px; padding: 15px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; }
         .vendor-strip:active { transform: scale(0.98); }
-        .v-logo { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid white; box-shadow: 0 2px 10px rgba(0,0,0,0.05); background: #eee; }
-        .v-info { flex: 1; margin: 0 15px; }
-        .v-name { font-size: 14px; font-weight: 800; color: var(--text-main); margin-bottom: 3px; display: flex; align-items: center; gap: 5px; }
-        .v-cat { font-size: 11px; color: var(--text-muted); }
-        .v-btn { font-size: 12px; font-weight: 800; color: #FF7A00; background: white; border: 1px solid #FF7A00; padding: 6px 12px; border-radius: 20px; }
+        .v-logo { width: 55px; height: 55px; border-radius: 12px; object-fit: cover; border: 2px solid white; box-shadow: 0 4px 10px rgba(255, 122, 0, 0.15); background: #eee; }
+        .v-info { flex: 1; margin: 0 15px; min-width: 0; }
+        .v-name { font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 3px; display: flex; align-items: center; gap: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .v-cat { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .v-btn { font-size: 12px; font-weight: 800; color: white; background: var(--brand-color); padding: 8px 14px; border-radius: 10px; flex-shrink: 0;}
 
         /* Related Products Grid */
-        .related-wrapper { padding: 0 20px; }
+        .related-wrapper { padding: 10px 20px 0; }
         .related-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .related-card { background: white; border-radius: 16px; padding: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; cursor: pointer; }
-        .rel-img { width: 100%; height: 120px; object-fit: cover; border-radius: 10px; background: #eee; margin-bottom: 10px; }
-        .rel-price { font-size: 14px; font-weight: 800; color: #FF7A00; margin-bottom: 4px; }
-        .rel-title { font-size: 11px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .related-card { 
+            background: white; border-radius: 16px; padding: 10px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; 
+            cursor: pointer; transition: transform 0.2s; 
+            width: 100%; min-width: 0; box-sizing: border-box; overflow: hidden;
+        }
+        
+        .related-card:active { transform: translateY(2px); }
+        .rel-img { width: 100%; height: 130px; object-fit: cover; border-radius: 10px; background: #eee; margin-bottom: 10px; }
+        .rel-price { font-size: 15px; font-weight: 800; color: var(--brand-color); margin-bottom: 4px; }
+        .rel-title { font-size: 12px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;}
 
-        .view-all-btn { display: block; text-align: center; background: #f1f5f9; color: var(--text-main); font-weight: 800; font-size: 14px; padding: 15px; border-radius: 12px; text-decoration: none; margin: 20px; transition: 0.2s; }
-        .view-all-btn:active { background: #e2e8f0; }
+        .view-all-btn { display: block; text-align: center; background: white; color: var(--brand-color); border: 2px solid #e2e8f0; font-weight: 800; font-size: 14px; padding: 15px; border-radius: 16px; text-decoration: none; margin: 20px; transition: 0.2s; }
+        .view-all-btn:active { background: #f8fafc; border-color: var(--brand-color); }
 
         /* Sticky Bottom Action Bar */
-        .fixed-bottom-bar { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: white; padding: 15px 20px; display: flex; gap: 10px; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); z-index: 1000; border-top: 1px solid #f1f5f9; border-radius: 24px 24px 0 0; }
-        .action-btn { flex: 1; padding: 14px; border: none; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; }
-        .action-btn:active { transform: scale(0.98); }
-        .btn-whatsapp { background: #25D366; color: white; }
-        .btn-chat { background: #0f172a; color: white; }
+        .fixed-bottom-bar { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 15px 20px; display: flex; gap: 12px; box-shadow: 0 -4px 25px rgba(0,0,0,0.06); z-index: 1000; border-top: 1px solid #f1f5f9; border-radius: 24px 24px 0 0; }
+        .action-btn { flex: 1; padding: 15px; border: none; border-radius: 14px; font-weight: 800; font-size: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; }
+        .action-btn:active { transform: scale(0.96); }
+        .btn-whatsapp { background: #25D366; color: white; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3); }
+        .btn-chat { background: #0f172a; color: white; box-shadow: 0 4px 15px rgba(15, 23, 42, 0.3); }
 
         /* Skeletons */
         .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
         /* ========================================= */
-        /* 🌙 DARK MODE FIXES FOR PRODUCT PAGE       */
+        /* 🌙 DARK MODE OVERRIDES                    */
         /* ========================================= */
         body.dark-mode { background-color: #020617 !important; }
         body.dark-mode .app-container { background: #0f172a !important; }
-        body.dark-mode .header { background: #1e293b !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .header { background: #1e293b !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; border-color: #334155 !important; }
         body.dark-mode .page-title, body.dark-mode .fa-arrow-left { color: #f1f5f9 !important; }
         
         body.dark-mode .action-icon-btn { background: #334155 !important; color: #f1f5f9 !important; }
         
         body.dark-mode .carousel-container { background: #0f172a !important; border-bottom: 1px solid #334155 !important; }
         
-        body.dark-mode .product-info-box { background: #0f172a !important; }
+        body.dark-mode .product-info-box { background: #1e293b !important; }
         body.dark-mode .p-title { color: #f1f5f9 !important; }
-        body.dark-mode .p-category { background: #1e293b !important; color: #94a3b8 !important; }
+        body.dark-mode .p-category { background: #0f172a !important; color: var(--brand-color) !important; border: 1px solid #334155; }
         body.dark-mode .section-title { color: #f1f5f9 !important; }
-        body.dark-mode .p-desc { color: #cbd5e1 !important; }
+        body.dark-mode .p-desc { background: #0f172a !important; color: #cbd5e1 !important; border: 1px solid #334155; }
         
-        body.dark-mode .vendor-strip { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .vendor-strip { background: #0f172a !important; border-color: #334155 !important; }
         body.dark-mode .v-name { color: #f1f5f9 !important; }
         body.dark-mode .v-logo { border-color: #1e293b !important; }
-        body.dark-mode .v-btn { background: #0f172a !important; }
+        body.dark-mode .v-btn { background: var(--brand-color) !important; color: white !important;}
         
         body.dark-mode .related-card { background: #1e293b !important; border-color: #334155 !important; }
         body.dark-mode .rel-title { color: #f1f5f9 !important; }
         
-        body.dark-mode .view-all-btn { background: #1e293b !important; color: #f1f5f9 !important; }
+        body.dark-mode .view-all-btn { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
         body.dark-mode .view-all-btn:active { background: #334155 !important; }
         
-        body.dark-mode .fixed-bottom-bar { background: #1e293b !important; border-top-color: #334155 !important; }
-        body.dark-mode .btn-chat { background: #334155 !important; color: #f1f5f9 !important; }
+        body.dark-mode .fixed-bottom-bar { background: rgba(30, 41, 59, 0.95) !important; border-top-color: #334155 !important; }
+        body.dark-mode .btn-chat { background: #334155 !important; color: #f1f5f9 !important; box-shadow: none; }
     </style>
 </head>
 <body>
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
 
     <div class="app-container">
         
@@ -128,11 +144,12 @@
         </div>
 
         <div id="loader-state">
-            <div class="sk-shimmer" style="width: 100%; height: 320px;"></div>
-            <div style="padding: 20px;">
-                <div class="sk-shimmer" style="width: 40%; height: 25px; border-radius: 8px; margin-bottom: 10px;"></div>
-                <div class="sk-shimmer" style="width: 80%; height: 20px; border-radius: 8px; margin-bottom: 20px;"></div>
-                <div class="sk-shimmer" style="width: 100%; height: 100px; border-radius: 16px;"></div>
+            <div class="sk-shimmer" style="width: 100%; height: 340px;"></div>
+            <div style="padding: 25px 20px;">
+                <div class="sk-shimmer" style="width: 30%; height: 25px; border-radius: 8px; margin-bottom: 12px;"></div>
+                <div class="sk-shimmer" style="width: 80%; height: 30px; border-radius: 8px; margin-bottom: 10px;"></div>
+                <div class="sk-shimmer" style="width: 50%; height: 35px; border-radius: 8px; margin-bottom: 25px;"></div>
+                <div class="sk-shimmer" style="width: 100%; height: 120px; border-radius: 12px;"></div>
             </div>
         </div>
 
@@ -144,18 +161,18 @@
             </div>
 
             <div class="product-info-box">
-                <div class="p-price" id="display-price">₦0</div>
-                <h1 class="p-title" id="display-title">Loading...</h1>
                 <div class="p-category" id="display-category">Category</div>
+                <h1 class="p-title" id="display-title">Loading...</h1>
+                <div class="p-price" id="display-price">₦0</div>
 
-                <div class="section-title">Description</div>
+                <div class="section-title"><i class="fas fa-align-left" style="color: var(--brand-color); font-size: 14px;"></i> Description</div>
                 <div class="p-desc" id="display-desc">...</div>
 
-                <div class="section-title" style="margin-top: 30px;">Sold By</div>
+                <div class="section-title" style="margin-top: 30px;"><i class="fas fa-store" style="color: var(--brand-color); font-size: 14px;"></i> Sold By</div>
                 <div class="vendor-strip" id="vendor-btn">
                     <img src="" id="v-logo" class="v-logo" onerror="this.src='https://via.placeholder.com/150'">
                     <div class="v-info">
-                        <div class="v-name" id="v-name">... <i class="fas fa-check-circle" style="color: #2d8eff;"></i></div>
+                        <div class="v-name" id="v-name">... <i class="fas fa-check-circle" style="color: var(--brand-color);"></i></div>
                         <div class="v-cat" id="v-cat">Verified Seller</div>
                     </div>
                     <div class="v-btn">View Store</div>
@@ -163,7 +180,7 @@
             </div>
 
             <div class="related-wrapper">
-                <div class="section-title">Related Items</div>
+                <div class="section-title"><i class="fas fa-layer-group" style="color: var(--brand-color); font-size: 14px;"></i> Related Items</div>
                 <div class="related-grid" id="related-grid"></div>
             </div>
 
@@ -173,18 +190,19 @@
 
         <div class="fixed-bottom-bar" id="action-bar" style="display: none;">
             <button class="action-btn btn-chat" onclick="openChat()"><i class="fas fa-comment-dots"></i> Chat</button>
-            <button class="action-btn btn-whatsapp" id="whatsapp-btn"><i class="fab fa-whatsapp" style="font-size: 16px;"></i> WhatsApp</button>
+            <button class="action-btn btn-whatsapp" id="whatsapp-btn"><i class="fab fa-whatsapp" style="font-size: 18px;"></i> WhatsApp</button>
         </div>
 
     </div>
 
     <script src="../asset/script.js"></script>
 
-   <script>
+    <script>
         let currentProduct = null;
+        let currentVendorUserId = null; 
         let slideInterval;
 
-        // 🛡️ XSS Sanitizers
+        // 🛡️ XSS Sanitizers & Utilities
         function escapeHTML(str) {
             if (!str) return '';
             return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
@@ -193,14 +211,25 @@
             if (!str) return '';
             return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
         }
-
         function createSlug(title) {
             return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
         }
 
+        // 🎲 Array Randomizer
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
         window.smartBack = function() {
-            if (document.referrer === "" || document.referrer.includes('wa.me')) {
-                window.location.href = "../items/index.html";
+            const referrer = document.referrer;
+            const currentDomain = window.location.origin;
+
+            if (!referrer || !referrer.startsWith(currentDomain) || referrer.includes('wa.me')) {
+                window.location.href = "../index.html"; 
             } else {
                 window.history.back();
             }
@@ -238,7 +267,7 @@
                 // 2. FETCH VENDOR
                 const { data: vendor } = await supabaseClient.from('vendors').select('*').eq('id', product.vendor_id).single();
 
-                // 3. POPULATE UI (Sanitized)
+                // 3. POPULATE UI
                 document.getElementById('loader-state').style.display = 'none';
                 document.getElementById('content-state').style.display = 'block';
                 document.getElementById('action-bar').style.display = 'flex';
@@ -264,28 +293,42 @@
 
                 // Populate Vendor
                 if (vendor) {
+                    currentVendorUserId = vendor.profile_id || vendor.user_id; 
+                    
                     let badgeColor = "#38bdf8"; // Default Blue (Verified)
-                    if (vendor.subscription_plan === "Influencer") badgeColor = "#fbbf24"; // Gold
-                    if (vendor.subscription_plan === "Icon") badgeColor = "#1e293b"; // Black/Slate
+                    if (vendor.subscription_plan === "Influencer") badgeColor = "#fbbf24"; 
+                    if (vendor.subscription_plan === "Icon") badgeColor = "#1e293b"; 
 
                     document.getElementById('v-name').innerHTML = `${escapeHTML(vendor.business_name)} <i class="fas fa-check-circle" style="color: ${badgeColor};"></i>`;
-                    document.getElementById('v-cat').innerText = escapeHTML(vendor.categories ? vendor.categories.split(',')[0] : "Verified Seller");
+                    
+                    const descTxt = vendor.categories ? vendor.categories.split(',')[0] : "Verified Seller";
+                    document.getElementById('v-cat').innerText = escapeHTML(descTxt);
+                    
                     document.getElementById('v-logo').src = escapeHTML(vendor.logo_url) || "https://via.placeholder.com/150";
                     
                     document.getElementById('vendor-btn').onclick = () => window.location.href = `../vendors/profile/index.html?id=${escapeJS(vendor.id)}`;
 
                     const waBtn = document.getElementById('whatsapp-btn');
+                    
                     let phone = vendor.whatsapp_number || "";
                     if(phone.startsWith('0')) phone = "234" + phone.substring(1);
                     
                     const fPrice = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(product.price);
                     const msg = encodeURIComponent(`Hi, I saw your ${product.name} on UNICAL Digital Market for ${fPrice}. Is it still available?`);
-                    waBtn.onclick = () => window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+                    
+                    waBtn.onclick = () => {
+                        if(phone) {
+                            window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+                        } else {
+                            alert("This vendor hasn't provided a WhatsApp number.");
+                        }
+                    };
                 }
 
                 loadRelatedItems(product.category, product.id);
 
             } catch (error) {
+                console.error(error);
                 alert("Failed to load item.");
                 window.location.href = "../items/index.html";
             }
@@ -312,9 +355,10 @@
                 } else {
                     gallery.scrollBy({ left: gallery.clientWidth, behavior: 'smooth' });
                 }
-            }, 2500); 
+            }, 3000); 
         }
 
+        // 🚀 SMART RELATED ITEMS (Shuffles and limits to 20)
         async function loadRelatedItems(category, currentId) {
             const grid = document.getElementById('related-grid');
             try {
@@ -323,23 +367,25 @@
                     .eq('category', category)
                     .eq('status', 'Active')
                     .neq('id', currentId) 
-                    .limit(8); // 🚀 UPDATED FROM 4 TO 8 ITEMS!
+                    .limit(50); // Fetch up to 50 options
                 
                 if(!data || data.length === 0) {
-                    grid.innerHTML = "<p style='grid-column: span 2; text-align: center; color: #94a3b8; font-size: 13px;'>No similar items right now.</p>";
+                    grid.innerHTML = "<p style='grid-column: span 2; text-align: center; color: #94a3b8; font-size: 13px; padding: 20px 0;'>No similar items right now.</p>";
                     return;
                 }
 
-                grid.innerHTML = ""; // Clear existing before append
+                // Randomly shuffle the pool and grab up to 20
+                const randomizedItems = shuffleArray(data).slice(0, 20);
 
-                data.forEach(p => {
+                grid.innerHTML = "";
+                randomizedItems.forEach(p => {
                     const imgUrl = escapeHTML((p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/300');
                     const fPrice = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(p.price);
                     const safeName = escapeHTML(p.name);
-                    const safeIdJS = escapeJS(p.id);
+                    const safeId = escapeJS(p.id);
                     
                     grid.insertAdjacentHTML('beforeend', `
-                        <div class="related-card" onclick="window.location.href='index.html?id=${safeIdJS}'">
+                        <div class="related-card" onclick="window.location.href='index.html?id=${safeId}'">
                             <img src="${imgUrl}" class="rel-img">
                             <div class="rel-price">${fPrice}</div>
                             <div class="rel-title">${safeName}</div>
@@ -363,7 +409,10 @@
         }
 
         window.openChat = async function() {
-            if (!currentProduct) return;
+            if (!currentProduct || !currentVendorUserId) {
+                alert("Could not load vendor details. Please refresh the page and try again.");
+                return;
+            }
             
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (!session) {
@@ -372,27 +421,15 @@
                 return;
             }
 
-            const { data: vendorData } = await supabaseClient
-                .from('vendors')
-                .select('profile_id')
-                .eq('id', currentProduct.vendor_id)
-                .single();
-
-            if (!vendorData || !vendorData.profile_id) {
-                alert("Could not load vendor details.");
-                return;
-            }
-
-            const actualVendorUserId = vendorData.profile_id;
-
-            if (session.user.id === actualVendorUserId) {
+            if (session.user.id === currentVendorUserId) {
                 alert("You cannot chat with yourself about your own product.");
                 return;
             }
 
-            window.location.href = `../chats/index.html?product_id=${currentProduct.id}&vendor_id=${actualVendorUserId}`;
+            window.location.href = `../chats/index.html?product_id=${currentProduct.id}&vendor_id=${currentVendorUserId}`;
         }
 
+        // --- SAVED ITEMS LOGIC ---
         async function checkSavedStatus(productId) {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (!session) return; 
@@ -427,17 +464,21 @@
             const btn = document.getElementById('save-btn');
             const isSaved = btn.getAttribute('data-saved') === 'true';
 
-            if (isSaved) {
-                btn.innerHTML = '<i class="far fa-heart"></i>';
-                btn.setAttribute('data-saved', 'false');
-                await supabaseClient.from('saved_items').delete().match({ user_id: session.user.id, product_id: currentProduct.id });
-            } else {
-                btn.innerHTML = '<i class="fas fa-heart" style="color:#ef4444;"></i>';
-                btn.setAttribute('data-saved', 'true');
-                await supabaseClient.from('saved_items').insert([{
-                    user_id: session.user.id,
-                    product_id: currentProduct.id
-                }]);
+            try {
+                if (isSaved) {
+                    btn.innerHTML = '<i class="far fa-heart"></i>';
+                    btn.setAttribute('data-saved', 'false');
+                    await supabaseClient.from('saved_items').delete().match({ user_id: session.user.id, product_id: currentProduct.id });
+                } else {
+                    btn.innerHTML = '<i class="fas fa-heart" style="color:#ef4444;"></i>';
+                    btn.setAttribute('data-saved', 'true');
+                    await supabaseClient.from('saved_items').insert([{
+                        user_id: session.user.id,
+                        product_id: currentProduct.id
+                    }]);
+                }
+            } catch (err) {
+                console.error("Error toggling save status:", err);
             }
         }
     </script>
