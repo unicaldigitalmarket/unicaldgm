@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Coming Soon | UNICAL Digital Market</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+
+        :root {
+            --brand-color: #FF7A00; /* UNICAL Orange */
+            --bg-dark: #020617;
+            --surface-dark: #0f172a;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Cool Background Glow Effect */
+        .bg-glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: var(--brand-color);
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.15;
+            animation: pulse 4s infinite alternate;
+            z-index: 0;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.1; }
+            100% { transform: scale(1.2); opacity: 0.2; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .icon-box {
+            width: 90px;
+            height: 90px;
+            background: rgba(255, 122, 0, 0.1);
+            border: 2px solid rgba(255, 122, 0, 0.3);
+            border-radius: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            color: var(--brand-color);
+            margin: 0 auto 30px;
+            box-shadow: 0 10px 30px rgba(255, 122, 0, 0.2);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        h1 {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+            background: linear-gradient(to right, #ffffff, #cbd5e1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p {
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 40px;
+            padding: 0 10px;
+        }
+
+        .contact-box {
+            background: var(--surface-dark);
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid #1e293b;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .contact-box span {
+            display: block;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #475569;
+            margin-bottom: 15px;
+        }
+
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            background: #25D366; /* WhatsApp Green */
+            color: white;
+            text-decoration: none;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 15px;
+            transition: 0.2s;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2);
+        }
+
+        .social-btn:active {
+            transform: scale(0.96);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <div class="container">
+        <div class="icon-box">
+            <i class="fas fa-rocket"></i>
+        </div>
+        
+        <h1>We're Launching Soon</h1>
+        
+        <p>We are currently building the number one digital marketplace for the University of Calabar community. Get ready to buy, sell, and connect like never before.</p>
+
+        <div class="contact-box">
+            <span>Are you a vendor?</span>
+            <a href="https://wa.me/2348000000000?text=Hi!%20I%20want%20to%20know%20more%20about%20selling%20on%20UNICAL%20Digital%20Market." target="_blank" class="social-btn">
+                <i class="fab fa-whatsapp" style="font-size: 20px;"></i> Contact Admin
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>
