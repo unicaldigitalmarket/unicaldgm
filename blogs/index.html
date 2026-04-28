@@ -5,6 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Campus News | UNICAL Market</title>
     
+    <meta name="description" content="Stay updated with the latest campus news, student gist, events, and market announcements on UNICAL Digital Market. Your #1 source for University of Calabar updates.">
+    <meta name="keywords" content="UNICAL news, campus gist Calabar, UNICAL student blog, UnicalDGM announcements, University of Calabar events">
+    <meta name="author" content="UnicalDGM">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://unicaldgm.com.ng/blogs/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://unicaldgm.com.ng/blogs/">
+    <meta property="og:title" content="Campus News & Gist | UNICAL Digital Market">
+    <meta property="og:description" content="Get the latest updates, events, and campus news from the University of Calabar.">
+    <meta property="og:image" content="https://unicaldgm.com.ng/512.png">
+
+    <meta name="theme-color" content="#FF7A00">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../192.png" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../asset/style.css">
@@ -14,14 +31,9 @@
             --brand-color: #FF7A00; /* UNICAL Orange */
         }
         
-        /* 🚀 Sticky Header Background */
         .blog-header-wrapper {
-            position: sticky;
-            top: 0;
-            background: #f8fafc;
-            z-index: 100;
-            padding: 15px 20px 5px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            position: sticky; top: 0; background: #f8fafc; z-index: 100;
+            padding: 15px 20px 5px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
             border-bottom: 1px solid #e2e8f0;
         }
 
@@ -31,13 +43,11 @@
         .search-container { background: white; border-radius: 12px; display: flex; align-items: center; padding: 14px 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin-bottom: 15px;}
         .search-container input { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; color: var(--text-main); }
         
-        /* Category Chips */
         .chip-scroll { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: none; }
         .chip-scroll::-webkit-scrollbar { display: none; }
         .chip { padding: 8px 16px; background: white; border: 1px solid #e2e8f0; border-radius: 20px; font-size: 12px; font-weight: 600; color: var(--text-muted); white-space: nowrap; cursor: pointer; transition: 0.2s; }
         .chip.active { background: var(--brand-color); color: white; border-color: var(--brand-color); }
 
-        /* Cool Horizontal News Card Layout (AFIT Style) */
         .news-card { 
             background: white; border-radius: 16px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); 
             border: 1px solid #f1f5f9; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; 
@@ -58,7 +68,6 @@
         .blog-title { font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 4px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .blog-snippet { font-size: 12px; color: var(--text-muted); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 8px;}
         
-        /* Interaction Row */
         .interaction-row { display: flex; justify-content: space-between; align-items: center; }
         .stats-group { display: flex; gap: 12px; }
         .stat-item { display: flex; align-items: center; gap: 4px; color: #94a3b8; font-size: 11px; font-weight: 700; }
@@ -71,7 +80,6 @@
         }
         .share-btn:active { transform: scale(0.9); background: #e2e8f0; }
 
-        /* 🚀 SKELETON LOADER STYLES */
         .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         .sk-news-cover { width: 95px; height: 95px; border-radius: 12px; flex-shrink: 0; }
@@ -83,7 +91,6 @@
         body.dark-mode .app-container { background: #0f172a !important; }
         body.dark-mode .page-title, body.dark-mode .back-btn { color: #f1f5f9 !important; }
         
-        /* 🚀 FIX: Dark Mode Sticky Header */
         body.dark-mode .blog-header-wrapper { background: #0f172a !important; border-bottom-color: #334155 !important; }
         
         body.dark-mode .search-container { background: #1e293b !important; border: 1px solid #334155 !important; box-shadow: none !important; }
@@ -95,7 +102,7 @@
         body.dark-mode .news-cover { border-color: #334155 !important; background: #0f172a !important;}
         body.dark-mode .blog-title { color: #f1f5f9 !important; }
         body.dark-mode .blog-snippet { color: #cbd5e1 !important; }
-        body.dark-mode .cat-badge { background: rgba(255, 122, 0, 0.15) !important; } /* Adapted to Unical Orange */
+        body.dark-mode .cat-badge { background: rgba(255, 122, 0, 0.15) !important; }
         body.dark-mode .share-btn { background: #334155 !important; color: #cbd5e1 !important; }
         body.dark-mode .share-btn:active { background: #475569 !important; }
         
