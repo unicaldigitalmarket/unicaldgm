@@ -1,135 +1,189 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
-        window.location.replace("../coming-soon/");
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Create New Password | UNICAL Digital Market</title>
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../asset/style.css">
-    <meta name="theme-color" content="#FF7A00">
+    <meta name="description" content="Reset your UNICAL Digital Market account password.">
+    <meta name="robots" content="noindex, nofollow"> <meta name="theme-color" content="#FF7A00">
     <link rel="icon" href="../favicon.ico" type="image/x-icon">
     <link rel="icon" href="../192.png" sizes="192x192" type="image/png">
     <link rel="apple-touch-icon" href="../apple-touch-icon.png">
-
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
-        
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+        /* 🚀 Reset for perfect mobile sizing */
+        * { box-sizing: border-box; }
+
         :root {
-            --brand-color: #FF7A00;
+            --brand-color: #FF7A00; 
+            --brand-gradient: linear-gradient(135deg, #FF7A00, #ea580c);
+            --brand-bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
         }
 
-        body { 
-            background: #e0e0e0; /* Matches global app background */
-            display: flex; justify-content: center; min-height: 100vh; margin: 0; font-family: 'Poppins', sans-serif; 
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #e2e8f0; 
+            margin: 0; padding: 0; 
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            color: var(--text-main);
+            position: relative;
+            overflow-x: hidden;
         }
-        
-        /* 🚀 FIX: Wraps the page in the standard mobile dimensions */
+
+        /* 🚀 Immersive Background Glow Effects */
+        .bg-glow-1 {
+            position: absolute; width: 350px; height: 350px; background: var(--brand-color);
+            border-radius: 50%; filter: blur(100px); opacity: 0.15; top: -10%; right: -20%; z-index: 0;
+            animation: pulse 6s infinite alternate;
+        }
+        .bg-glow-2 {
+            position: absolute; width: 300px; height: 300px; background: #38bdf8;
+            border-radius: 50%; filter: blur(100px); opacity: 0.1; bottom: -10%; left: -20%; z-index: 0;
+            animation: pulse 6s infinite alternate-reverse;
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+
         .app-container {
-            background: #f8fafc; width: 100%; max-width: 480px; min-height: 100vh;
-            display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.1); box-sizing: border-box;
+            background: var(--brand-bg);
+            width: 100%; max-width: 480px; min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1);
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 20px; position: relative; z-index: 1;
         }
 
+        /* The Premium Form Card */
         .auth-card {
-            background: white; width: 100%; padding: 30px 25px;
-            border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); text-align: center;
-            box-sizing: border-box;
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            width: 100%; padding: 40px 30px;
+            border-radius: 30px; box-shadow: 0 15px 50px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255,255,255,0.8);
+            position: relative;
         }
 
-        /* 🚀 BRAND UPDATE: Orange Icon */
-        .auth-icon {
-            width: 60px; height: 60px; background: rgba(255, 122, 0, 0.1); color: var(--brand-color);
-            border-radius: 50%; display: flex; justify-content: center; align-items: center;
-            font-size: 24px; margin: 0 auto 20px;
+        /* 🚀 Floating Back Button */
+        .floating-back {
+            position: absolute; top: 25px; left: 25px; width: 40px; height: 40px;
+            background: #f1f5f9; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            color: var(--text-muted); text-decoration: none;
+            font-size: 16px; z-index: 10; transition: 0.2s; border: 1px solid transparent;
+        }
+        .floating-back:hover { color: var(--text-main); }
+        .floating-back:active { transform: scale(0.9); background: #e2e8f0; }
+
+        /* 🚀 UNICAL Logo */
+        .auth-logo {
+            width: 85px; height: 85px; object-fit: contain; margin: 0 auto 20px;
+            display: block; border-radius: 20px; background: white;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05); border: 2px solid #f8fafc;
         }
 
-        .auth-title { font-size: 22px; font-weight: 800; color: #1e293b; margin-bottom: 10px; }
-        .auth-sub { font-size: 13px; color: #64748b; margin-bottom: 25px; line-height: 1.5; }
+        .auth-title { text-align: center; font-size: 26px; font-weight: 900; margin: 0 0 5px; letter-spacing: -0.5px; }
+        .auth-subtitle { text-align: center; font-size: 14px; font-weight: 500; color: var(--text-muted); margin: 0 0 30px; line-height: 1.4; }
 
-        .input-group { position: relative; margin-bottom: 15px; text-align: left; }
-        .input-label { display: block; font-size: 12px; font-weight: 800; color: #1e293b; margin-bottom: 8px; }
+        /* 🚀 Icon-Embedded Inputs */
+        .form-group { margin-bottom: 18px; width: 100%; }
+        .input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
+        .input-icon { position: absolute; left: 16px; color: #94a3b8; font-size: 18px; transition: 0.2s; }
         
-        .input-field {
-            width: 100%; padding: 14px 40px 14px 15px; border: 1px solid #e2e8f0;
-            border-radius: 12px; font-size: 14px; outline: none; background: #f8fafc;
-            transition: 0.2s; box-sizing: border-box; color: #1e293b; /* Dark text for readability */
+        .form-input {
+            width: 100%; padding: 15px 15px 15px 48px; border: 2px solid #e2e8f0;
+            border-radius: 14px; font-size: 14px; font-weight: 500; font-family: 'Inter', sans-serif;
+            outline: none; transition: 0.2s; background: #f8fafc; color: var(--text-main);
         }
-        
-        /* 🚀 BRAND UPDATE: Orange focus ring */
-        .input-field:focus { 
-            border-color: var(--brand-color); 
-            background: white; 
-            box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.1); 
-        }
-        
-        .toggle-password {
-            position: absolute; right: 15px; top: 38px; color: #94a3b8;
-            cursor: pointer; font-size: 14px;
-        }
+        .form-input:focus { border-color: var(--brand-color); background: white; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.1); }
+        .form-input:focus + .input-icon { color: var(--brand-color); }
 
-        /* 🚀 BRAND UPDATE: Orange Button */
+        .toggle-password { position: absolute; right: 16px; color: #94a3b8; cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; }
+        .toggle-password:active { transform: scale(0.8); }
+
+        /* 🚀 Premium Gradient Button */
         .auth-btn {
-            background: var(--brand-color); color: white; border: none; width: 100%;
-            padding: 15px; border-radius: 12px; font-size: 15px; font-weight: 800;
-            cursor: pointer; transition: 0.2s; margin-top: 10px; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.2);
+            width: 100%; background: var(--brand-gradient); color: white; border: none;
+            padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 800;
+            cursor: pointer; transition: 0.2s; box-shadow: 0 8px 25px rgba(255, 122, 0, 0.3);
+            display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 10px;
         }
-        .auth-btn:hover { opacity: 0.9; }
-        .auth-btn:active { transform: scale(0.98); }
+        .auth-btn:active { transform: scale(0.97); box-shadow: 0 4px 15px rgba(255, 122, 0, 0.2); }
         .auth-btn:disabled { opacity: 0.7; cursor: not-allowed; }
 
-        #msg-box { font-size: 13px; font-weight: 600; margin-top: 15px; display: none; padding: 10px; border-radius: 8px;}
-        .msg-error { color: #ef4444; background: #fef2f2; border: 1px solid #fecaca; }
-        .msg-success { color: #10b981; background: #ecfdf5; border: 1px solid #a7f3d0; }
+        .message-box { padding: 14px; border-radius: 12px; font-size: 13px; font-weight: 600; text-align: center; margin-bottom: 20px; display: none; }
+        .error-msg { color: #ef4444; background: #fef2f2; border: 1px solid #fecaca; }
+        .success-msg { color: #059669; background: #d1fae5; border: 1px solid #6ee7b7; }
 
         /* ========================================= */
-        /* 🌙 DARK MODE FIXES FOR RESET PASSWORD     */
+        /* 🌙 DARK MODE FIXES FOR RESET PAGE         */
         /* ========================================= */
         body.dark-mode { background-color: #020617 !important; }
-        body.dark-mode .app-container { background: #0f172a !important; }
+        body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;}
         
-        body.dark-mode .auth-card { background: #1e293b !important; box-shadow: 0 10px 40px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .floating-back { background: #0f172a !important; color: #94a3b8 !important; border-color: #334155 !important; }
+        body.dark-mode .floating-back:hover { color: #f1f5f9 !important; }
         
-        body.dark-mode .auth-icon { background: rgba(255, 122, 0, 0.1) !important; color: var(--brand-color) !important; }
+        body.dark-mode .auth-card { 
+            background: rgba(30, 41, 59, 0.9) !important; border-color: #334155 !important; 
+            box-shadow: 0 15px 50px rgba(0,0,0,0.5) !important; 
+        }
         
+        body.dark-mode .auth-logo { background: #1e293b !important; border-color: #334155 !important; }
         body.dark-mode .auth-title { color: #f1f5f9 !important; }
-        body.dark-mode .auth-sub { color: #94a3b8 !important; }
+        body.dark-mode .auth-subtitle { color: #94a3b8 !important; }
         
-        body.dark-mode .input-label { color: #cbd5e1 !important; }
-        body.dark-mode .input-field { background: #0f172a !important; border-color: #334155 !important; color: #f1f5f9 !important; }
-        body.dark-mode .input-field:focus { border-color: var(--brand-color) !important; }
+        body.dark-mode .form-input { 
+            background: #0f172a !important; color: #f1f5f9 !important; border-color: #334155 !important; 
+        }
+        body.dark-mode .form-input:focus { border-color: var(--brand-color) !important; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.15) !important;}
+        body.dark-mode .input-icon { color: #64748b !important; }
+        body.dark-mode .form-input:focus ~ .input-icon { color: var(--brand-color) !important; }
         
-        body.dark-mode .msg-error { background: rgba(239, 68, 68, 0.1) !important; border-color: #ef4444 !important; color: #fca5a5 !important; }
-        body.dark-mode .msg-success { background: rgba(16, 185, 129, 0.1) !important; border-color: #10b981 !important; color: #6ee7b7 !important; }
+        body.dark-mode .error-msg { background: rgba(239, 68, 68, 0.1) !important; border-color: #ef4444 !important; color: #fca5a5 !important; }
+        body.dark-mode .success-msg { background: rgba(16, 185, 129, 0.1) !important; border-color: #10b981 !important; color: #6ee7b7 !important; }
     </style>
 </head>
 <body>
+    <script>
+        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+    </script>
+
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
 
     <div class="app-container">
         <div class="auth-card">
-            <div class="auth-icon"><i class="fas fa-lock"></i></div>
-            <h1 class="auth-title">Create New Password</h1>
-            <p class="auth-sub">Your new password must be at least 6 characters long.</p>
+            <a href="../login/index.html" class="floating-back"><i class="fas fa-arrow-left"></i></a>
 
-            <div class="input-group">
-                <label class="input-label">New Password</label>
-                <input type="password" id="pass1" class="input-field" placeholder="Enter new password">
-                <i class="fas fa-eye toggle-password" onclick="toggleVis('pass1', this)"></i>
+            <img src="../asset/img/logo.png" alt="UNICAL Market" class="auth-logo" onerror="this.src='../192.png'; this.onerror=null;">
+            
+            <h1 class="auth-title">Create New Password</h1>
+            <p class="auth-subtitle">Your new password must be at least 6 characters long.</p>
+
+            <div class="message-box" id="msg-box"></div>
+
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <input type="password" id="pass1" class="form-input" placeholder="Enter new password">
+                    <i class="fas fa-lock input-icon"></i>
+                    <i class="far fa-eye toggle-password" onclick="toggleVis('pass1', this)"></i>
+                </div>
             </div>
 
-            <div class="input-group">
-                <label class="input-label">Confirm Password</label>
-                <input type="password" id="pass2" class="input-field" placeholder="Type it again">
-                <i class="fas fa-eye toggle-password" onclick="toggleVis('pass2', this)"></i>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <input type="password" id="pass2" class="form-input" placeholder="Confirm new password">
+                    <i class="fas fa-lock input-icon"></i>
+                    <i class="far fa-eye toggle-password" onclick="toggleVis('pass2', this)"></i>
+                </div>
             </div>
 
             <button class="auth-btn" id="submit-btn" onclick="updatePassword()">Save New Password</button>
-            
-            <div id="msg-box"></div>
         </div>
     </div>
 
@@ -152,7 +206,7 @@
         });
 
         // Show/Hide Password Logic
-        function toggleVis(inputId, icon) {
+        window.toggleVis = function(inputId, icon) {
             const input = document.getElementById(inputId);
             if (input.type === "password") {
                 input.type = "text";
@@ -172,16 +226,16 @@
             const btn = document.getElementById('submit-btn');
 
             msg.style.display = 'block';
-            msg.className = 'msg-error';
+            msg.className = 'message-box error-msg';
 
             if (p1.length < 6) {
-                msg.innerText = "Password must be at least 6 characters."; return;
+                msg.innerHTML = '<i class="fas fa-exclamation-circle"></i> Password must be at least 6 characters.'; return;
             }
             if (p1 !== p2) {
-                msg.innerText = "Passwords do not match."; return;
+                msg.innerHTML = '<i class="fas fa-exclamation-circle"></i> Passwords do not match.'; return;
             }
 
-            btn.innerText = "Updating Securely...";
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating...';
             btn.disabled = true;
 
             try {
@@ -193,9 +247,9 @@
                 if (error) throw error;
 
                 // Success!
-                msg.className = 'msg-success';
-                msg.innerText = "Password updated successfully! Redirecting...";
-                btn.innerText = "Success!";
+                msg.className = 'message-box success-msg';
+                msg.innerHTML = '<i class="fas fa-check-circle"></i> Password updated successfully! Redirecting...';
+                btn.innerHTML = '<i class="fas fa-check"></i> Success!';
                 
                 // Send them back to the login page after 2 seconds
                 setTimeout(() => {
@@ -203,7 +257,7 @@
                 }, 2000);
 
             } catch (error) {
-                msg.innerText = error.message || "Failed to update password. Your recovery link may have expired.";
+                msg.innerHTML = '<i class="fas fa-exclamation-circle"></i> ' + (error.message || "Failed to update password. Your recovery link may have expired.");
                 btn.innerText = "Save New Password";
                 btn.disabled = false;
             }
