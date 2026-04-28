@@ -1,14 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
-
 * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; -webkit-tap-highlight-color: transparent; }
 
 :root {
-    --brand-color:#FF7A00; /* Your new Golden Yellow */
+    --brand-color:#FF7A00; 
     --brand-bg: #f0f4f8;
     --text-main: #1e293b;
     --text-muted: #64748b;
-    --blue-accent:#FFA726; /* Your new matching Royal Blue */
+    --blue-accent:#FFA726; 
 }
 
 body { background: #e0e0e0; display: flex; justify-content: center; }
@@ -20,55 +19,68 @@ body { background: #e0e0e0; display: flex; justify-content: center; }
 
 /* --- HEADER --- */
 .header { background: white; padding: 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
-/* 🚀 FIX: OLD LOGO TEXT STYLES REMOVED */
-/* .logo { font-size: 22px; font-weight: 800; color: var(--brand-color); margin-bottom: 15px; letter-spacing: -0.5px; } */
 
-/* 🚀 FIX: NEW LOGO IMAGE STYLES (RESPONSIVE) */
 .logo-link {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    margin-bottom: 15px; /* Keeps same spacing above search box */
-    transition: 0.2s; /* Smooth click animation */
+    display: flex; align-items: center; text-decoration: none; margin-bottom: 15px; transition: 0.2s; 
 }
-.logo-link:active {
-    transform: scale(0.95); /* Mobile-app click effect */
-}
-.header-logo {
-    max-height: 45px; /* Adjust this number to make the logo larger or smaller vertically */
-    height: auto;
-    width: auto;
-    max-width: 100%; /* Makes it responsive: it won't overflow small screens */
-    display: block;
-}
+.logo-link:active { transform: scale(0.95); }
+.header-logo { max-height: 45px; height: auto; width: auto; max-width: 100%; display: block; }
 .search-box { background: #f1f5f9; border-radius: 12px; display: flex; align-items: center; padding: 12px 15px; }
 .search-icon { color: #94a3b8; margin-right: 10px; cursor: pointer; }
 .search-box input { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; color: var(--text-main); }
-/* 🚀 NOTIFICATIONS & SMART DOTS */
+
+/* --- NOTIFICATIONS --- */
 .header-top { display: flex; justify-content: space-between; align-items: center; width: 100%; }
 .notify-icon-container { position: relative; font-size: 22px; color: var(--brand-color); text-decoration: none; margin-right: 5px; transition: 0.2s; }
 .notify-icon-container:active { transform: scale(0.9); }
 .red-dot { position: absolute; top: -2px; right: -2px; width: 10px; height: 10px; background: #ef4444; border-radius: 50%; border: 2px solid white; display: none; }
 
-.nav-item { position: relative; } /* Allows the red dot to stick to the nav icon */
+.nav-item { position: relative; } 
 .msg-dot { top: 5px; right: 15px; border: 2px solid var(--brand-bg); }
 
-/* 🚀 FIX: Removed padding-bottom here to allow footer to reach the bottom */
 .content-area { flex: 1; overflow-y: auto; }
 
-/* --- CATEGORIES (HOMEPAGE) --- */
-.category-grid {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px 10px;
-    padding: 20px; background: white; margin-bottom: 10px;
+/* 🚀 RECOMMENDED SLIDER --- */
+.rec-slider { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 5px; scrollbar-width: none; scroll-behavior: smooth; }
+.rec-slider::-webkit-scrollbar { display: none; }
+.rec-card { min-width: 100px; max-width: 100px; display: flex; flex-direction: column; cursor: pointer; text-decoration: none; }
+.rec-card:active { transform: scale(0.95); }
+.rec-img { width: 100px; height: 100px; border-radius: 14px; object-fit: cover; background: #eee; margin-bottom: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; }
+.rec-title { font-size: 11px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 3px; }
+.rec-price { font-size: 12px; font-weight: 800; color: var(--brand-color); }
+.sk-rec-img { width: 100px; height: 100px; border-radius: 14px; margin-bottom: 6px; }
+
+/* 🚀 NEW: 2x2 HORIZONTAL CATEGORY GRID --- */
+.new-category-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    padding: 0 20px 25px;
 }
-.cat-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; }
-.cat-icon-box {
-    width: 55px; height: 55px; border-radius: 16px;
-    display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.03); transition: transform 0.2s;
+.new-cat-card {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 12px 14px;
+    border-radius: 16px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    text-decoration: none;
+    transition: 0.2s;
 }
-.cat-item:active .cat-icon-box { transform: scale(0.9); }
-.cat-name { font-size: 11px; text-align: center; color: var(--text-main); font-weight: 600; line-height: 1.2; }
+.new-cat-card:active { transform: scale(0.96); background: #f8fafc; }
+.cat-emoji {
+    font-size: 26px;
+    margin-right: 12px;
+    line-height: 1;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15)); /* Makes the emoji look 3D */
+}
+.new-cat-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-main);
+}
+
 
 /* --- SECTIONS SHARED --- */
 .section-wrapper { padding: 0 20px 20px; }
@@ -84,7 +96,7 @@ body { background: #e0e0e0; display: flex; justify-content: center; }
     display: flex; flex-direction: column; height: 100%; overflow: hidden;
 }
 .card-img { width: 100%; height: 140px; object-fit: cover; border-radius: 10px; background: #eee; margin-bottom: 10px; flex-shrink: 0; }
-.card-price { font-size: 16px; font-weight: 800; color: var(--blue-accent); margin-bottom: 4px; }
+.card-price { font-size: 16px; font-weight: 800; color: var(--brand-color); margin-bottom: 4px; }
 .card-title { font-size: 12px; color: var(--text-main); line-height: 1.4; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
 .card-desc { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px;}
 
@@ -108,7 +120,6 @@ body { background: #e0e0e0; display: flex; justify-content: center; }
 .blog-title { font-size: 14px; font-weight: 800; color: var(--text-main); margin-bottom: 4px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .blog-desc { font-size: 12px; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 
-/* 🚀 THE FIXED EXPANDABLE FOOTER */
 /* 🚀 THE FIXED EXPANDABLE FOOTER */
 .footer {
     background: var(--brand-color); color: #1e293b; 
@@ -188,16 +199,14 @@ body.dark-mode {
     --brand-bg: #0f172a;
     --text-main: #f1f5f9;
     --text-muted: #94a3b8;
-    background-color: #020617; /* Very dark background */
+    background-color: #020617; 
 }
 
-/* Force App Container to be dark */
 body.dark-mode .app-container {
     background: var(--brand-bg);
     box-shadow: 0 0 30px rgba(0,0,0,0.8);
 }
 
-/* Turn all white elements dark */
 body.dark-mode .header,
 body.dark-mode .bottom-nav,
 body.dark-mode .card,
@@ -219,7 +228,6 @@ body.dark-mode .sticky-top-bar {
     color: var(--text-main);
 }
 
-/* Fix Input fields and search boxes */
 body.dark-mode input,
 body.dark-mode textarea,
 body.dark-mode .search-box,
@@ -230,7 +238,6 @@ body.dark-mode .msg-input {
     border-color: #334155 !important;
 }
 
-/* Fix specific text colors */
 body.dark-mode .section-title,
 body.dark-mode .card-title,
 body.dark-mode .product-title,
@@ -251,12 +258,10 @@ body.dark-mode .chat-last-msg {
     color: #cbd5e1 !important;
 }
 
-/* Bottom Nav adjustments */
 body.dark-mode .nav-item { color: #64748b; }
 body.dark-mode .nav-item.active { color: var(--brand-color); }
 body.dark-mode .nav-fab { border-color: #0f172a; }
 
-/* Fix Empty states and Skeleton loaders for Dark Mode */
 body.dark-mode .sk-shimmer {
     background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
     background-size: 200% 100%;
@@ -266,68 +271,34 @@ body.dark-mode .sk-vendor {
     background: #1e293b !important;
     border-color: #334155 !important;
 }
-/* 🚀 FIX: MISSING DARK MODE EDGE CASES */
 
-/* 1. Remove the solid white background from the Category Grid */
-body.dark-mode .category-grid {
-    background: transparent !important;
-}
-body.dark-mode .cat-name {
-    color: #f1f5f9 !important;
-}
-
-/* 2. Fix the Review Cards (they were staying white) */
-body.dark-mode .review-card {
-    background: #1e293b !important;
-    border-color: #334155 !important;
-}
-
-/* 3. Force stubborn inline Vendor Names and Descriptions to turn white/gray */
-body.dark-mode .card div {
-    color: #f1f5f9 !important;
-}
-body.dark-mode .card-price {
-    color: var(--blue-accent) !important; 
-}
-body.dark-mode .card div[style*="color: #64748b"] {
-    color: #94a3b8 !important; /* Keeps the tiny description text slightly faded */
-}
-
-/* 4. Fix all Footer Text, Links, and the Dropdown Arrow */
+body.dark-mode .review-card { background: #1e293b !important; border-color: #334155 !important; }
+body.dark-mode .card div { color: #f1f5f9 !important; }
+body.dark-mode .card-price { color: var(--blue-accent) !important; }
+body.dark-mode .card div[style*="color: #64748b"] { color: #94a3b8 !important; }
 body.dark-mode .footer-logo-box,
 body.dark-mode .footer-links-grid a,
 body.dark-mode .copyright-text,
 body.dark-mode .footer-toggle,
-body.dark-mode #footer-arrow-icon {
-    color: #f1f5f9 !important;
-}
-body.dark-mode .copyright-text a {
-    color: var(--blue-accent) !important;
-}
-/* 5. Force bright pastel category boxes to become dark slate */
-body.dark-mode .cat-icon-box {
-    background: #1e293b !important;
-    box-shadow: none !important;
-}
-/* Keep the price orange in dark mode - High Specificity */
-body.dark-mode .card .card-price {
-    color: var(--blue-accent) !important; 
-}
+body.dark-mode #footer-arrow-icon { color: #f1f5f9 !important; }
+body.dark-mode .copyright-text a { color: var(--blue-accent) !important; }
+
+/* 🚀 NEW: Dark Mode for the Category Grid */
+body.dark-mode .new-cat-card { background: #1e293b !important; border-color: #334155 !important; }
+body.dark-mode .new-cat-card:active { background: #334155 !important; }
+body.dark-mode .new-cat-name { color: #f1f5f9 !important; }
+
+body.dark-mode .card .card-price { color: var(--blue-accent) !important; }
 .view-all-btn-home { display: block; text-align: center; background: #f1f5f9; color: var(--text-main); font-weight: 800; font-size: 13px; padding: 12px; border-radius: 12px; text-decoration: none; margin-top: 15px; transition: 0.2s; }
 .view-all-btn-home:active { transform: scale(0.98); background: #e2e8f0; }
 body.dark-mode .view-all-btn-home { background: #1e293b !important; color: #f1f5f9 !important; }
 body.dark-mode .view-all-btn-home:active { background: #334155 !important; }
 
-/* 🚀 AD POPUP DARK MODE FIXES */
+body.dark-mode .rec-img { border-color: #334155; background: #1e293b; }
+body.dark-mode .rec-title { color: #f1f5f9; }
+
 @keyframes popUp { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-body.dark-mode .ad-modal-content {
-    background: #0f172a !important;
-    border: 1px solid #334155 !important;
-}
-body.dark-mode #ad-title {
-    color: #f1f5f9 !important;
-}
-body.dark-mode #ad-content {
-    color: #cbd5e1 !important;
-}
+body.dark-mode .ad-modal-content { background: #0f172a !important; border: 1px solid #334155 !important; }
+body.dark-mode #ad-title { color: #f1f5f9 !important; }
+body.dark-mode #ad-content { color: #cbd5e1 !important; }

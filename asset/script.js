@@ -32,7 +32,7 @@ function shuffleArray(array) {
     return array;
 }
 
-// 🚀 2. SMART CACHE & SCROLL (Detects if you clicked "Back")
+// 🚀 2. SMART CACHE & SCROLL
 const navEntries = performance.getEntriesByType("navigation");
 const isBackNavigation = navEntries.length > 0 && navEntries[0].type === "back_forward";
 
@@ -67,6 +67,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     fetchAdPopup(); 
 
     await Promise.all([
+        fetchRecommendedItems(), // 🚀 NEW FUNCTION CALL
         fetchItems(),
         fetchVendors(),
         fetchReviews(),
@@ -129,6 +130,66 @@ function setupSearch() {
 }
 
 // =========================================
+// 🚀 FETCH RECOMMENDED (CACHES FOR 5 MINS)
+// =========================================
+async function fetchRecommendedItems() {
+    const slider = document.getElementById('rec-slider');
+    if (!slider) return;
+
+    const now = Date.now();
+    const cachedData = localStorage.getItem('rec_items_data');
+    const cachedTime = localStorage.getItem('rec_items_time');
+
+    let displayItems = [];
+
+    // Check if cache exists and is less than 5 minutes (300,000 ms) old
+    if (cachedData && cachedTime && (now - parseInt(cachedTime) < 300000)) {
+        displayItems = JSON.parse(cachedData);
+    } else {
+        try {
+            const { data, error } = await supabaseClient.from('products').select('id, name, price, image_urls').eq('status', 'Active').limit(100);
+            if (error) throw error;
+            if (data.length === 0) { slider.parentElement.style.display = 'none'; return; }
+            
+            // Shuffle and pick 20
+            displayItems = shuffleArray(data).slice(0, 20);
+            
+            // Save to cache
+            localStorage.setItem('rec_items_data', JSON.stringify(displayItems));
+            localStorage.setItem('rec_items_time', now.toString());
+        } catch (err) {
+            console.error("Failed to load recommended", err);
+            slider.parentElement.style.display = 'none';
+            return;
+        }
+    }
+
+    slider.innerHTML = "";
+    displayItems.forEach(p => {
+        const imgUrl = escapeHTML((p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/150?text=No+Image');
+        const fPrice = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(p.price);
+        
+        slider.insertAdjacentHTML('beforeend', `
+            <a href="product/index.html?id=${escapeJS(p.id)}" class="rec-card">
+                <img src="${imgUrl}" class="rec-img" onerror="this.src='https://via.placeholder.com/150'">
+                <div class="rec-title">${escapeHTML(p.name)}</div>
+                <div class="rec-price">${fPrice}</div>
+            </a>
+        `);
+    });
+
+    // Auto-Scroll Logic every 1.5 seconds
+    setInterval(() => {
+        const maxScroll = slider.scrollWidth - slider.clientWidth;
+        if (slider.scrollLeft >= maxScroll - 5) {
+            slider.scrollTo({ left: 0, behavior: 'smooth' }); // Loop back cleanly
+        } else {
+            slider.scrollBy({ left: 107, behavior: 'smooth' }); // Scroll past one card
+        }
+    }, 1500);
+}
+
+// =========================================
 // --- FETCH ITEMS ---
 // =========================================
 async function fetchItems() {
@@ -138,7 +199,6 @@ async function fetchItems() {
     const cachedData = sessionStorage.getItem('home_items');
     let displayItems = [];
 
-    // ONLY use cache if they navigated BACK. If they refresh normally, fetch fresh data!
     if (isBackNavigation && cachedData) {
         displayItems = JSON.parse(cachedData);
     } else {
@@ -241,7 +301,6 @@ async function fetchReviews() {
         displayReviews = JSON.parse(cachedData);
     } else {
         try {
-            // 🚀 FIX: Removed the legacy_name and legacy_avatar columns causing the crash
             const { data, error } = await supabaseClient.from('reviews').select('rating, review_text, profiles(full_name, avatar_url)').eq('status', 'approved').limit(20);
             if (error) throw error;
             if (data.length === 0) { slider.innerHTML = "<p style='padding:20px; color:#94a3b8; font-size:13px;'>No reviews yet.</p>"; return; }
@@ -318,7 +377,6 @@ async function fetchBlogs() {
     displayBlogs.forEach(b => {
         const imgUrl = escapeHTML(b.image_url || 'https://via.placeholder.com/100');
         const postDate = new Date(b.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        const niceSlug = b.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '') + '--' + b.id;
 
        list.insertAdjacentHTML('beforeend', `
             <div class="blog-card" onclick="window.location.href='blog-content/index.html?id=${escapeJS(b.id)}'">
@@ -340,7 +398,6 @@ async function fetchBlogs() {
 // --- FETCH AD POPUP ---
 // =========================================
 async function fetchAdPopup() {
-    // 🚀 FIX: IF THIS IS NOT THE HOME PAGE, STOP RUNNING TO PREVENT CRASH!
     const adTitleEl = document.getElementById('ad-title');
     if (!adTitleEl) return; 
 
@@ -365,7 +422,6 @@ async function fetchAdPopup() {
             adImg.style.display = 'none';
         }
 
-        // Show popup
         setTimeout(() => {
             const popup = document.getElementById('ad-popup');
             if (popup) popup.style.display = 'flex';
@@ -438,7 +494,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // =========================================
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        // Register your actual service worker file
         navigator.serviceWorker.register('sw.js')
             .then(reg => console.log('Service Worker Registered successfully!', reg.scope))
             .catch(err => console.error('Service Worker Registration Failed!', err));
@@ -451,18 +506,13 @@ if ('serviceWorker' in navigator) {
 let deferredPrompt;
 
 window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent Chrome from showing the mini-infobar automatically
     e.preventDefault();
-    // Stash the event so it can be triggered later.
     deferredPrompt = e;
 });
 
-// This is the function triggered by your button in index.html
 function downloadApp() {
     if (deferredPrompt) {
-        // Show the native install prompt
         deferredPrompt.prompt();
-        // Wait for the user to respond to the prompt
         deferredPrompt.userChoice.then((choiceResult) => {
             if (choiceResult.outcome === 'accepted') {
                 console.log('User accepted the PWA install prompt');
@@ -472,7 +522,6 @@ function downloadApp() {
             deferredPrompt = null;
         });
     } else {
-        // Fallback message if the app is already installed or the browser doesn't support it
         alert("The app is already installed or your browser doesn't support direct installation. Try using Chrome or Safari!");
     }
 }

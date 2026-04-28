@@ -26,10 +26,6 @@
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="icon" href="192.png" sizes="192x192" type="image/png">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
-
-    <script>
-        window.location.replace("coming-soon/");
-    </script>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -56,49 +52,63 @@
         </div>
 
         <div class="content-area">
-            
-           <div class="category-grid">
-                <a href="requests/" class="cat-item">
-                    <div class="cat-icon-box" style="color: #f43f5e; background: #fff1f2;"><i class="fas fa-bullhorn"></i></div>
-                    <span class="cat-name">Request</span>
-                </a>
 
-                <a href="items/index.html?cat=Gadgets" class="cat-item">
-                    <div class="cat-icon-box" style="color: #3b82f6; background: #eff6ff;"><i class="fas fa-laptop-code"></i></div>
-                    <span class="cat-name">Gadgets</span>
-                </a>
-                
-                <a href="items/index.html?cat=Fashion" class="cat-item">
-                    <div class="cat-icon-box" style="color: #ec4899; background: #fdf2f8;"><i class="fas fa-tshirt"></i></div>
-                    <span class="cat-name">Fashion</span>
-                </a>
-                
-                <a href="items/index.html?cat=Food" class="cat-item">
-                    <div class="cat-icon-box" style="color: #f59e0b; background: #fffbeb;"><i class="fas fa-hamburger"></i></div>
-                    <span class="cat-name">Food</span>
-                </a>
-                
-                <a href="items/index.html?cat=Transport" class="cat-item">
-                    <div class="cat-icon-box" style="color: #eab308; background: #fefce8;"><i class="fas fa-motorcycle"></i></div>
-                    <span class="cat-name">Transport</span>
-                </a>
-                
-                <a href="items/index.html?cat=Beauty" class="cat-item">
-                    <div class="cat-icon-box" style="color: #f43f5e; background: #fff1f2;"><i class="fas fa-magic"></i></div>
-                    <span class="cat-name">Beauty</span>
-                </a>
-                
-                <a href="items/index.html?cat=CampusServices" class="cat-item">
-                    <div class="cat-icon-box" style="color: #10b981; background: #ecfdf5;"><i class="fas fa-print"></i></div>
-                    <span class="cat-name">Services</span>
-                </a>
-                
-                <a href="category/" class="cat-item">
-                    <div class="cat-icon-box" style="color: #64748b; background: #f8fafc;"><i class="fas fa-ellipsis-h"></i></div>
-                    <span class="cat-name">Others</span>
-                </a>
+            <div class="section-wrapper" style="padding-top: 15px; margin-bottom: 5px;">
+                <div class="section-header" style="margin-bottom: 10px;">
+                    <div class="section-title" style="font-size: 15px;">Recommended for you</div>
+                </div>
+                <div class="rec-slider" id="rec-slider">
+                    <div class="rec-card"><div class="sk-shimmer sk-rec-img"></div><div class="sk-shimmer sk-line short"></div></div>
+                    <div class="rec-card"><div class="sk-shimmer sk-rec-img"></div><div class="sk-shimmer sk-line short"></div></div>
+                    <div class="rec-card"><div class="sk-shimmer sk-rec-img"></div><div class="sk-shimmer sk-line short"></div></div>
+                    <div class="rec-card"><div class="sk-shimmer sk-rec-img"></div><div class="sk-shimmer sk-line short"></div></div>
+                </div>
             </div>
 
+            <div class="new-category-grid">
+                
+                <a href="requests/" class="new-cat-card">
+                    <span class="cat-emoji">📢</span>
+                    <span class="new-cat-name">Request</span>
+                </a>
+                
+                <a href="items/index.html?cat=Gadgets" class="new-cat-card">
+                    <span class="cat-emoji">💻</span>
+                    <span class="new-cat-name">Gadgets</span>
+                </a>
+                
+                <a href="items/index.html?cat=Fashion" class="new-cat-card">
+                    <span class="cat-emoji">👗</span>
+                    <span class="new-cat-name">Fashion</span>
+                </a>
+                
+                <a href="items/index.html?cat=Food" class="new-cat-card">
+                    <span class="cat-emoji">🍔</span>
+                    <span class="new-cat-name">Food</span>
+                </a>
+                
+                <a href="items/index.html?cat=Transport" class="new-cat-card">
+                    <span class="cat-emoji">🛵</span>
+                    <span class="new-cat-name">Transport</span>
+                </a>
+                
+                <a href="items/index.html?cat=Beauty" class="new-cat-card">
+                    <span class="cat-emoji">💄</span>
+                    <span class="new-cat-name">Beauty</span>
+                </a>
+                
+                <a href="items/index.html?cat=CampusServices" class="new-cat-card">
+                    <span class="cat-emoji">🖨️</span>
+                    <span class="new-cat-name">Services</span>
+                </a>
+                
+                <a href="category/" class="new-cat-card">
+                    <span class="cat-emoji">📦</span>
+                    <span class="new-cat-name">Others</span>
+                </a>
+
+            </div>
+            
             <div class="section-wrapper">
                 <div class="section-header">
                     <div class="section-title">Student Reviews</div>
