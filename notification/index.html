@@ -1,96 +1,156 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
+     <script>
         window.location.replace("../coming-soon/");
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Notifications | UNICAL Digital Market</title>
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../asset/style.css">
+    <!-- 🚀 PRIMARY SEO -->
+    <meta name="description" content="View your latest notifications, messages, and alerts on UNICAL Digital Market.">
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- 🚀 MOBILE APP & ICONS -->
     <meta name="theme-color" content="#FF7A00">
     <link rel="icon" href="../favicon.ico" type="image/x-icon">
     <link rel="icon" href="../192.png" sizes="192x192" type="image/png">
     <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+        /* 🚀 Reset & Variables */
+        * { box-sizing: border-box; }
         :root {
-            --brand-color: #FF7A00;
+            --brand-color: #FF7A00; 
+            --brand-gradient: linear-gradient(135deg, #FF7A00, #ea580c);
+            --brand-bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
         }
 
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #e2e8f0; 
+            margin: 0; padding: 0; 
+            display: flex; justify-content: center; min-height: 100vh;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            background: var(--brand-bg); width: 100%; max-width: 480px; min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1); display: flex; flex-direction: column;
+            position: relative; z-index: 1;
+        }
+
+        /* 🚀 Glassmorphic Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95); padding: 15px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
         .header-top-flex { display: flex; align-items: center; justify-content: space-between; width: 100%; }
-        .page-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; }
+        .header-left { display: flex; align-items: center; gap: 15px; }
+        .back-btn { background: white; color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid #e2e8f0; font-size: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
+        .back-btn:active { transform: scale(0.9); background: #f1f5f9; }
+        .page-title { font-size: 20px; font-weight: 900; color: var(--text-main); margin: 0; letter-spacing: -0.5px;}
         
-        .clear-btn { background: none; border: none; color: var(--brand-color); font-size: 13px; font-weight: 800; cursor: pointer; transition: 0.2s; }
-        .clear-btn:active { transform: scale(0.95); opacity: 0.8; }
+        .clear-btn { background: rgba(255, 122, 0, 0.1); border: none; color: var(--brand-color); padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .clear-btn:active { transform: scale(0.95); background: rgba(255, 122, 0, 0.2); }
 
-        .notif-container { padding: 15px 20px 90px; }
+        .notif-container { padding: 15px 20px 90px; flex: 1; }
 
+        /* 🚀 Modern Notification Cards */
         .notif-card {
-            background: white; border-radius: 16px; padding: 16px; margin-bottom: 12px;
-            display: flex; gap: 15px; border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            background: white; border-radius: 20px; padding: 18px; margin-bottom: 15px;
+            display: flex; gap: 15px; border: 1px solid #f1f5f9; box-shadow: 0 8px 25px rgba(0,0,0,0.02);
             position: relative; overflow: hidden; transition: 0.2s;
         }
         
-        .notif-card.unread { background: #fffcf8; border-color: #fde68a; }
-        .notif-card.unread::before { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 4px; background: var(--brand-color); }
+        /* Unread State with Dot */
+        .notif-card.unread { background: #fffaf5; border-color: #fed7aa; }
+        .notif-card.unread::after { 
+            content: ''; position: absolute; right: 18px; top: 22px; 
+            height: 8px; width: 8px; border-radius: 50%; background: var(--brand-color); 
+            box-shadow: 0 0 10px rgba(255, 122, 0, 0.5);
+        }
 
-        .notif-icon-wrapper { width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 18px; flex-shrink: 0; }
+        /* Rounded Square Icons */
+        .notif-icon-wrapper { 
+            width: 48px; height: 48px; border-radius: 14px; display: flex; 
+            justify-content: center; align-items: center; font-size: 20px; flex-shrink: 0; 
+        }
 
         .icon-system { background: #f1f5f9; color: #475569; }
         .icon-promo { background: rgba(255, 122, 0, 0.1); color: var(--brand-color); }
         .icon-alert { background: #fef2f2; color: #ef4444; }
         .icon-success { background: #ecfdf5; color: #10b981; }
 
-        .notif-content { flex: 1; }
-        .notif-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
-        .notif-title { font-size: 14px; font-weight: 800; color: var(--text-main); }
-        .notif-time { font-size: 11px; color: var(--text-muted); font-weight: 600; white-space: nowrap; margin-left: 10px; }
+        .notif-content { flex: 1; min-width: 0;}
+        .notif-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding-right: 15px;}
+        .notif-title { font-size: 15px; font-weight: 800; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.3px;}
+        .notif-time { font-size: 11px; color: var(--text-muted); font-weight: 600; white-space: nowrap; flex-shrink: 0;}
         
-        .notif-message { font-size: 13px; color: #475569; line-height: 1.5; }
+        .notif-message { font-size: 13px; color: #475569; line-height: 1.6; font-weight: 500;}
         
-        /* The Accordion Buttons */
-        .read-more-btn { color: var(--brand-color); font-weight: 800; cursor: pointer; font-size: 12px; margin-top: 5px; display: inline-block; }
+        .read-more-btn { color: var(--brand-color); font-weight: 800; cursor: pointer; font-size: 12px; margin-top: 6px; display: inline-block; transition: 0.2s;}
+        .read-more-btn:active { opacity: 0.7; }
 
+        /* 🚀 Friendly Empty State */
         .empty-state { text-align: center; padding: 80px 20px; display: none; flex-direction: column; align-items: center; }
-        .empty-state i { font-size: 60px; color: #cbd5e1; margin-bottom: 20px; }
-        .empty-state h3 { font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0 0 8px; }
-        .empty-state p { font-size: 13px; color: var(--text-muted); line-height: 1.5; max-width: 250px; }
+        .empty-icon-box { background: #f1f5f9; width: 100px; height: 100px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-bottom: 25px; }
+        .empty-state i { font-size: 45px; color: #cbd5e1; }
+        .empty-state h3 { font-size: 20px; font-weight: 900; color: var(--text-main); margin: 0 0 10px; letter-spacing: -0.5px;}
+        .empty-state p { font-size: 14px; color: var(--text-muted); line-height: 1.5; max-width: 260px; font-weight: 500;}
 
+        /* Skeleton Loaders */
         .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        .sk-card { display: flex; gap: 15px; padding: 15px; background: white; border-radius: 16px; margin-bottom: 12px; border: 1px solid #f1f5f9; }
-        .sk-avatar { width: 45px; height: 45px; border-radius: 50%; flex-shrink: 0; }
+        .sk-card { display: flex; gap: 15px; padding: 20px; background: white; border-radius: 20px; margin-bottom: 15px; border: 1px solid #f1f5f9; }
+        .sk-avatar { width: 48px; height: 48px; border-radius: 14px; flex-shrink: 0; }
         .sk-lines { flex: 1; }
-        .sk-line-1 { height: 14px; width: 50%; border-radius: 4px; margin-bottom: 10px; }
-        .sk-line-2 { height: 12px; width: 90%; border-radius: 4px; margin-bottom: 6px; }
+        .sk-line-1 { height: 16px; width: 40%; border-radius: 6px; margin-bottom: 12px; }
+        .sk-line-2 { height: 14px; width: 90%; border-radius: 6px; margin-bottom: 8px; }
+        .sk-line-3 { height: 14px; width: 60%; border-radius: 6px; }
 
         /* ========================================= */
         /* 🌙 DARK MODE FIXES FOR NOTIFICATIONS      */
         /* ========================================= */
         body.dark-mode { background-color: #020617 !important; }
-        body.dark-mode .app-container { background: #0f172a !important; }
+        body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;}
         
-        body.dark-mode .header { background: #1e293b !important; border-bottom-color: #334155 !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; }
-        body.dark-mode .page-title, body.dark-mode .fa-arrow-left { color: #f1f5f9 !important; }
+        body.dark-mode .header { background: rgba(15, 23, 42, 0.95) !important; border-bottom-color: #334155 !important; }
+        body.dark-mode .page-title { color: #f1f5f9 !important; }
+        body.dark-mode .back-btn { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important;}
+        body.dark-mode .back-btn:active { background: #334155 !important; }
         
-        body.dark-mode .notif-card { background: #1e293b !important; border-color: #334155 !important; box-shadow: none !important; }
+        body.dark-mode .clear-btn { background: rgba(255, 122, 0, 0.15) !important; }
+        
+        body.dark-mode .notif-card { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 8px 25px rgba(0,0,0,0.5) !important; }
         body.dark-mode .notif-card.unread { background: #0f172a !important; border-color: #334155 !important; }
+        body.dark-mode .notif-card.unread::after { box-shadow: 0 0 10px rgba(255, 122, 0, 0.8) !important; }
         
         body.dark-mode .notif-title { color: #f1f5f9 !important; }
         body.dark-mode .notif-message { color: #cbd5e1 !important; }
         body.dark-mode .notif-time { color: #94a3b8 !important; }
         
         body.dark-mode .icon-system { background: #0f172a !important; color: #94a3b8 !important; }
-        body.dark-mode .icon-promo { background: rgba(255, 122, 0, 0.1) !important; color: var(--brand-color) !important; }
-        body.dark-mode .icon-alert { background: rgba(239, 68, 68, 0.1) !important; color: #fca5a5 !important; }
-        body.dark-mode .icon-success { background: rgba(16, 185, 129, 0.1) !important; color: #6ee7b7 !important; }
+        body.dark-mode .icon-promo { background: rgba(255, 122, 0, 0.15) !important; color: var(--brand-color) !important; }
+        body.dark-mode .icon-alert { background: rgba(239, 68, 68, 0.15) !important; color: #fca5a5 !important; }
+        body.dark-mode .icon-success { background: rgba(16, 185, 129, 0.15) !important; color: #6ee7b7 !important; }
 
         body.dark-mode .empty-state h3 { color: #f1f5f9 !important; }
         body.dark-mode .empty-state p { color: #94a3b8 !important; }
+        body.dark-mode .empty-icon-box { background: #1e293b !important; }
         body.dark-mode .empty-state i { color: #334155 !important; }
         
         body.dark-mode .sk-card { background: #1e293b !important; border-color: #334155 !important; }
@@ -98,28 +158,33 @@
     </style>
 </head>
 <body>
+    <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
 
     <div class="app-container">
         
-        <div class="header" style="position: sticky; top: 0; z-index: 100; background: white; border-bottom: 1px solid #f1f5f9; padding: 15px 20px;">
+        <div class="header">
             <div class="header-top-flex">
-                <div style="display: flex; align-items: center; gap: 15px;">
-                    <button onclick="window.history.back()" style="background:none; border:none; font-size:20px; color:var(--text-main); cursor:pointer;"><i class="fas fa-arrow-left"></i></button>
+                <div class="header-left">
+                    <!-- 🚀 SMART BACK BUTTON -->
+                    <button onclick="smartBack(event)" class="back-btn"><i class="fas fa-arrow-left"></i></button>
                     <h1 class="page-title">Notifications</h1>
                 </div>
-                <button class="clear-btn" onclick="markAllAsRead()">Mark all as read</button>
+                <button class="clear-btn" onclick="markAllAsRead()">Mark all Read</button>
             </div>
         </div>
 
         <div class="content-area notif-container">
             
             <div id="skeleton-loader">
-                <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-lines"><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-lines"><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-lines"><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div></div></div>
                 <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-lines"><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div></div></div>
             </div>
 
             <div class="empty-state" id="empty-state">
-                <i class="fas fa-bell-slash"></i>
+                <div class="empty-icon-box">
+                    <i class="fas fa-bell-slash"></i>
+                </div>
                 <h3>All Caught Up!</h3>
                 <p>You don't have any new notifications right now. Check back later!</p>
             </div>
@@ -139,9 +204,25 @@
 
     <script src="../asset/script.js"></script>
 
-   <script>
+    <script>
         let currentUser = null;
         let currentlyOpenId = null; 
+
+        // 🚀 SMART BACK BUTTON LOGIC
+        function getSmartRedirectUrl() {
+            const referrer = document.referrer;
+            const currentWebsite = window.location.origin;
+
+            if (referrer && referrer.startsWith(currentWebsite) && !referrer.includes('/login/') && !referrer.includes('/reset-password/')) {
+                return referrer; 
+            }
+            return "../index.html"; 
+        }
+
+        window.smartBack = function(event) {
+            if (event) event.preventDefault();
+            window.location.href = getSmartRedirectUrl();
+        }
 
         // 🛡️ XSS Sanitizers
         function escapeHTML(str) {
@@ -273,7 +354,7 @@
             }
         };
 
-        function markAllAsRead() {
+        window.markAllAsRead = function() {
             localStorage.setItem('notifs_cleared_time', new Date().toISOString());
             document.querySelectorAll('.notif-card.unread').forEach(card => {
                 card.classList.remove('unread');
@@ -283,9 +364,9 @@
         function getIconConfig(type) {
             switch (type?.toLowerCase()) {
                 case 'promo': return { icon: 'fas fa-tag', bgClass: 'icon-promo' };
-                case 'alert': return { icon: 'fas fa-exclamation-triangle', bgClass: 'icon-alert' };
+                case 'alert': return { icon: 'fas fa-exclamation-circle', bgClass: 'icon-alert' };
                 case 'success': return { icon: 'fas fa-check-circle', bgClass: 'icon-success' };
-                default: return { icon: 'fas fa-bullhorn', bgClass: 'icon-system' }; 
+                default: return { icon: 'fas fa-bell', bgClass: 'icon-system' }; 
             }
         }
 

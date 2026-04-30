@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+     <script>
+        window.location.replace("../coming-soon/");
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>All Categories | UNICAL Market</title>
@@ -27,11 +30,18 @@
     <link rel="stylesheet" href="../asset/style.css">
 
     <style>
+        /* 🚀 NEW: 3D Emoji Drop Shadow for the List View */
+        .list-emoji {
+            font-size: 26px;
+            line-height: 1;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+        }
+
         /* ========================================= */
         /* 🌙 DARK MODE FIXES FOR CATEGORY PAGE      */
         /* ========================================= */
         body.dark-mode { background-color: #020617 !important; }
-        body.dark-mode .app-container { background: #0f172a !important; }
+        body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;}
         body.dark-mode .header { background: #1e293b !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; }
         
         body.dark-mode .logo, 
@@ -59,7 +69,7 @@
             <div class="full-cat-list">
                 
                 <a href="../items/index.html?cat=Gadgets" class="full-cat-item">
-                    <div class="full-cat-icon" style="color: #3b82f6; background: #eff6ff;"><i class="fas fa-laptop-code"></i></div>
+                    <div class="full-cat-icon" style="background: #eff6ff;"><span class="list-emoji">💻</span></div>
                     <div class="full-cat-text">
                         <div class="full-cat-title">Gadgets</div>
                         <div class="full-cat-desc">Phones, Laptops, Computers, Accessories</div>
@@ -68,7 +78,7 @@
                 </a>
 
                 <a href="../items/index.html?cat=Fashion" class="full-cat-item">
-                    <div class="full-cat-icon" style="color: #ec4899; background: #fdf2f8;"><i class="fas fa-tshirt"></i></div>
+                    <div class="full-cat-icon" style="background: #fdf2f8;"><span class="list-emoji">👗</span></div>
                     <div class="full-cat-text">
                         <div class="full-cat-title">Fashion & Clothing</div>
                         <div class="full-cat-desc">Shirts, Dresses, Shoes, Bags, Jewelry</div>
@@ -77,7 +87,7 @@
                 </a>
 
                 <a href="../items/index.html?cat=Food" class="full-cat-item">
-                    <div class="full-cat-icon" style="color: #f59e0b; background: #fffbeb;"><i class="fas fa-hamburger"></i></div>
+                    <div class="full-cat-icon" style="background: #fffbeb;"><span class="list-emoji">🍔</span></div>
                     <div class="full-cat-text">
                         <div class="full-cat-title">Food & Pastries</div>
                         <div class="full-cat-desc">Fast food, Snacks, Cakes, Drinks</div>
@@ -86,7 +96,7 @@
                 </a>
 
                 <a href="../items/index.html?cat=Transport" class="full-cat-item">
-                    <div class="full-cat-icon" style="color: #eab308; background: #fefce8;"><i class="fas fa-motorcycle"></i></div>
+                    <div class="full-cat-icon" style="background: #fefce8;"><span class="list-emoji">🛵</span></div>
                     <div class="full-cat-text">
                         <div class="full-cat-title">Transport & Delivery</div>
                         <div class="full-cat-desc">Bike/Keke Rides, Delivery, Logistics</div>
@@ -95,7 +105,7 @@
                 </a>
 
                 <a href="../items/index.html?cat=Beauty" class="full-cat-item">
-                    <div class="full-cat-icon" style="color: #f43f5e; background: #fff1f2;"><i class="fas fa-magic"></i></div>
+                    <div class="full-cat-icon" style="background: #fff1f2;"><span class="list-emoji">💄</span></div>
                     <div class="full-cat-text">
                         <div class="full-cat-title">Beauty & Personal Care</div>
                         <div class="full-cat-desc">Skincare, Makeup, Hair, Fragrances</div>
@@ -104,7 +114,7 @@
                 </a>
 
                 <a href="../items/index.html?cat=Health" class="full-cat-item">
-                    <div class="full-cat-icon" style="color: #10b981; background: #ecfdf5;"><i class="fas fa-heartbeat"></i></div>
+                    <div class="full-cat-icon" style="background: #ecfdf5;"><span class="list-emoji">💊</span></div>
                     <div class="full-cat-text">
                         <div class="full-cat-title">Health & Wellness</div>
                         <div class="full-cat-desc">Pharmacy, Supplements, Fitness, First aid</div>
@@ -113,7 +123,7 @@
                 </a>
 
                 <a href="../items/index.html?cat=CampusServices" class="full-cat-item">
-                    <div class="full-cat-icon" style="color: #059669; background: #d1fae5;"><i class="fas fa-print"></i></div>
+                    <div class="full-cat-icon" style="background: #d1fae5;"><span class="list-emoji">🖨️</span></div>
                     <div class="full-cat-text">
                         <div class="full-cat-title">Campus Services</div>
                         <div class="full-cat-desc">Printing, Typing, Errands, Laundry</div>
@@ -122,7 +132,7 @@
                 </a>
 
                 <a href="../items/index.html?cat=Professional" class="full-cat-item">
-                    <div class="full-cat-icon" style="color: #2563eb; background: #dbeafe;"><i class="fas fa-briefcase"></i></div>
+                    <div class="full-cat-icon" style="background: #dbeafe;"><span class="list-emoji">💼</span></div>
                     <div class="full-cat-text">
                         <div class="full-cat-title">Professional Services</div>
                         <div class="full-cat-desc">Graphics, Web Design, CV Writing, Media</div>
@@ -131,7 +141,7 @@
                 </a>
 
                 <a href="../items/index.html?cat=Tutorials" class="full-cat-item">
-                    <div class="full-cat-icon" style="color: #9333ea; background: #f3e8ff;"><i class="fas fa-chalkboard-teacher"></i></div>
+                    <div class="full-cat-icon" style="background: #f3e8ff;"><span class="list-emoji">🎓</span></div>
                     <div class="full-cat-text">
                         <div class="full-cat-title">Tutorials & Learning</div>
                         <div class="full-cat-desc">Academics, Skills, Tech, Exam Prep</div>
@@ -140,7 +150,7 @@
                 </a>
 
                 <a href="../items/index.html?cat=Books" class="full-cat-item">
-                    <div class="full-cat-icon" style="color: #6366f1; background: #eef2ff;"><i class="fas fa-book"></i></div>
+                    <div class="full-cat-icon" style="background: #eef2ff;"><span class="list-emoji">📚</span></div>
                     <div class="full-cat-text">
                         <div class="full-cat-title">Books & Study Materials</div>
                         <div class="full-cat-desc">Textbooks, Past Questions, Handouts</div>
@@ -149,7 +159,7 @@
                 </a>
 
                 <a href="../items/index.html?cat=Accommodation" class="full-cat-item">
-                    <div class="full-cat-icon" style="color: #14b8a6; background: #ccfbf1;"><i class="fas fa-home"></i></div>
+                    <div class="full-cat-icon" style="background: #ccfbf1;"><span class="list-emoji">🏠</span></div>
                     <div class="full-cat-text">
                         <div class="full-cat-title">Accommodation</div>
                         <div class="full-cat-desc">Hostels, Roommates wanted, Lodges</div>
@@ -158,7 +168,7 @@
                 </a>
 
                 <a href="../items/index.html?cat=Electronics" class="full-cat-item">
-                    <div class="full-cat-icon" style="color: #0ea5e9; background: #f0f9ff;"><i class="fas fa-tv"></i></div>
+                    <div class="full-cat-icon" style="background: #f0f9ff;"><span class="list-emoji">📺</span></div>
                     <div class="full-cat-text">
                         <div class="full-cat-title">Electronics</div>
                         <div class="full-cat-desc">Fans, TVs, Irons, Generators</div>
@@ -197,9 +207,6 @@
     <script src="../asset/script.js"></script>
 
     <script>
-        // 🚀 REMOVED THE DUPLICATE SUPABASE INITIALIZATION!
-        // script.js handles Supabase and Dark Mode automatically now.
-
         async function requireLogin(targetUrl) {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) {

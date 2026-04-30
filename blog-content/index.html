@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
+     <script>
         window.location.replace("../coming-soon/");
     </script>
     <meta charset="UTF-8">
@@ -17,130 +17,158 @@
     <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 
     <style>
+        /* 🚀 Reset & Variables */
+        * { box-sizing: border-box; }
         :root {
-            --brand-color: #FF7A00; /* UNICAL Orange */
+            --brand-color: #FF7A00; 
+            --brand-bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
         }
         
-        body { background: white; }
+        body { 
+            background: #e2e8f0; 
+            margin: 0; padding: 0; 
+            display: flex; justify-content: center; min-height: 100vh;
+            color: var(--text-main);
+        }
 
-        /* AFIT Style Transparent Header */
+        .app-container {
+            background: white; width: 100%; max-width: 480px; min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1); display: flex; flex-direction: column;
+            position: relative; overflow-x: hidden;
+        }
+
+        /* 🚀 Glassmorphic Hero Buttons */
         .header { 
             position: absolute; top: 0; left: 0; width: 100%; 
-            background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent); 
-            border: none; padding: 20px; z-index: 20;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent); 
+            padding: 20px; z-index: 20;
             display: flex; justify-content: space-between; align-items: center;
         }
         .action-btn { 
-            background: rgba(255,255,255,0.2); backdrop-filter: blur(4px); border: none; 
-            width: 40px; height: 40px; border-radius: 50%; color: white; 
-            font-size: 18px; cursor: pointer; transition: 0.2s;
+            background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255,255,255,0.4); width: 45px; height: 45px; border-radius: 50%; 
+            color: white; font-size: 18px; cursor: pointer; transition: 0.2s; 
+            display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-        .action-btn:active { transform: scale(0.9); }
+        .action-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.4); }
 
-        .article-hero { width: 100%; height: 280px; object-fit: cover; background: #e2e8f0; }
+        /* 🚀 Premium Hero Image */
+        .article-hero { width: 100%; height: 320px; object-fit: cover; background: #e2e8f0; }
         
-        /* Overlapping Curved Body */
+        /* 🚀 Overlapping Curved Article Body */
         .article-body { 
-            padding: 25px 20px; background: white; margin-top: -20px; 
-            position: relative; border-radius: 24px 24px 0 0; z-index: 10; 
+            padding: 35px 25px; background: white; margin-top: -30px; 
+            position: relative; border-radius: 30px 30px 0 0; z-index: 10; 
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.08); flex: 1;
         }
         
         .cat-badge { 
             color: var(--brand-color); background: rgba(255, 122, 0, 0.1); 
-            padding: 4px 10px; border-radius: 8px; font-size: 11px; 
-            font-weight: 800; text-transform: uppercase; 
+            padding: 6px 14px; border-radius: 10px; font-size: 11px; 
+            font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+            display: inline-block; margin-bottom: 15px; border: 1px solid rgba(255, 122, 0, 0.2);
         }
         
-        .article-title { font-size: 24px; font-weight: 900; color: var(--text-main); margin: 15px 0; line-height: 1.3; }
+        .article-title { font-size: 26px; font-weight: 900; color: var(--text-main); margin: 0 0 15px 0; line-height: 1.3; letter-spacing: -0.5px;}
         .article-meta { 
-            display: flex; gap: 15px; color: var(--text-muted); font-size: 12px; 
-            font-weight: 600; margin-bottom: 20px; 
+            display: flex; gap: 15px; color: var(--text-muted); font-size: 13px; 
+            font-weight: 600; margin-bottom: 25px; align-items: center;
         }
         
-        /* Interaction Bar (Likes & Views) */
+        /* 🚀 Interaction Bar (Likes & Views) */
         .interaction-bar { 
             display: flex; justify-content: space-between; align-items: center; 
-            padding-bottom: 20px; border-bottom: 1px solid #f1f5f9; margin-bottom: 25px;
+            padding-bottom: 25px; border-bottom: 2px solid #f1f5f9; margin-bottom: 25px;
         }
         .likes-btn { 
-            display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 800; 
-            color: var(--text-main); cursor: pointer; background: #f8fafc; padding: 8px 16px; 
-            border-radius: 20px; border: 1px solid #e2e8f0; transition: 0.2s; 
+            display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; 
+            color: var(--text-main); cursor: pointer; background: #f8fafc; padding: 10px 20px; 
+            border-radius: 20px; border: 1px solid #e2e8f0; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.02);
         }
         .likes-btn:active { transform: scale(0.95); }
         .likes-btn i.liked { color: #ef4444; animation: pop 0.3s ease; }
         @keyframes pop { 50% { transform: scale(1.3); } }
 
-        .article-content { font-size: 16px; color: #334155; line-height: 1.8; white-space: pre-wrap; margin-bottom: 40px;}
-        .article-content a { word-break: break-all; } 
+        /* 🚀 Highly Readable Content */
+        .article-content { font-size: 16px; color: #334155; line-height: 1.8; white-space: pre-wrap; margin-bottom: 40px; font-weight: 400;}
+        .article-content a { word-break: break-all; color: var(--brand-color); text-decoration: none; font-weight: 700; } 
+        .article-content a:hover { text-decoration: underline; }
         
-        /* Comments Section */
-        .comments-section { border-top: 5px solid #f8fafc; padding-top: 30px; }
-        .comment-card { display: flex; gap: 12px; margin-bottom: 20px; }
-        .comment-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #eee; border: 2px solid #f8fafc;}
-        .comment-bubble { background: #f8fafc; padding: 15px; border-radius: 0 16px 16px 16px; flex: 1; border: 1px solid #f1f5f9; }
-        .comment-name { font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 5px; }
-        .comment-text { font-size: 14px; color: var(--text-muted); line-height: 1.5; }
+        /* 🚀 Comments Section */
+        .comments-section { border-top: 5px solid #f8fafc; padding-top: 35px; }
+        .comment-card { display: flex; gap: 15px; margin-bottom: 25px; }
+        .comment-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #e2e8f0; border: 2px solid #f8fafc; box-shadow: 0 4px 10px rgba(0,0,0,0.05);}
+        .comment-bubble { background: #f8fafc; padding: 18px; border-radius: 0 20px 20px 20px; flex: 1; border: 1px solid #e2e8f0; }
+        .comment-name { font-size: 14px; font-weight: 800; color: var(--text-main); margin-bottom: 5px; }
+        .comment-text { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
 
-        .add-comment-box { display: flex; gap: 10px; margin-top: 20px; margin-bottom: 40px; width: 100%; box-sizing: border-box; }
+        .add-comment-box { display: flex; gap: 12px; margin-top: 25px; margin-bottom: 40px; width: 100%; align-items: center;}
         .comment-input { 
-            flex: 1; min-width: 0; box-sizing: border-box; padding: 14px 15px; 
-            border-radius: 14px; border: 2px solid #e2e8f0; background: #f8fafc; 
-            outline: none; font-size: 14px; transition: 0.2s;
+            flex: 1; min-width: 0; padding: 16px 20px; 
+            border-radius: 30px; border: 2px solid #e2e8f0; background: #f8fafc; 
+            outline: none; font-size: 14px; transition: 0.2s; font-family: inherit; font-weight: 500;
         }
-        .comment-input:focus { border-color: var(--brand-color); background: white; }
+        .comment-input:focus { border-color: var(--brand-color); background: white; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.1);}
         .send-btn { 
-            background: var(--brand-color); color: white; border: none; width: 48px; 
-            height: 48px; border-radius: 14px; display: flex; justify-content: center; 
-            align-items: center; cursor: pointer; font-size: 16px; 
-            box-shadow: 0 4px 10px rgba(255, 122, 0, 0.3); flex-shrink: 0; 
+            background: var(--brand-color); color: white; border: none; width: 50px; 
+            height: 50px; border-radius: 50%; display: flex; justify-content: center; 
+            align-items: center; cursor: pointer; font-size: 18px; 
+            box-shadow: 0 6px 15px rgba(255, 122, 0, 0.3); flex-shrink: 0; transition: 0.2s;
         }
+        .send-btn:active { transform: scale(0.9); }
 
-        /* More Blogs Section */
-        .more-blogs-section { background: #f8fafc; padding: 30px 20px; }
-        .section-title { font-size: 18px; font-weight: 900; color: var(--text-main); margin-bottom: 20px; }
+        /* 🚀 More Blogs Section */
+        .more-blogs-section { background: #f8fafc; padding: 40px 25px; border-top: 1px solid #e2e8f0;}
+        .section-title { font-size: 20px; font-weight: 900; color: var(--text-main); margin-bottom: 20px; letter-spacing: -0.5px;}
         
         .small-blog-card { 
-            background: white; border-radius: 16px; padding: 12px; display: flex; gap: 15px; 
-            margin-bottom: 15px; border: 1px solid #f1f5f9; box-shadow: 0 4px 10px rgba(0,0,0,0.02); cursor: pointer; 
+            background: white; border-radius: 20px; padding: 15px; display: flex; gap: 15px; 
+            margin-bottom: 15px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.02); 
+            cursor: pointer; transition: 0.2s; align-items: center;
         }
-        .small-blog-card img { width: 80px; height: 80px; border-radius: 10px; object-fit: cover; }
-        .sbc-title { font-size: 14px; font-weight: 800; color: var(--text-main); margin-bottom: 5px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .sbc-meta { font-size: 11px; color: var(--text-muted); font-weight: 600; }
+        .small-blog-card:active { transform: scale(0.98); background: #f1f5f9; }
+        .small-blog-card img { width: 90px; height: 90px; border-radius: 14px; object-fit: cover; }
+        .sbc-info { flex: 1; }
+        .sbc-title { font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 6px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .sbc-meta { font-size: 12px; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 5px;}
 
         /* SKELETON LOADER STYLES */
         .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        .sk-hero { width: 100%; height: 280px; }
-        .sk-badge { width: 60px; height: 22px; border-radius: 8px; margin-bottom: 15px; }
-        .sk-title { width: 90%; height: 30px; border-radius: 8px; margin-bottom: 10px; }
-        .sk-meta { width: 150px; height: 15px; border-radius: 4px; margin-bottom: 30px; }
-        .sk-text { width: 100%; height: 16px; border-radius: 4px; margin-bottom: 12px; }
+        .sk-hero { width: 100%; height: 320px; }
+        .sk-badge { width: 80px; height: 26px; border-radius: 10px; margin-bottom: 15px; }
+        .sk-title { width: 95%; height: 35px; border-radius: 10px; margin-bottom: 15px; }
+        .sk-meta { width: 150px; height: 18px; border-radius: 6px; margin-bottom: 35px; }
+        .sk-text { width: 100%; height: 16px; border-radius: 6px; margin-bottom: 15px; }
 
         /* ========================================= */
-        /* 🌙 DARK MODE FIXES FOR UNICAL ORANGE      */
+        /* 🌙 DARK MODE FIXES                        */
         /* ========================================= */
         body.dark-mode { background-color: #020617 !important; }
-        body.dark-mode .app-container { background: #0f172a !important; }
+        body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b; }
         
-        body.dark-mode .article-body { background: #0f172a !important; }
+        body.dark-mode .article-body { background: #0f172a !important; box-shadow: 0 -10px 30px rgba(0,0,0,0.5) !important;}
         body.dark-mode .article-title { color: #f1f5f9 !important; }
         body.dark-mode .article-content { color: #cbd5e1 !important; }
         
-        body.dark-mode .interaction-bar { border-bottom-color: #334155 !important; }
+        body.dark-mode .interaction-bar { border-bottom-color: #1e293b !important; }
         body.dark-mode .likes-btn { background: #1e293b !important; border-color: #334155 !important; color: #f1f5f9 !important; }
         
         body.dark-mode .comments-section { border-top-color: #1e293b !important; }
         body.dark-mode .comment-bubble { background: #1e293b !important; border-color: #334155 !important; }
         body.dark-mode .comment-name { color: #f1f5f9 !important; }
-        body.dark-mode .comment-text { color: #cbd5e1 !important; }
+        body.dark-mode .comment-text { color: #94a3b8 !important; }
+        body.dark-mode .comment-avatar { border-color: #0f172a !important; }
         
         body.dark-mode .comment-input { background: #1e293b !important; border-color: #334155 !important; color: white; }
         body.dark-mode .comment-input:focus { border-color: var(--brand-color) !important; }
         
-        body.dark-mode .more-blogs-section { background: #020617 !important; }
+        body.dark-mode .more-blogs-section { background: #020617 !important; border-top-color: #1e293b !important;}
         body.dark-mode .section-title { color: #f1f5f9 !important; }
-        body.dark-mode .small-blog-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .small-blog-card { background: #0f172a !important; border-color: #1e293b !important; }
+        body.dark-mode .small-blog-card:active { background: #1e293b !important; }
         body.dark-mode .sbc-title { color: #f1f5f9 !important; }
         
         body.dark-mode .cat-badge { background: rgba(255, 122, 0, 0.15) !important; }
@@ -156,8 +184,9 @@
 
     <div class="app-container">
         
+        <!-- 🚀 Hero Controls -->
         <div class="header">
-            <button class="action-btn" onclick="smartBack()"><i class="fas fa-arrow-left"></i></button>
+            <button class="action-btn" onclick="smartBack(event)"><i class="fas fa-arrow-left"></i></button>
             <button class="action-btn" id="shareTopBtn" style="display: none;"><i class="fas fa-share-alt"></i></button>
         </div>
 
@@ -174,7 +203,7 @@
             </div>
         </div>
 
-        <div id="real-content" style="display: none;">
+        <div id="real-content" style="display: none; display: flex; flex-direction: column; flex: 1;">
             <img src="" id="articleImg" class="article-hero" onerror="this.src='https://placehold.co/600x300?text=No+Image'">
 
             <div class="article-body">
@@ -189,18 +218,18 @@
                     <div class="likes-btn" onclick="toggleLike()" id="like-btn">
                         <i class="far fa-heart" id="like-icon"></i> <span id="like-count">0</span>
                     </div>
-                    <div style="font-size: 13px; color: var(--text-muted); font-weight: 600;">
-                        <i class="far fa-eye"></i> <span id="view-count">0</span> Views
+                    <div style="font-size: 14px; color: var(--text-muted); font-weight: 700;">
+                        <i class="far fa-eye" style="margin-right: 4px;"></i> <span id="view-count">0</span>
                     </div>
                 </div>
 
                 <div class="article-content" id="articleContent"></div>
 
                 <div class="comments-section">
-                    <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 20px;">Comments</h3>
+                    <h3 style="font-size: 20px; font-weight: 900; margin-bottom: 25px; color: var(--text-main);">Comments</h3>
                     
                     <div id="commentsList">
-                        <p style="color: #94a3b8; font-size: 13px;"><i class="fas fa-spinner fa-spin"></i> Loading comments...</p>
+                        <p style="color: #94a3b8; font-size: 14px; font-weight: 600;"><i class="fas fa-spinner fa-spin"></i> Loading comments...</p>
                     </div>
 
                     <div class="add-comment-box">
@@ -209,15 +238,14 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="more-blogs-section">
-            <h3 class="section-title">See More News</h3>
-            <div id="more-blogs-list">
-                <p style="color: #94a3b8; font-size: 13px;">Loading more posts...</p>
+            <div class="more-blogs-section">
+                <h3 class="section-title">See More News</h3>
+                <div id="more-blogs-list">
+                    <p style="color: #94a3b8; font-size: 14px; font-weight: 500;">Loading more posts...</p>
+                </div>
             </div>
         </div>
-
     </div>
 
     <script src="../asset/script.js"></script>
@@ -226,7 +254,7 @@
         let currentUser = null;
         let currentBlog = null;
         
-        // Smart URL Parsing to handle both ?id=uuid and ?post=slug--uuid
+        // Smart URL Parsing
         const urlParams = new URLSearchParams(window.location.search);
         const postParam = urlParams.get('post') || urlParams.get('id');
         const blogId = postParam ? (postParam.includes('--') ? postParam.split('--').pop() : postParam) : null;
@@ -241,12 +269,20 @@
             return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
         }
 
-        window.smartBack = function() {
-            if (document.referrer === "" || document.referrer.includes('wa.me') || !document.referrer.includes(window.location.host)) {
-                window.location.href = "../blogs/index.html"; 
-            } else {
-                window.history.back(); 
+        // 🚀 SMART BACK BUTTON LOGIC
+        function getSmartRedirectUrl() {
+            const referrer = document.referrer;
+            const currentWebsite = window.location.origin;
+
+            if (referrer && referrer.startsWith(currentWebsite) && !referrer.includes('/login/') && !referrer.includes('/reset-password/')) {
+                return referrer; 
             }
+            return "../index.html"; 
+        }
+
+        window.smartBack = function(event) {
+            if (event) event.preventDefault();
+            window.location.href = getSmartRedirectUrl();
         }
 
         document.addEventListener("DOMContentLoaded", async () => {
@@ -255,7 +291,7 @@
             
             if (!blogId) {
                 alert("Article not found.");
-                window.location.href = "../blogs/index.html";
+                window.location.href = "../index.html";
                 return;
             }
 
@@ -269,7 +305,7 @@
         function linkifyText(text) {
             const urlRegex = /(https?:\/\/[^\s]+)/g;
             return text.replace(urlRegex, function(url) {
-                return `<a href="${url}" target="_blank" style="color: var(--brand-color); text-decoration: underline; font-weight: bold;">${url}</a>`;
+                return `<a href="${url}" target="_blank">${url}</a>`;
             });
         }
 
@@ -292,19 +328,19 @@
                 document.getElementById('articleImg').src = data.image_url || 'https://placehold.co/600x400?text=No+Image';
                 document.getElementById('articleCat').innerText = escapeHTML(data.category || 'News');
                 document.getElementById('articleTitle').innerText = escapeHTML(data.title);
-                document.getElementById('articleDate').innerHTML = `<i class="far fa-calendar-alt"></i> ${new Date(data.created_at).toLocaleDateString([], { year: 'numeric', month: 'long', day: 'numeric' })}`;
+                document.getElementById('articleDate').innerHTML = `<i class="far fa-calendar-alt" style="margin-right: 5px;"></i> ${new Date(data.created_at).toLocaleDateString([], { year: 'numeric', month: 'long', day: 'numeric' })}`;
                 
                 // Content Rendering
                 const safeContent = escapeHTML(data.content);
                 const textWithLinks = linkifyText(safeContent);
                 document.getElementById('articleContent').innerHTML = textWithLinks.replace(/\n/g, '<br>');
 
-                // Interaction Bar (Likes & Views)
+                // Interaction Bar
                 document.getElementById('view-count').innerText = data.views || 0;
                 updateLikeUI();
 
                 const shareBtn = document.getElementById('shareTopBtn');
-                shareBtn.style.display = 'block';
+                shareBtn.style.display = 'flex';
                 shareBtn.onclick = () => shareArticle();
 
                 // Track View count robustly
@@ -324,7 +360,7 @@
                 }
 
                 document.getElementById('skeleton-content').style.display = 'none';
-                document.getElementById('real-content').style.display = 'block';
+                document.getElementById('real-content').style.display = 'flex';
 
                 loadComments();
                 loadMoreBlogs();
@@ -332,12 +368,11 @@
             } catch (err) {
                 console.error(err);
                 document.getElementById('skeleton-content').style.display = 'none';
-                document.getElementById('real-content').style.display = 'block';
+                document.getElementById('real-content').style.display = 'flex';
                 document.getElementById('articleTitle').innerText = "Error loading article.";
             }
         }
 
-        // --- UNICAL LIKE FUNCTIONALITY ---
         function updateLikeUI() {
             const likes = currentBlog.likes || [];
             const count = likes.length;
@@ -362,9 +397,9 @@
 
             let likes = currentBlog.likes || [];
             if (likes.includes(currentUser.id)) {
-                likes = likes.filter(id => id !== currentUser.id); // Unlike
+                likes = likes.filter(id => id !== currentUser.id); 
             } else {
-                likes.push(currentUser.id); // Like
+                likes.push(currentUser.id); 
             }
 
             currentBlog.likes = likes;
@@ -375,7 +410,6 @@
             } catch (e) { console.error("Sync failed"); }
         }
 
-        // --- COMMENTS FUNCTIONALITY ---
         async function loadComments() {
             const list = document.getElementById('commentsList');
             try {
@@ -389,7 +423,7 @@
                 list.innerHTML = "";
 
                 if (data.length === 0) {
-                    list.innerHTML = '<p style="font-size:13px; color:#94a3b8; text-align: center; padding: 20px;">No comments yet. Be the first to share your thoughts!</p>';
+                    list.innerHTML = '<p style="font-size:14px; color:#94a3b8; text-align: center; padding: 20px; font-weight: 500;">No comments yet. Be the first to share your thoughts!</p>';
                     return;
                 }
 
@@ -408,7 +442,7 @@
                     `);
                 });
             } catch (err) {
-                list.innerHTML = '<p style="color:red; font-size:13px;">Failed to load comments.</p>';
+                list.innerHTML = '<p style="color:#ef4444; font-size:14px; font-weight:600;">Failed to load comments.</p>';
             }
         }
 
@@ -438,7 +472,6 @@
             }
         }
 
-        // --- SEE MORE NEWS FUNCTIONALITY ---
         async function loadMoreBlogs() {
             const list = document.getElementById('more-blogs-list');
             try {
@@ -453,11 +486,11 @@
                 list.innerHTML = "";
 
                 if (!data || data.length === 0) {
-                    list.innerHTML = '<p style="font-size:13px; color:#94a3b8;">No other articles found.</p>';
+                    list.innerHTML = '<p style="font-size:14px; color:#94a3b8; font-weight:500;">No other articles found.</p>';
                     return;
                 }
 
-                // Randomize and pick 3 to show
+                // Randomize and pick 3
                 const shuffled = data.sort(() => 0.5 - Math.random()).slice(0, 3);
 
                 shuffled.forEach(b => {
@@ -468,9 +501,9 @@
                     list.insertAdjacentHTML('beforeend', `
                         <div class="small-blog-card" onclick="window.location.href='index.html?id=${escapeJS(b.id)}&post=${escapeJS(slug)}'">
                             <img src="${img}" onerror="this.src='https://placehold.co/100x100?text=No+Image'">
-                            <div>
+                            <div class="sbc-info">
                                 <div class="sbc-title">${escapeHTML(b.title)}</div>
-                                <div class="sbc-meta">${escapeHTML(b.category)} • ${date}</div>
+                                <div class="sbc-meta"><span style="color: var(--brand-color); font-weight: 800;">${escapeHTML(b.category)}</span> <span style="margin: 0 4px;">•</span> ${date}</div>
                             </div>
                         </div>
                     `);

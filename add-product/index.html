@@ -1,136 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Vendor Dashboard | UNICAL Market</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../asset/style.css">
+    <title>Vendor Dashboard | UNICAL Digital Market</title>
+    
+    <!-- 🚀 MOBILE APP & ICONS -->
     <meta name="theme-color" content="#FF7A00">
     <link rel="icon" href="../favicon.ico" type="image/x-icon">
     <link rel="icon" href="../192.png" sizes="192x192" type="image/png">
     <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+        /* 🚀 Reset & Variables */
+        * { box-sizing: border-box; }
+        :root {
+            --brand-color: #FF7A00; 
+            --brand-gradient: linear-gradient(135deg, #FF7A00, #ea580c);
+            --brand-bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #e2e8f0; 
+            margin: 0; padding: 0; 
+            display: flex; justify-content: center; min-height: 100vh;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            background: var(--brand-bg); width: 100%; max-width: 480px; min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1); display: flex; flex-direction: column;
+            position: relative; z-index: 1;
+        }
+
+        /* 🚀 Glassmorphic Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95); padding: 15px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .header-top-flex { display: flex; align-items: center; gap: 15px; }
+        .back-btn { color: var(--text-main); text-decoration: none; font-size: 16px; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; background: #f1f5f9; border-radius: 50%; transition: 0.2s; border: 1px solid transparent;}
+        .back-btn:active { transform: scale(0.9); background: #e2e8f0; }
+        .page-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.3px;}
         
-        .header-top-flex { display: flex; align-items: center; gap: 15px; margin-bottom: 5px; }
-        .page-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; }
-        
+        .content-area { padding: 0 0 90px 0; }
+
         /* State Containers */
         #loading-state { text-align: center; padding: 100px 20px; color: #94a3b8; }
-        #not-vendor-state, #pending-state { display: none; text-align: center; padding: 60px 20px; background: white; margin: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        #not-vendor-state, #pending-state { display: none; text-align: center; padding: 60px 20px; background: white; margin: 20px; border-radius: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;}
         .state-icon { font-size: 50px; margin-bottom: 15px; color: #cbd5e1; }
-        .state-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin-bottom: 10px; }
-        .state-desc { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 20px; }
+        .state-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 10px; letter-spacing: -0.5px;}
+        .state-desc { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 25px; font-weight: 500;}
         
-        .action-btn { background: var(--brand-color); color: white; border: none; padding: 14px 20px; border-radius: 12px; font-weight: 800; width: 100%; cursor: pointer; text-decoration: none; display: inline-block; box-sizing: border-box; transition: 0.2s; }
-        .action-btn:active { transform: scale(0.98); }
+        .action-btn { background: var(--brand-gradient); color: white; border: none; padding: 16px 20px; border-radius: 14px; font-size: 15px; font-weight: 800; width: 100%; cursor: pointer; text-decoration: none; display: inline-block; box-sizing: border-box; transition: 0.2s; box-shadow: 0 8px 25px rgba(255, 122, 0, 0.3);}
+        .action-btn:active { transform: scale(0.97); box-shadow: 0 4px 15px rgba(255, 122, 0, 0.2); }
 
-        /* Dashboard State */
+        /* 🚀 Dashboard State */
         #dashboard-state { display: none; padding: 20px; }
-        .dash-card { background: linear-gradient(135deg, #1e293b, #0f172a); color: white; padding: 25px 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        .dash-name { font-size: 20px; font-weight: 800; margin-bottom: 5px; }
-        .dash-slots { font-size: 13px; color: #94a3b8; }
-        .slot-bar { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-top: 10px; overflow: hidden; }
-        .slot-fill { height: 100%; background: #38bdf8; border-radius: 3px; width: 0%; transition: 0.5s; }
+        .dash-card { background: linear-gradient(135deg, #0f172a, #1e293b); color: white; padding: 25px; border-radius: 20px; margin-bottom: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); position: relative; overflow: hidden; border: 1px solid #334155;}
+        .dash-icon { position: absolute; top: -10px; right: -10px; font-size: 120px; opacity: 0.05; transform: rotate(-15deg); pointer-events: none;}
+        .dash-name { font-size: 22px; font-weight: 900; margin-bottom: 8px; letter-spacing: -0.5px; position: relative; z-index: 1;}
+        .dash-slots { font-size: 13px; color: #94a3b8; font-weight: 600; position: relative; z-index: 1;}
+        .slot-bar { width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 15px; overflow: hidden; position: relative; z-index: 1;}
+        .slot-fill { height: 100%; background: #38bdf8; border-radius: 4px; width: 0%; transition: width 1s ease-in-out; }
 
-        .form-card { background: white; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 30px; border: 1px solid #f1f5f9; }
-        .form-group { margin-bottom: 15px; }
-        .form-label { display: block; font-size: 12px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
-        .form-input { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-size: 14px; background: #f8fafc; outline: none; box-sizing: border-box; transition: 0.2s; }
-        .form-input:focus { border-color: #2d8eff; background: white; }
+        /* 🚀 Premium Forms */
+        .form-card { background: white; padding: 25px 20px; border-radius: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.03); margin-bottom: 30px; border: 1px solid #f1f5f9; }
+        .form-group { margin-bottom: 18px; }
+        .form-label { display: block; font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
+        .form-input { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 14px; background: #f8fafc; outline: none; box-sizing: border-box; transition: 0.2s; color: var(--text-main); font-family: 'Inter', sans-serif; font-weight: 500;}
+        .form-input:focus { border-color: var(--brand-color); background: white; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.1);}
+        select.form-input { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 12px auto; }
 
         /* 🚀 INVENTORY GRID STYLES */
-        .inventory-header { font-size: 18px; font-weight: 800; color: var(--text-main); margin-bottom: 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px; }
-        .inventory-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-        .inv-card { background: white; border-radius: 16px; padding: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; position: relative; }
-        .inv-img { width: 100%; height: 130px; object-fit: cover; border-radius: 10px; background: #eee; margin-bottom: 10px; }
-        .inv-price { font-size: 15px; font-weight: 800; color: #2d8eff; margin-bottom: 4px; }
-        .inv-title { font-size: 12px; font-weight: 600; color: var(--text-main); line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 10px; }
+        .inventory-header { font-size: 18px; font-weight: 900; color: var(--text-main); margin-bottom: 20px; padding-bottom: 12px; letter-spacing: -0.5px;}
+        .inventory-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .inv-card { background: white; border-radius: 18px; padding: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; position: relative; display: flex; flex-direction: column;}
+        .inv-img { width: 100%; height: 140px; object-fit: cover; border-radius: 12px; background: #f8fafc; margin-bottom: 12px; }
+        .inv-price { font-size: 16px; font-weight: 900; color: var(--brand-color); margin-bottom: 4px; }
+        .inv-title { font-size: 13px; font-weight: 700; color: var(--text-main); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 15px; flex-grow: 1;}
         
-        .inv-actions { display: flex; gap: 5px; }
-        .inv-btn { flex: 1; padding: 8px; border: none; border-radius: 8px; font-size: 11px; font-weight: 800; cursor: pointer; color: white; transition: 0.2s; }
-        .btn-edit { background: #0f172a; }
-        .btn-delete { background: #ef4444; }
-        .btn-sold { background: #f59e0b; width: 100%; margin-top: 5px; }
-        .btn-active { background: #10b981; width: 100%; margin-top: 5px; }
+        .inv-actions { display: flex; gap: 8px; margin-bottom: 8px;}
+        .inv-btn { flex: 1; padding: 10px; border: none; border-radius: 10px; font-size: 12px; font-weight: 800; cursor: pointer; color: white; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 5px;}
+        .inv-btn:active { transform: scale(0.95); }
+        .btn-edit { background: #f1f5f9; color: var(--text-main); border: 1px solid #e2e8f0; }
+        .btn-delete { background: #fee2e2; color: #ef4444; border: 1px solid #fecaca;}
+        .btn-sold { background: #fef9c3; color: #d97706; width: 100%; border: 1px solid #fde047;}
+        .btn-active { background: #d1fae5; color: #059669; width: 100%; border: 1px solid #a7f3d0;}
         
-        .status-badge { position: absolute; top: 15px; left: 15px; font-size: 10px; font-weight: 800; padding: 4px 8px; border-radius: 8px; color: white; }
-        .badge-sold { background: #ef4444; }
-        .badge-active { background: #10b981; }
+        .status-badge { position: absolute; top: 20px; left: 20px; font-size: 10px; font-weight: 900; padding: 5px 10px; border-radius: 10px; color: white; letter-spacing: 0.5px; backdrop-filter: blur(4px);}
+        .badge-sold { background: rgba(239, 68, 68, 0.9); }
+        .badge-active { background: rgba(16, 185, 129, 0.9); }
 
         /* 🚀 EDIT MODAL */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(4px); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
-        .modal-body { background: white; width: 100%; max-width: 400px; border-radius: 20px; padding: 25px; position: relative; animation: slideUp 0.3s; max-height: 85vh; overflow-y: auto; }
-        @keyframes slideUp { from {transform: translateY(20px); opacity: 0;} to {transform: translateY(0); opacity: 1;} }
-        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; color: #94a3b8; cursor: pointer; background: none; border: none; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(5px); z-index: 1000; justify-content: center; align-items: center; padding: 20px; }
+        .modal-body { background: white; width: 100%; max-width: 420px; border-radius: 24px; padding: 30px 25px; position: relative; animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 50px rgba(0,0,0,0.3);}
+        @keyframes slideUp { from {transform: translateY(30px) scale(0.95); opacity: 0;} to {transform: translateY(0) scale(1); opacity: 1;} }
+        .close-btn { position: absolute; top: 20px; right: 20px; width: 35px; height: 35px; border-radius: 50%; background: #f1f5f9; display: flex; justify-content: center; align-items: center; font-size: 18px; color: #64748b; cursor: pointer; border: none; transition: 0.2s; }
+        .close-btn:active { transform: scale(0.9); background: #e2e8f0;}
         
         /* ========================================= */
         /* 🌙 DARK MODE FIXES FOR VENDOR DASHBOARD   */
         /* ========================================= */
         body.dark-mode { background-color: #020617 !important; }
-        body.dark-mode .app-container { background: #0f172a !important; }
-        body.dark-mode .header { background: #1e293b !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;}
+        
+        body.dark-mode .header { background: rgba(15, 23, 42, 0.9) !important; border-bottom-color: #334155 !important; }
+        body.dark-mode .page-title, body.dark-mode .state-title, body.dark-mode .inventory-header { color: #f1f5f9 !important; }
+        body.dark-mode .back-btn { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important;}
+        body.dark-mode .back-btn:active { background: #334155 !important; }
 
-        body.dark-mode .page-title, 
-        body.dark-mode .state-title, 
-        body.dark-mode .inventory-header { color: #f1f5f9 !important; }
         body.dark-mode .state-desc { color: #94a3b8 !important; }
-        body.dark-mode .inventory-header { border-bottom-color: #334155 !important; }
 
-        body.dark-mode #not-vendor-state, 
-        body.dark-mode #pending-state,
-        body.dark-mode .form-card { 
-            background: #1e293b !important; 
-            border-color: #334155 !important; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important; 
+        body.dark-mode #not-vendor-state, body.dark-mode #pending-state, body.dark-mode .form-card { 
+            background: rgba(30, 41, 59, 0.5) !important; border-color: #334155 !important; box-shadow: 0 10px 30px rgba(0,0,0,0.3) !important; 
         }
 
-        /* 🚀 THE FIX: Override inline style for the Pending State button */
-        body.dark-mode #pending-state .action-btn {
-            background: #334155 !important;
-            color: #f1f5f9 !important;
-        }
+        body.dark-mode #pending-state .action-btn { background: #1e293b !important; color: #f1f5f9 !important; border: 1px solid #334155 !important;}
 
         body.dark-mode .form-label { color: #cbd5e1 !important; }
-        body.dark-mode .form-input { 
-            background: #0f172a !important; 
-            color: #f1f5f9 !important; 
-            border-color: #334155 !important; 
-        }
-        body.dark-mode .form-input:focus { border-color: #2d8eff !important; }
+        body.dark-mode .form-input { background: #0f172a !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+        body.dark-mode .form-input:focus { border-color: var(--brand-color) !important; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.15) !important; }
 
-        body.dark-mode .inv-card { 
-            background: #1e293b !important; 
-            border-color: #334155 !important; 
-        }
+        body.dark-mode .inv-card { background: #1e293b !important; border-color: #334155 !important; }
         body.dark-mode .inv-title { color: #f1f5f9 !important; }
+        body.dark-mode .inv-img { background: #0f172a !important; }
 
-        body.dark-mode .modal-body { 
-            background: #1e293b !important; 
-            color: #f1f5f9 !important; 
-            border: 1px solid #334155 !important;
-        }
-        body.dark-mode .close-btn { color: #f1f5f9 !important; }
+        /* Dark mode buttons */
+        body.dark-mode .btn-edit { background: #0f172a !important; color: #cbd5e1 !important; border-color: #334155 !important; }
+        body.dark-mode .btn-delete { background: rgba(239, 68, 68, 0.1) !important; border-color: rgba(239, 68, 68, 0.3) !important; color: #fca5a5 !important;}
+        body.dark-mode .btn-sold { background: rgba(245, 158, 11, 0.1) !important; border-color: rgba(245, 158, 11, 0.3) !important; color: #fcd34d !important; }
+        body.dark-mode .btn-active { background: rgba(16, 185, 129, 0.1) !important; border-color: rgba(16, 185, 129, 0.3) !important; color: #6ee7b7 !important; }
+
+        body.dark-mode .modal-body { background: #1e293b !important; color: #f1f5f9 !important; border: 1px solid #334155 !important; box-shadow: 0 25px 60px rgba(0,0,0,0.8) !important;}
+        body.dark-mode .close-btn { background: #0f172a !important; color: #94a3b8 !important; border: 1px solid #334155 !important;}
+        body.dark-mode .close-btn:active { background: #334155 !important; color: #f1f5f9 !important; }
     </style>
 </head>
 <body>
+    <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
 
     <div class="app-container">
         <div class="header">
             <div class="header-top-flex">
-                <a href="../index.html" class="back-btn" style="color: var(--text-main); font-size: 20px;"><i class="fas fa-arrow-left"></i></a>
-                <h1 class="page-title">Add Items</h1>
+                <!-- 🚀 SMART BACK BUTTON -->
+                <a href="#" onclick="goBackOrHome(event)" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+                <h1 class="page-title">Vendor Dashboard</h1>
             </div>
         </div>
 
-        <div class="content-area" style="padding: 0 0 90px 0;">
+        <div class="content-area">
             
             <div id="loading-state">
                 <i class="fas fa-circle-notch fa-spin" style="font-size: 40px; margin-bottom: 15px; color: var(--brand-color);"></i>
-                <p>Verifying clearance...</p>
+                <p style="font-weight: 600;">Verifying clearance...</p>
             </div>
 
             <div id="not-vendor-state">
@@ -149,13 +185,16 @@
 
             <div id="dashboard-state">
                 <div class="dash-card">
+                    <i class="fas fa-store dash-icon"></i>
                     <div class="dash-name" id="dash-business-name">Store Name</div>
                     <div class="dash-slots"><span id="dash-used">0</span> of <span id="dash-max">5</span> Item Slots Used</div>
                     <div class="slot-bar"><div class="slot-fill" id="dash-slot-bar"></div></div>
                 </div>
 
                 <div class="form-card">
-                    <h3 style="margin: 0 0 20px; font-size: 16px;"><i class="fas fa-plus-circle" style="color: #2d8eff;"></i> Post New Item</h3>
+                    <h3 style="margin: 0 0 25px; font-size: 16px; font-weight: 900; letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px;">
+                        <i class="fas fa-plus-circle" style="color: var(--brand-color); font-size: 20px;"></i> Post New Item
+                    </h3>
                     
                     <div class="form-group">
                         <label class="form-label">Item Name</label>
@@ -169,7 +208,7 @@
 
                     <div class="form-group">
                         <label class="form-label">Category</label>
-                        <select id="p-cat" class="form-input" style="background: white;">
+                        <select id="p-cat" class="form-input">
                             <option value="Gadgets">Gadgets</option>
                             <option value="Fashion">Fashion & Clothing</option>
                             <option value="Food">Food & Pastries</option>
@@ -188,20 +227,22 @@
 
                     <div class="form-group">
                         <label class="form-label">Description</label>
-                        <textarea id="p-desc" class="form-input" style="height: 80px; resize: none;" placeholder="Details about the item..."></textarea>
+                        <textarea id="p-desc" class="form-input" style="height: 100px; resize: none;" placeholder="Details about the item..."></textarea>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">Photos (Up to 5)</label>
-                        <input type="file" id="p-files" class="form-input" accept="image/*" multiple style="background: white;">
+                        <input type="file" id="p-files" class="form-input" accept="image/*" multiple style="background: white; padding: 12px;">
                     </div>
 
-                    <button class="action-btn" id="post-btn" onclick="postItem()">Upload Item</button>
+                    <button class="action-btn" id="post-btn" onclick="postItem()" style="margin-top: 10px;">
+                        <i class="fas fa-cloud-upload-alt"></i> Upload Item
+                    </button>
                 </div>
 
                 <div class="inventory-header">My Live Inventory</div>
                 <div id="inventory-list" class="inventory-grid">
-                    <p style="grid-column: span 2; text-align: center; color: #94a3b8; font-size: 13px; padding: 20px;">Loading your items...</p>
+                    <p style="grid-column: span 2; text-align: center; color: #94a3b8; font-size: 13px; padding: 30px;">Loading your items...</p>
                 </div>
             </div>
         </div>
@@ -209,7 +250,7 @@
         <div id="editModal" class="modal-overlay">
             <div class="modal-body">
                 <button class="close-btn" onclick="document.getElementById('editModal').style.display='none'">&times;</button>
-                <h3 style="margin: 0 0 20px; font-size: 18px;">Edit Item</h3>
+                <h3 style="margin: 0 0 25px; font-size: 20px; font-weight: 900; letter-spacing: -0.5px;">Edit Item</h3>
                 
                 <input type="hidden" id="edit-id">
                 
@@ -233,13 +274,13 @@
                         <option value="Others">Others</option>
                     </select>
                 </div>
-                <div class="form-group"><label class="form-label">Description</label><textarea id="edit-desc" class="form-input" style="height: 80px; resize: none;"></textarea></div>
+                <div class="form-group"><label class="form-label">Description</label><textarea id="edit-desc" class="form-input" style="height: 100px; resize: none;"></textarea></div>
                 <div class="form-group">
-                    <label class="form-label">Update Photos <span style="font-weight:normal; color:#2d8eff;">(Leave blank to keep old images)</span></label>
-                    <input type="file" id="edit-files" class="form-input" accept="image/*" multiple>
+                    <label class="form-label">Update Photos <span style="font-weight:600; color:var(--brand-color);">(Leave blank to keep old images)</span></label>
+                    <input type="file" id="edit-files" class="form-input" accept="image/*" multiple style="padding: 10px;">
                 </div>
                 
-                <button class="action-btn" id="save-edit-btn" onclick="saveEditedItem()">Save Changes</button>
+                <button class="action-btn" id="save-edit-btn" onclick="saveEditedItem()" style="margin-top: 15px;">Save Changes</button>
             </div>
         </div>
 
@@ -258,7 +299,7 @@
 
     <script src="../asset/script.js"></script>
 
-   <script>
+    <script>
         const CLOUD_NAME = "dj6yl36fq"; 
 
         let currentUser = null;
@@ -266,7 +307,23 @@
         let myProducts = [];
         let currentItemCount = 0;
 
-        // 🛡️ XSS Sanitizer Function
+        // 🚀 SMART BACK BUTTON LOGIC
+        function getSmartRedirectUrl() {
+            const referrer = document.referrer;
+            const currentWebsite = window.location.origin;
+
+            if (referrer && referrer.startsWith(currentWebsite) && !referrer.includes('/login/') && !referrer.includes('/reset-password/')) {
+                return referrer; 
+            }
+            return "../index.html";
+        }
+
+        window.goBackOrHome = function(event) {
+            event.preventDefault();
+            window.location.href = getSmartRedirectUrl();
+        }
+
+        // 🛡️ XSS Sanitizers
         function escapeHTML(str) {
             if (str === null || str === undefined) return '';
             return String(str)
@@ -276,8 +333,6 @@
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#039;');
         }
-
-        // JS-Specific Escape (for placing inside onclick='')
         function escapeJS(str) {
             if (!str) return '';
             return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
@@ -331,7 +386,7 @@
                 if(currentItemCount >= myVendorData.max_items) document.getElementById('dash-slot-bar').style.background = '#ef4444';
 
                 if (data.length === 0) {
-                    grid.innerHTML = `<p style="grid-column: span 2; text-align: center; color: #94a3b8; font-size: 13px; padding: 20px;">You haven't posted any items yet.</p>`;
+                    grid.innerHTML = `<p style="grid-column: span 2; text-align: center; color: #94a3b8; font-size: 14px; padding: 40px 20px; font-weight:500;">You haven't posted any items yet.</p>`;
                     return;
                 }
 
@@ -346,7 +401,7 @@
                         : `<div class="status-badge badge-active">ACTIVE</div>`;
                         
                     const toggleBtn = isSold
-                        ? `<button class="inv-btn btn-active" onclick="toggleStatus('${escapeJS(p.id)}', 'Active')"><i class="fas fa-check"></i> Mark Active</button>`
+                        ? `<button class="inv-btn btn-active" onclick="toggleStatus('${escapeJS(p.id)}', 'Active')"><i class="fas fa-check-circle"></i> Mark Active</button>`
                         : `<button class="inv-btn btn-sold" onclick="toggleStatus('${escapeJS(p.id)}', 'Sold')"><i class="fas fa-times-circle"></i> Mark Sold</button>`;
 
                     const safeNameJS = escapeJS(p.name);
@@ -354,14 +409,14 @@
                     const safeCatJS = escapeJS(p.category);
 
                     grid.innerHTML += `
-                        <div class="inv-card" style="opacity: ${isSold ? '0.7' : '1'}">
+                        <div class="inv-card" style="opacity: ${isSold ? '0.6' : '1'}">
                             ${badge}
                             <img src="${imgUrl}" class="inv-img" onerror="this.src='https://via.placeholder.com/300'">
                             <div class="inv-price">${fPrice}</div>
                             <div class="inv-title">${escapeHTML(p.name)}</div>
                             
                             <div class="inv-actions">
-                                <button class="inv-btn btn-edit" onclick="openEditModal('${escapeJS(p.id)}', '${safeNameJS}', ${p.price}, '${safeCatJS}', '${safeDescJS}')"><i class="fas fa-pen"></i></button>
+                                <button class="inv-btn btn-edit" onclick="openEditModal('${escapeJS(p.id)}', '${safeNameJS}', ${p.price}, '${safeCatJS}', '${safeDescJS}')"><i class="fas fa-pen"></i> Edit</button>
                                 <button class="inv-btn btn-delete" onclick="deleteItem('${escapeJS(p.id)}')"><i class="fas fa-trash"></i></button>
                             </div>
                             ${toggleBtn}
@@ -386,7 +441,8 @@
             if (files.length === 0) return alert("Select at least 1 photo.");
             if (files.length > 5) return alert("Max 5 photos allowed.");
 
-            btn.innerText = "Uploading Photos..."; btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading Photos...'; 
+            btn.disabled = true;
 
             try {
                 let imageUrls = [];
@@ -396,7 +452,7 @@
                     const data = await res.json(); if(data.secure_url) imageUrls.push(data.secure_url);
                 }
 
-                btn.innerText = "Saving to Market...";
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving to Market...';
                 const { error } = await supabaseClient.from('products').insert([{
                     vendor_id: myVendorData.id, name: name, price: parseFloat(price),
                     description: desc, category: cat, image_urls: imageUrls, status: 'Active'
@@ -411,9 +467,10 @@
                 
                 alert("Item posted successfully!");
                 loadMyInventory(); 
+                window.scrollTo({ top: document.getElementById('inventory-list').offsetTop - 100, behavior: 'smooth' });
 
             } catch (error) { alert("Failed to post item."); console.error(error); } 
-            finally { btn.innerText = "Upload Item"; btn.disabled = false; }
+            finally { btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Upload Item'; btn.disabled = false; }
         }
 
         async function deleteItem(id) {
@@ -452,13 +509,14 @@
             if(!name || !price || !desc) return alert("Fill all details.");
             if (files.length > 5) return alert("Max 5 photos allowed.");
 
-            btn.innerText = "Saving changes..."; btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving changes...'; 
+            btn.disabled = true;
 
             try {
                 const updateData = { name, price: parseFloat(price), category: cat, description: desc };
 
                 if (files.length > 0) {
-                    btn.innerText = "Uploading new photos...";
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading new photos...';
                     let imageUrls = [];
                     for (let i = 0; i < files.length; i++) {
                         const formData = new FormData(); formData.append('file', files[i]); formData.append('upload_preset', 'unical_products');

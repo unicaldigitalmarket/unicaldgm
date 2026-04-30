@@ -159,7 +159,7 @@
 
                 <div class="form-card">
                     <div class="input-group">
-                        <label class="input-label">Categories (Select Multiple)</label>
+                        <label class="input-label">Categories (Max 5)</label>
                         <div class="cat-picker-grid" id="category-container">
                             <div class="cat-pill" data-val="Gadgets">Gadgets</div>
                             <div class="cat-pill" data-val="Fashion">Fashion & Clothing</div>
@@ -197,7 +197,7 @@
 
     <script src="../asset/script.js"></script>
 
-   <script>
+    <script>
         const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dj6yl36fq/image/upload';
         const CLOUDINARY_PRESET = 'unical_avatars';
 
@@ -218,15 +218,23 @@
             setupCategoryPills();
         });
 
+        // 🚀 UPDATED: Enforce Max 5 Categories Rule
         function setupCategoryPills() {
             document.querySelectorAll('.cat-pill').forEach(pill => {
                 pill.addEventListener('click', function() {
                     const val = this.getAttribute('data-val');
                     
                     if (selectedCategories.includes(val)) {
+                        // User is removing a category (always allowed)
                         selectedCategories = selectedCategories.filter(c => c !== val);
                         this.classList.remove('active');
+                        document.getElementById('msg-box').style.display = 'none'; // Clear any errors
                     } else {
+                        // User is adding a category, check limit first
+                        if (selectedCategories.length >= 5) {
+                            showMsg("You can only select a maximum of 5 categories.", true);
+                            return; // Block the action
+                        }
                         selectedCategories.push(val);
                         this.classList.add('active');
                     }
@@ -236,7 +244,7 @@
 
         function showMsg(text, isError = false) {
             const msgBox = document.getElementById('msg-box');
-            msgBox.innerText = text; // innerText is automatically safe
+            msgBox.innerText = text; 
             msgBox.className = isError ? 'msg-error' : 'msg-success';
             msgBox.style.display = 'block';
             window.scrollTo({ top: 0, behavior: 'smooth' });

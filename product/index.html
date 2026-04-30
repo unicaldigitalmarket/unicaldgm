@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
+     <script>
         window.location.replace("../coming-soon/");
     </script>
     <meta charset="UTF-8">
@@ -17,79 +17,107 @@
     <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 
     <style>
-        :root { --brand-color: #FF7A00; } /* UNICAL Orange */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-        /* --- PRODUCT PAGE STYLES (AFIT REDESIGN) --- */
-        body { background: #e0e0e0; }
-        .app-container { padding-bottom: 80px; } 
+        :root { 
+            --brand-color: #FF7A00; 
+            --brand-gradient: linear-gradient(135deg, #FF7A00, #ea580c);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif;
+            background: #e2e8f0; 
+            margin: 0; padding: 0;
+            display: flex; justify-content: center;
+        }
+        .app-container { 
+            background: white; width: 100%; max-width: 480px; min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1); padding-bottom: 90px; position: relative;
+        } 
         
-        /* Redesigned Header */
-        .header { background: white; padding: 15px 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.03); }
+        /* 🚀 Glassmorphic Header */
+        .header { 
+            background: rgba(255, 255, 255, 0.9); padding: 15px 20px; position: sticky; top: 0; z-index: 100; 
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
         .header-flex { display: flex; justify-content: space-between; align-items: center; width: 100%; }
         .header-title-group { display: flex; align-items: center; gap: 15px; }
-        .page-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0; }
+        .page-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.3px;}
         
-        /* New: Rounded Square Action Buttons */
+        /* Action Buttons */
         .action-icon-btn {
             background: #f1f5f9; color: var(--text-main); width: 40px; height: 40px; 
-            border-radius: 12px; display: flex; justify-content: center; align-items: center;
-            border: none; font-size: 16px; cursor: pointer; transition: 0.2s;
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            border: 1px solid #e2e8f0; font-size: 16px; cursor: pointer; transition: 0.2s;
         }
         .action-icon-btn:active { transform: scale(0.9); background: #e2e8f0; }
 
-        /* Image Carousel */
-        .carousel-container { position: relative; width: 100%; height: 340px; background: white; border-bottom: 1px solid #f1f5f9; }
+        /* 🚀 Image Carousel */
+        .carousel-container { position: relative; width: 100%; height: 350px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; }
         .image-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; height: 100%; scroll-behavior: smooth; }
         .image-slider::-webkit-scrollbar { display: none; }
         .slide-img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; scroll-snap-align: center; }
         
-        .carousel-dots { position: absolute; bottom: 15px; left: 0; width: 100%; display: flex; justify-content: center; gap: 6px; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.5); transition: 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        .carousel-dots { position: absolute; bottom: 15px; left: 0; width: 100%; display: flex; justify-content: center; gap: 8px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.4); transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
         .dot.active { background: white; width: 24px; border-radius: 4px; }
 
-        /* Product Details - Reordered layout */
-        .product-info-box { background: white; padding: 25px 20px; border-radius: 0 0 24px 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
-        .p-category { display: inline-block; background: #fff7ed; color: var(--brand-color); font-size: 11px; font-weight: 800; padding: 6px 12px; border-radius: 8px; text-transform: uppercase; margin-bottom: 12px; }
-        .p-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; line-height: 1.3; }
-        .p-price { font-size: 26px; font-weight: 800; color: var(--brand-color); margin-bottom: 5px; }
+        /* 🚀 Product Details */
+        .product-info-box { background: white; padding: 25px 20px; border-radius: 0 0 30px 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.03); }
+        .p-category { display: inline-block; background: rgba(255, 122, 0, 0.1); color: var(--brand-color); font-size: 11px; font-weight: 800; padding: 6px 14px; border-radius: 8px; text-transform: uppercase; margin-bottom: 12px; letter-spacing: 0.5px;}
+        .p-title { font-size: 22px; font-weight: 900; color: var(--text-main); margin-bottom: 8px; line-height: 1.3; letter-spacing: -0.5px;}
+        .p-price { font-size: 26px; font-weight: 900; color: var(--brand-color); margin-bottom: 10px; }
         
-        .section-title { font-size: 16px; font-weight: 800; color: var(--text-main); margin: 25px 0 12px; display: flex; align-items: center; gap: 8px; }
-        .p-desc { font-size: 14px; color: #475569; line-height: 1.6; white-space: pre-wrap; background: #f8fafc; padding: 15px; border-radius: 12px; }
+        .section-title { font-size: 16px; font-weight: 900; color: var(--text-main); margin: 30px 0 15px; display: flex; align-items: center; gap: 8px; letter-spacing: -0.3px;}
+        .p-desc { font-size: 14px; color: #475569; line-height: 1.7; white-space: pre-wrap; background: #f8fafc; padding: 18px; border-radius: 16px; border: 1px solid #e2e8f0; font-weight: 500;}
 
-        /* Redesigned Vendor Card */
-        .vendor-strip { background: #fff7ed; border: 1px solid #ffedd5; border-radius: 16px; padding: 15px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; }
-        .vendor-strip:active { transform: scale(0.98); }
-        .v-logo { width: 55px; height: 55px; border-radius: 12px; object-fit: cover; border: 2px solid white; box-shadow: 0 4px 10px rgba(255, 122, 0, 0.15); background: #eee; }
+        /* 🚀 Vendor Card */
+        .vendor-strip { background: white; border: 1px solid #e2e8f0; border-radius: 20px; padding: 15px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.02);}
+        .vendor-strip:active { transform: scale(0.98); background: #f8fafc;}
+        .v-logo { width: 55px; height: 55px; border-radius: 14px; object-fit: cover; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.05); background: #eee; }
         .v-info { flex: 1; margin: 0 15px; min-width: 0; }
         .v-name { font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 3px; display: flex; align-items: center; gap: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        .v-cat { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-        .v-btn { font-size: 12px; font-weight: 800; color: white; background: var(--brand-color); padding: 8px 14px; border-radius: 10px; flex-shrink: 0;}
+        .v-cat { font-size: 12px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600;}
+        .v-btn { font-size: 12px; font-weight: 800; color: var(--brand-color); background: rgba(255, 122, 0, 0.1); padding: 8px 14px; border-radius: 10px; flex-shrink: 0;}
 
-        /* Related Products Grid */
+        /* 🚀 SAFETY TIPS SECTION */
+        .safety-card { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; padding: 20px; margin-top: 30px;}
+        .safety-title { font-size: 15px; font-weight: 900; color: var(--text-main); margin: 0 0 12px 0; display: flex; align-items: center; gap: 8px; }
+        .safety-list { margin: 0; padding-left: 20px; color: #475569; font-size: 13px; line-height: 1.6; font-weight: 500;}
+        .safety-list li { margin-bottom: 8px; }
+        .safety-list li:last-child { margin-bottom: 0; }
+
+        /* 🚀 Related Products Grid */
         .related-wrapper { padding: 10px 20px 0; }
         .related-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
         
         .related-card { 
-            background: white; border-radius: 16px; padding: 10px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; 
-            cursor: pointer; transition: transform 0.2s; 
-            width: 100%; min-width: 0; box-sizing: border-box; overflow: hidden;
+            background: white; border-radius: 18px; padding: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid #e2e8f0; 
+            cursor: pointer; transition: 0.2s; 
+            width: 100%; min-width: 0; box-sizing: border-box; overflow: hidden; display: flex; flex-direction: column;
         }
-        
-        .related-card:active { transform: translateY(2px); }
-        .rel-img { width: 100%; height: 130px; object-fit: cover; border-radius: 10px; background: #eee; margin-bottom: 10px; }
-        .rel-price { font-size: 15px; font-weight: 800; color: var(--brand-color); margin-bottom: 4px; }
-        .rel-title { font-size: 12px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;}
+        .related-card:active { transform: scale(0.97); background: #f8fafc;}
+        .rel-img { width: 100%; height: 130px; object-fit: cover; border-radius: 12px; background: #f1f5f9; margin-bottom: 12px; }
+        .rel-price { font-size: 15px; font-weight: 900; color: var(--brand-color); margin-bottom: 4px; }
+        .rel-title { font-size: 13px; font-weight: 700; color: var(--text-main); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex-grow: 1;}
 
-        .view-all-btn { display: block; text-align: center; background: white; color: var(--brand-color); border: 2px solid #e2e8f0; font-weight: 800; font-size: 14px; padding: 15px; border-radius: 16px; text-decoration: none; margin: 20px; transition: 0.2s; }
-        .view-all-btn:active { background: #f8fafc; border-color: var(--brand-color); }
+        .view-all-btn { display: block; text-align: center; background: white; color: var(--text-main); border: 2px solid #e2e8f0; font-weight: 800; font-size: 14px; padding: 15px; border-radius: 16px; text-decoration: none; margin: 20px; transition: 0.2s; }
+        .view-all-btn:active { background: #f8fafc; border-color: var(--brand-color); color: var(--brand-color);}
 
-        /* Sticky Bottom Action Bar */
-        .fixed-bottom-bar { position: fixed; bottom: 0; width: 100%; max-width: 480px; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 15px 20px; display: flex; gap: 12px; box-shadow: 0 -4px 25px rgba(0,0,0,0.06); z-index: 1000; border-top: 1px solid #f1f5f9; border-radius: 24px 24px 0 0; }
-        .action-btn { flex: 1; padding: 15px; border: none; border-radius: 14px; font-weight: 800; font-size: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; }
+        /* 🚀 Sticky Bottom Action Bar */
+        .fixed-bottom-bar { 
+            position: fixed; bottom: 0; width: 100%; max-width: 480px; 
+            background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            padding: 15px 20px; display: flex; gap: 12px; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); 
+            z-index: 1000; border-top: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .action-btn { flex: 1; padding: 16px; border: none; border-radius: 16px; font-weight: 800; font-size: 15px; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.2s; }
         .action-btn:active { transform: scale(0.96); }
-        .btn-whatsapp { background: #25D366; color: white; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3); }
-        .btn-chat { background: #0f172a; color: white; box-shadow: 0 4px 15px rgba(15, 23, 42, 0.3); }
+        .btn-whatsapp { background: #25D366; color: white; box-shadow: 0 8px 20px rgba(37, 211, 102, 0.25); }
+        .btn-chat { background: var(--text-main); color: white; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2); }
 
         /* Skeletons */
         .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
@@ -99,33 +127,41 @@
         /* 🌙 DARK MODE OVERRIDES                    */
         /* ========================================= */
         body.dark-mode { background-color: #020617 !important; }
-        body.dark-mode .app-container { background: #0f172a !important; }
-        body.dark-mode .header { background: #1e293b !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; border-color: #334155 !important; }
-        body.dark-mode .page-title, body.dark-mode .fa-arrow-left { color: #f1f5f9 !important; }
+        body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;}
         
-        body.dark-mode .action-icon-btn { background: #334155 !important; color: #f1f5f9 !important; }
+        body.dark-mode .header { background: rgba(15, 23, 42, 0.9) !important; border-bottom-color: #334155 !important; }
+        body.dark-mode .page-title { color: #f1f5f9 !important; }
+        body.dark-mode .action-icon-btn { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important;}
+        body.dark-mode .action-icon-btn:active { background: #334155 !important; }
         
         body.dark-mode .carousel-container { background: #0f172a !important; border-bottom: 1px solid #334155 !important; }
         
-        body.dark-mode .product-info-box { background: #1e293b !important; }
+        body.dark-mode .product-info-box { background: #1e293b !important; box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;}
         body.dark-mode .p-title { color: #f1f5f9 !important; }
-        body.dark-mode .p-category { background: #0f172a !important; color: var(--brand-color) !important; border: 1px solid #334155; }
+        body.dark-mode .p-category { background: rgba(255, 122, 0, 0.15) !important; border: 1px solid rgba(255, 122, 0, 0.3) !important; }
         body.dark-mode .section-title { color: #f1f5f9 !important; }
-        body.dark-mode .p-desc { background: #0f172a !important; color: #cbd5e1 !important; border: 1px solid #334155; }
+        body.dark-mode .p-desc { background: #0f172a !important; color: #cbd5e1 !important; border-color: #334155 !important; }
         
         body.dark-mode .vendor-strip { background: #0f172a !important; border-color: #334155 !important; }
+        body.dark-mode .vendor-strip:active { background: #1e293b !important; }
         body.dark-mode .v-name { color: #f1f5f9 !important; }
-        body.dark-mode .v-logo { border-color: #1e293b !important; }
-        body.dark-mode .v-btn { background: var(--brand-color) !important; color: white !important;}
+        body.dark-mode .v-logo { border-color: #334155 !important; }
+        body.dark-mode .v-btn { background: rgba(255, 122, 0, 0.15) !important; color: var(--brand-color) !important;}
         
+        body.dark-mode .safety-card { background: #0f172a !important; border-color: #334155 !important; }
+        body.dark-mode .safety-title { color: #f1f5f9 !important; }
+        body.dark-mode .safety-list { color: #cbd5e1 !important; }
+
         body.dark-mode .related-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .related-card:active { background: #334155 !important; }
+        body.dark-mode .rel-img { background: #0f172a !important; }
         body.dark-mode .rel-title { color: #f1f5f9 !important; }
         
         body.dark-mode .view-all-btn { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
-        body.dark-mode .view-all-btn:active { background: #334155 !important; }
+        body.dark-mode .view-all-btn:active { background: #334155 !important; border-color: var(--brand-color) !important; color: var(--brand-color) !important; }
         
-        body.dark-mode .fixed-bottom-bar { background: rgba(30, 41, 59, 0.95) !important; border-top-color: #334155 !important; }
-        body.dark-mode .btn-chat { background: #334155 !important; color: #f1f5f9 !important; box-shadow: none; }
+        body.dark-mode .fixed-bottom-bar { background: rgba(15, 23, 42, 0.9) !important; border-top-color: #334155 !important; }
+        body.dark-mode .btn-chat { background: #1e293b !important; color: #f1f5f9 !important; border: 1px solid #334155; box-shadow: none; }
     </style>
 </head>
 <body>
@@ -140,10 +176,11 @@
         <div class="header">
             <div class="header-flex">
                 <div class="header-title-group">
-                    <button onclick="smartBack()" style="background:none; border:none; font-size:20px; color:var(--text-main); cursor:pointer;"><i class="fas fa-arrow-left"></i></button>
+                    <!-- 🚀 SMART BACK BUTTON -->
+                    <button class="action-icon-btn" onclick="smartBack(event)" style="border-radius: 50%;"><i class="fas fa-arrow-left"></i></button>
                     <h1 class="page-title">Item Details</h1>
                 </div>
-                <div style="display:flex; gap:10px;">
+                <div style="display:flex; gap:12px;">
                     <button class="action-icon-btn" onclick="shareItem()"><i class="fas fa-share-alt"></i></button>
                     <button class="action-icon-btn" id="save-btn" onclick="toggleSave()"><i class="far fa-heart"></i></button>
                 </div>
@@ -151,12 +188,12 @@
         </div>
 
         <div id="loader-state">
-            <div class="sk-shimmer" style="width: 100%; height: 340px;"></div>
-            <div style="padding: 25px 20px;">
-                <div class="sk-shimmer" style="width: 30%; height: 25px; border-radius: 8px; margin-bottom: 12px;"></div>
-                <div class="sk-shimmer" style="width: 80%; height: 30px; border-radius: 8px; margin-bottom: 10px;"></div>
-                <div class="sk-shimmer" style="width: 50%; height: 35px; border-radius: 8px; margin-bottom: 25px;"></div>
-                <div class="sk-shimmer" style="width: 100%; height: 120px; border-radius: 12px;"></div>
+            <div class="sk-shimmer" style="width: 100%; height: 350px;"></div>
+            <div style="padding: 30px 20px;">
+                <div class="sk-shimmer" style="width: 30%; height: 26px; border-radius: 8px; margin-bottom: 15px;"></div>
+                <div class="sk-shimmer" style="width: 85%; height: 35px; border-radius: 8px; margin-bottom: 12px;"></div>
+                <div class="sk-shimmer" style="width: 45%; height: 40px; border-radius: 8px; margin-bottom: 30px;"></div>
+                <div class="sk-shimmer" style="width: 100%; height: 140px; border-radius: 16px;"></div>
             </div>
         </div>
 
@@ -172,10 +209,10 @@
                 <h1 class="p-title" id="display-title">Loading...</h1>
                 <div class="p-price" id="display-price">₦0</div>
 
-                <div class="section-title"><i class="fas fa-align-left" style="color: var(--brand-color); font-size: 14px;"></i> Description</div>
+                <div class="section-title"><i class="fas fa-align-left" style="color: var(--brand-color); font-size: 15px;"></i> Description</div>
                 <div class="p-desc" id="display-desc">...</div>
 
-                <div class="section-title" style="margin-top: 30px;"><i class="fas fa-store" style="color: var(--brand-color); font-size: 14px;"></i> Sold By</div>
+                <div class="section-title" style="margin-top: 35px;"><i class="fas fa-store" style="color: var(--brand-color); font-size: 15px;"></i> Sold By</div>
                 <div class="vendor-strip" id="vendor-btn">
                     <img src="" id="v-logo" class="v-logo" onerror="this.src='https://via.placeholder.com/150'">
                     <div class="v-info">
@@ -184,10 +221,21 @@
                     </div>
                     <div class="v-btn">View Store</div>
                 </div>
+
+                <!-- 🚀 NEW SAFETY TIPS SECTION -->
+                <div class="safety-card">
+                    <h3 class="safety-title"><i class="fas fa-shield-alt" style="color: #10b981; font-size: 18px;"></i> Safety tips</h3>
+                    <ul class="safety-list">
+                        <li>Avoid paying in advance, even for delivery</li>
+                        <li>Meet with the seller at a safe public place</li>
+                        <li>First, check what you're going to buy to make sure it's what you need</li>
+                        <li>Only pay if you're satisfied</li>
+                    </ul>
+                </div>
             </div>
 
             <div class="related-wrapper">
-                <div class="section-title"><i class="fas fa-layer-group" style="color: var(--brand-color); font-size: 14px;"></i> Related Items</div>
+                <div class="section-title"><i class="fas fa-layer-group" style="color: var(--brand-color); font-size: 15px;"></i> Related Items</div>
                 <div class="related-grid" id="related-grid"></div>
             </div>
 
@@ -197,7 +245,7 @@
 
         <div class="fixed-bottom-bar" id="action-bar" style="display: none;">
             <button class="action-btn btn-chat" onclick="openChat()"><i class="fas fa-comment-dots"></i> Chat</button>
-            <button class="action-btn btn-whatsapp" id="whatsapp-btn"><i class="fab fa-whatsapp" style="font-size: 18px;"></i> WhatsApp</button>
+            <button class="action-btn btn-whatsapp" id="whatsapp-btn"><i class="fab fa-whatsapp" style="font-size: 20px;"></i> WhatsApp</button>
         </div>
 
     </div>
@@ -231,15 +279,20 @@
             return array;
         }
 
-        window.smartBack = function() {
+        // 🚀 SMART BACK BUTTON LOGIC
+        function getSmartRedirectUrl() {
             const referrer = document.referrer;
-            const currentDomain = window.location.origin;
+            const currentWebsite = window.location.origin;
 
-            if (!referrer || !referrer.startsWith(currentDomain) || referrer.includes('wa.me')) {
-                window.location.href = "../index.html"; 
-            } else {
-                window.history.back();
+            if (referrer && referrer.startsWith(currentWebsite) && !referrer.includes('/login/') && !referrer.includes('/reset-password/')) {
+                return referrer; 
             }
+            return "../index.html"; 
+        }
+
+        window.smartBack = function(event) {
+            if (event) event.preventDefault();
+            window.location.href = getSmartRedirectUrl();
         }
 
         document.addEventListener("DOMContentLoaded", async () => {
@@ -302,11 +355,11 @@
                 if (vendor) {
                     currentVendorUserId = vendor.profile_id || vendor.user_id; 
                     
-                    let badgeColor = "#38bdf8"; // Default Blue (Verified)
+                    let badgeColor = "#38bdf8"; 
                     if (vendor.subscription_plan === "Influencer") badgeColor = "#fbbf24"; 
                     if (vendor.subscription_plan === "Icon") badgeColor = "#1e293b"; 
 
-                    document.getElementById('v-name').innerHTML = `${escapeHTML(vendor.business_name)} <i class="fas fa-check-circle" style="color: ${badgeColor};"></i>`;
+                    document.getElementById('v-name').innerHTML = `${escapeHTML(vendor.business_name)} <i class="fas fa-check-circle" style="color: ${badgeColor}; font-size: 13px;"></i>`;
                     
                     const descTxt = vendor.categories ? vendor.categories.split(',')[0] : "Verified Seller";
                     document.getElementById('v-cat').innerText = escapeHTML(descTxt);
@@ -362,10 +415,10 @@
                 } else {
                     gallery.scrollBy({ left: gallery.clientWidth, behavior: 'smooth' });
                 }
-            }, 3000); 
+            }, 4000); 
         }
 
-        // 🚀 SMART RELATED ITEMS (Shuffles and limits to 20)
+        // 🚀 SMART RELATED ITEMS (Shuffles and limits to exactly 30)
         async function loadRelatedItems(category, currentId) {
             const grid = document.getElementById('related-grid');
             try {
@@ -374,15 +427,15 @@
                     .eq('category', category)
                     .eq('status', 'Active')
                     .neq('id', currentId) 
-                    .limit(50); // Fetch up to 50 options
+                    .limit(100); // Fetch a large pool to pick from
                 
                 if(!data || data.length === 0) {
-                    grid.innerHTML = "<p style='grid-column: span 2; text-align: center; color: #94a3b8; font-size: 13px; padding: 20px 0;'>No similar items right now.</p>";
+                    grid.innerHTML = "<p style='grid-column: span 2; text-align: center; color: #94a3b8; font-size: 14px; padding: 30px 0; font-weight: 500;'>No similar items right now.</p>";
                     return;
                 }
 
-                // Randomly shuffle the pool and grab up to 20
-                const randomizedItems = shuffleArray(data).slice(0, 20);
+                // Randomly shuffle the pool and grab exactly 30
+                const randomizedItems = shuffleArray(data).slice(0, 30);
 
                 grid.innerHTML = "";
                 randomizedItems.forEach(p => {

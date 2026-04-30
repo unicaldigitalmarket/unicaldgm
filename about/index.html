@@ -3,20 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>About Us | UNICAL Market</title>
+    <title>About Us | UNICAL Digital Market</title>
 
+    <!-- 🚀 PRIMARY SEO -->
     <meta name="description" content="Learn more about UNICAL Digital Market (UnicalDGM), the student-driven ecosystem empowering University of Calabar entrepreneurs to grow their businesses.">
     <meta name="keywords" content="About UnicalDGM, UNICAL student business, University of Calabar digital market, UNICAL vendors">
     <meta name="author" content="UnicalDGM">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://unicaldgm.com.ng/about/">
 
+    <!-- 🚀 SOCIAL MEDIA & WHATSAPP PREVIEWS -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://unicaldgm.com.ng/about/">
     <meta property="og:title" content="About UNICAL Digital Market">
     <meta property="og:description" content="We exist to bridge the gap between student entrepreneurs, digital visibility, and real business growth at UNICAL.">
     <meta property="og:image" content="https://unicaldgm.com.ng/512.png">
 
+    <!-- 🚀 MOBILE APP & ICONS -->
     <meta name="theme-color" content="#FF7A00">
     <link rel="icon" href="../favicon.ico" type="image/x-icon">
     <link rel="icon" href="../192.png" sizes="192x192" type="image/png">
@@ -26,40 +29,120 @@
     <link rel="stylesheet" href="../asset/style.css">
 
     <style>
-        :root { --brand-color: #FF7A00; }
-        
-        .page-header { position: sticky; top: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); z-index: 100; display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid #f1f5f9; gap: 15px; }
-        .back-btn { background: #f1f5f9; color: var(--text-main); width: 38px; height: 38px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: none; font-size: 16px; cursor: pointer; transition: 0.2s; }
-        .back-btn:active { transform: scale(0.9); }
-        .page-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0; }
-        
-        .doc-content { padding: 20px; padding-bottom: 40px; }
-        .hero-icon-wrapper { text-align: center; margin-bottom: 25px; padding: 20px 0; }
-        .hero-icon { font-size: 60px; color: var(--brand-color); background: rgba(255, 122, 0, 0.1); width: 120px; height: 120px; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; }
-        
-        .doc-card { background: white; border-radius: 16px; padding: 20px; margin-bottom: 15px; border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
-        .doc-h2 { font-size: 16px; font-weight: 800; color: var(--text-main); margin-bottom: 12px; display: flex; align-items: center; gap: 10px; }
-        .doc-h2 i { color: var(--brand-color); font-size: 18px; }
-        .doc-p { font-size: 14px; color: #475569; line-height: 1.6; margin-bottom: 15px; }
-        .doc-p:last-child { margin-bottom: 0; }
-        
-        .doc-ul { list-style: none; padding: 0; margin: 0 0 15px 0; }
-        .doc-li { font-size: 14px; color: #475569; line-height: 1.6; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 10px; }
-        .doc-li i { color: var(--brand-color); font-size: 12px; margin-top: 5px; flex-shrink: 0; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
-        /* 🌙 DARK MODE FIXES */
+        /* 🚀 Reset & Variables */
+        * { box-sizing: border-box; }
+        :root { 
+            --brand-color: #FF7A00; 
+            --brand-gradient: linear-gradient(135deg, #FF7A00, #ea580c);
+            --brand-bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #e2e8f0; 
+            margin: 0; padding: 0; 
+            display: flex; justify-content: center; min-height: 100vh;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            background: var(--brand-bg); width: 100%; max-width: 480px; min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1); display: flex; flex-direction: column;
+            position: relative; z-index: 1;
+        }
+
+        /* 🚀 Immersive Background Glow Effect */
+        .bg-glow-1 {
+            position: absolute; width: 350px; height: 350px; background: var(--brand-color);
+            border-radius: 50%; filter: blur(100px); opacity: 0.1; top: -10%; left: -20%; z-index: 0;
+            animation: pulse 6s infinite alternate;
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+
+        /* 🚀 Header */
+        .page-header { 
+            position: sticky; top: 0; background: rgba(248, 250, 252, 0.9); 
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            z-index: 100; display: flex; align-items: center; padding: 15px 20px; 
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8); gap: 15px; 
+        }
+        .back-btn { 
+            background: white; color: var(--text-main); width: 40px; height: 40px; 
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            border: 1px solid #e2e8f0; font-size: 16px; cursor: pointer; transition: 0.2s; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .back-btn:active { transform: scale(0.9); background: #f1f5f9; }
+        .page-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.5px;}
+        
+        .doc-content { padding: 20px; padding-bottom: 50px; position: relative; z-index: 1;}
+        
+        /* 🚀 Hero Section */
+        .hero-icon-wrapper { text-align: center; margin-bottom: 30px; padding: 10px 0; }
+        .hero-icon { 
+            font-size: 50px; color: white; background: var(--brand-gradient); 
+            width: 110px; height: 110px; border-radius: 35px; display: inline-flex; 
+            justify-content: center; align-items: center; 
+            box-shadow: 0 15px 30px rgba(255, 122, 0, 0.3);
+            animation: float 4s ease-in-out infinite;
+        }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
+        
+        /* 🚀 Premium Cards */
+        .doc-card { 
+            background: white; border-radius: 20px; padding: 25px; margin-bottom: 15px; 
+            border: 1px solid #e2e8f0; box-shadow: 0 8px 20px rgba(0,0,0,0.02); 
+            position: relative; overflow: hidden;
+        }
+        
+        /* Heading with Mini Icon */
+        .doc-h2 { 
+            font-size: 17px; font-weight: 800; color: var(--text-main); 
+            margin-bottom: 15px; display: flex; align-items: center; gap: 12px; letter-spacing: -0.3px;
+        }
+        .h2-icon-box {
+            width: 32px; height: 32px; border-radius: 10px; background: rgba(255, 122, 0, 0.1);
+            color: var(--brand-color); display: flex; justify-content: center; align-items: center;
+            font-size: 14px; flex-shrink: 0;
+        }
+
+        .doc-p { font-size: 14px; color: #475569; line-height: 1.7; margin-bottom: 15px; font-weight: 500;}
+        .doc-p:last-child { margin-bottom: 0; }
+        .doc-p strong { color: var(--text-main); font-weight: 800; }
+        
+        /* Clean Lists */
+        .doc-ul { list-style: none; padding: 0; margin: 0 0 15px 0; display: flex; flex-direction: column; gap: 12px;}
+        .doc-li { font-size: 14px; color: #475569; line-height: 1.6; display: flex; align-items: flex-start; gap: 12px; font-weight: 500;}
+        .doc-li i { color: var(--brand-color); font-size: 14px; margin-top: 4px; flex-shrink: 0; }
+
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES                        */
+        /* ========================================= */
         body.dark-mode { background-color: #020617 !important; }
-        body.dark-mode .app-container { background: #0f172a !important; }
-        body.dark-mode .page-header { background: rgba(15,23,42,0.95) !important; border-bottom-color: #334155 !important; }
-        body.dark-mode .back-btn { background: #1e293b !important; color: #f1f5f9 !important; }
-        body.dark-mode .page-title, body.dark-mode .doc-h2 { color: #f1f5f9 !important; }
-        body.dark-mode .doc-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;}
+        
+        body.dark-mode .page-header { background: rgba(15, 23, 42, 0.9) !important; border-bottom-color: #334155 !important; }
+        body.dark-mode .back-btn { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+        body.dark-mode .back-btn:active { background: #334155 !important; }
+        body.dark-mode .page-title { color: #f1f5f9 !important; }
+        
+        body.dark-mode .doc-card { background: rgba(30, 41, 59, 0.7) !important; border-color: #334155 !important; box-shadow: 0 8px 25px rgba(0,0,0,0.5) !important;}
+        body.dark-mode .doc-h2 { color: #f1f5f9 !important; }
+        body.dark-mode .h2-icon-box { background: rgba(255, 122, 0, 0.15) !important; }
+        
         body.dark-mode .doc-p, body.dark-mode .doc-li { color: #cbd5e1 !important; }
-        body.dark-mode .hero-icon { background: rgba(255, 122, 0, 0.15) !important; }
+        body.dark-mode .doc-p strong { color: #f1f5f9 !important; }
     </style>
 </head>
 <body>
     <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
+
+    <div class="bg-glow-1"></div>
 
     <div class="app-container">
         
@@ -69,55 +152,71 @@
         </div>
 
         <div class="doc-content">
-            <div class="hero-icon-wrapper">
-                <div class="hero-icon"><i class="fas fa-users"></i></div>
-            </div>
+            
+           <div class="hero-icon-wrapper">
+    <img src="../asset/img/logo.png" alt="UNICAL Digital Market" style="width: 120px; height: 120px; border-radius: 30px; object-fit: cover; box-shadow: 0 15px 35px rgba(255, 122, 0, 0.2); animation: float 4s ease-in-out infinite; background: white; border: 2px solid #f1f5f9;">
+</div>
 
             <div class="doc-card">
-                <h2 class="doc-h2"><i class="fas fa-info-circle"></i> Who We Are</h2>
+                <h2 class="doc-h2">
+                    <div class="h2-icon-box"><i class="fas fa-info"></i></div> 
+                    Who We Are
+                </h2>
                 <p class="doc-p"><strong>UnicalDGM (Unical Digital Marketing)</strong> is a student-driven digital ecosystem built to empower, promote, and scale businesses within the University of Calabar community and beyond.</p>
                 <p class="doc-p">We exist to bridge the gap between student entrepreneurs, digital visibility, and real business growth. At UnicalDGM, we understand that many student-owned businesses struggle, not because they lack quality products or services, but because they lack the right exposure, strategy, and digital presence. That’s where we come in.</p>
             </div>
 
             <div class="doc-card">
-                <h2 class="doc-h2"><i class="fas fa-briefcase"></i> What We Do</h2>
+                <h2 class="doc-h2">
+                    <div class="h2-icon-box"><i class="fas fa-briefcase"></i></div> 
+                    What We Do
+                </h2>
                 <p class="doc-p">We provide a centralised platform where student entrepreneurs can:</p>
                 <ul class="doc-ul">
-                    <li class="doc-li"><i class="fas fa-check-circle"></i> Showcase their products and services to a wider audience</li>
-                    <li class="doc-li"><i class="fas fa-check-circle"></i> Build a strong and credible online presence</li>
-                    <li class="doc-li"><i class="fas fa-check-circle"></i> Connect with potential customers and collaborators</li>
-                    <li class="doc-li"><i class="fas fa-check-circle"></i> Learn practical, result-driven marketing strategies</li>
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> Showcase their products and services to a wider audience.</li>
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> Build a strong and credible online presence.</li>
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> Connect with potential customers and collaborators.</li>
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> Learn practical, result-driven marketing strategies.</li>
                 </ul>
                 <p class="doc-p">Beyond visibility, we are building a learning and growth community. Through conferences, trainings, and expert-led sessions, we equip students with modern business and digital marketing knowledge that goes beyond the classroom.</p>
             </div>
 
             <div class="doc-card">
-                <h2 class="doc-h2"><i class="fas fa-eye"></i> Our Vision</h2>
+                <h2 class="doc-h2">
+                    <div class="h2-icon-box"><i class="fas fa-eye"></i></div> 
+                    Our Vision
+                </h2>
                 <p class="doc-p">To be the platform where businesses are not just listed, but truly seen, trusted, and chosen.</p>
             </div>
 
             <div class="doc-card">
-                <h2 class="doc-h2"><i class="fas fa-bullseye"></i> Our Mission</h2>
+                <h2 class="doc-h2">
+                    <div class="h2-icon-box"><i class="fas fa-bullseye"></i></div> 
+                    Our Mission
+                </h2>
                 <p class="doc-p">To help student entrepreneurs grow by providing:</p>
                 <ul class="doc-ul">
-                    <li class="doc-li"><i class="fas fa-check-circle"></i> Strategic digital exposure</li>
-                    <li class="doc-li"><i class="fas fa-check-circle"></i> Practical business education</li>
-                    <li class="doc-li"><i class="fas fa-check-circle"></i> A supportive and growth-focused community</li>
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> Strategic digital exposure.</li>
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> Practical business education.</li>
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> A supportive and growth-focused community.</li>
                 </ul>
             </div>
 
             <div class="doc-card">
-                <h2 class="doc-h2"><i class="fas fa-fire"></i> Why UnicalDGM?</h2>
+                <h2 class="doc-h2">
+                    <div class="h2-icon-box"><i class="fas fa-fire"></i></div> 
+                    Why UnicalDGM?
+                </h2>
                 <p class="doc-p">Because we’re not just another platform, we are a movement. A movement that believes:</p>
                 <ul class="doc-ul">
-                    <li class="doc-li"><i class="fas fa-check-circle"></i> Students can build profitable businesses while in school</li>
-                    <li class="doc-li"><i class="fas fa-check-circle"></i> Visibility is just as important as product quality</li>
-                    <li class="doc-li"><i class="fas fa-check-circle"></i> The right knowledge and strategy can change everything</li>
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> Students can build profitable businesses while in school.</li>
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> Visibility is just as important as product quality.</li>
+                    <li class="doc-li"><i class="fas fa-check-circle"></i> The right knowledge and strategy can change everything.</li>
                 </ul>
-                <p class="doc-p"><strong>We are here to ensure that no good business stays hidden.</strong></p>
+                <p class="doc-p" style="margin-top: 20px;"><strong>We are here to ensure that no good business stays hidden.</strong></p>
             </div>
+            
         </div>
-
     </div>
 </body>
 </html>

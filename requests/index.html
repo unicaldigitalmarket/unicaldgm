@@ -1,104 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
+     <script>
         window.location.replace("../coming-soon/");
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Buyer Requests | UNICAL Digital Market</title>
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../asset/style.css">
+    <!-- 🚀 PRIMARY SEO -->
+    <meta name="description" content="Looking for something specific? Post a buyer request on UNICAL Digital Market and have verified student vendors contact you with offers.">
+    <meta name="keywords" content="UNICAL buyer request, find items Calabar, student market request, UnicalDGM">
+    <meta name="author" content="UnicalDGM">
+    <meta name="robots" content="index, follow">
+
+    <!-- 🚀 MOBILE APP & ICONS -->
     <meta name="theme-color" content="#FF7A00">
     <link rel="icon" href="../favicon.ico" type="image/x-icon">
     <link rel="icon" href="../192.png" sizes="192x192" type="image/png">
     <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+        /* 🚀 Reset & Variables */
+        * { box-sizing: border-box; }
+        :root {
+            --brand-color: #FF7A00; 
+            --brand-gradient: linear-gradient(135deg, #FF7A00, #ea580c);
+            --brand-bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #e2e8f0; 
+            margin: 0; padding: 0; 
+            display: flex; justify-content: center; min-height: 100vh;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            background: var(--brand-bg); width: 100%; max-width: 480px; min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1); display: flex; flex-direction: column;
+            position: relative; z-index: 1;
+        }
+
+        /* 🚀 Glassmorphic Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95); padding: 15px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
         .header-top-flex { display: flex; align-items: center; gap: 15px; }
-        .page-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; }
-        
-        .request-box { background: white; padding: 20px; border-radius: 16px; border: 1px solid #e2e8f0; margin: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
-        .request-header { font-size: 16px; font-weight: 800; color: #1e293b; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
-        
-        .form-group { margin-bottom: 15px; }
-        .form-label { display: block; font-size: 12px; font-weight: 800; color: var(--text-main); margin-bottom: 6px; }
-        .form-input { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 13px; outline: none; background: #f8fafc; box-sizing: border-box; }
-        .form-input:focus { border-color: var(--brand-color); background: white; }
-        
-        .image-upload-wrapper { border: 2px dashed #cbd5e1; border-radius: 10px; padding: 15px; text-align: center; background: #f8fafc; cursor: pointer; margin-bottom: 15px; transition: 0.2s; }
-        .image-upload-wrapper:hover { border-color: var(--brand-color); background: #eff6ff; }
-        .image-preview { max-width: 100%; height: 120px; border-radius: 8px; object-fit: cover; display: none; margin-top: 10px; }
-        
-        .submit-btn { background: var(--brand-color); color: white; border: none; width: 100%; padding: 14px; border-radius: 10px; font-size: 14px; font-weight: 800; cursor: pointer; transition: 0.2s; }
-        .submit-btn:active { transform: scale(0.98); }
-        .submit-btn:disabled { background: #cbd5e1; cursor: not-allowed; transform: none; }
+        .back-btn { background: white; color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid #e2e8f0; font-size: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
+        .back-btn:active { transform: scale(0.9); background: #f1f5f9; }
+        .page-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.3px;}
 
-        .status-card { background: #fef2f2; border: 1px solid #fecaca; color: #ef4444; padding: 12px; border-radius: 10px; font-size: 12px; font-weight: 600; margin-bottom: 15px; display: none; line-height: 1.5; }
+        .content-area { padding: 0 0 90px 0; flex: 1; }
 
-        .my-list-title { margin: 30px 20px 10px; font-size: 15px; font-weight: 800; color: #334155; }
+        /* 🚀 Premium Form Card */
+        .request-box { 
+            background: white; padding: 25px 20px; border-radius: 24px; border: 1px solid #f1f5f9; 
+            margin: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.03); 
+        }
+        .request-header { 
+            font-size: 16px; font-weight: 900; color: var(--text-main); 
+            margin-bottom: 20px; display: flex; align-items: center; gap: 10px; letter-spacing: -0.3px;
+        }
         
-        .req-card { background: white; margin: 0 20px 15px; padding: 15px; border-radius: 12px; border: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: flex-start; }
-        .req-title { font-size: 14px; font-weight: 800; color: #1e293b; margin-bottom: 4px; }
-        .req-meta { font-size: 11px; color: #64748b; margin-bottom: 8px; }
-        .req-budget { font-size: 13px; font-weight: 800; color: #10b981; }
+        .form-group { margin-bottom: 18px; }
+        .form-label { display: block; font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; }
+        .form-input { 
+            width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 14px; 
+            font-size: 14px; font-weight: 500; outline: none; background: #f8fafc; 
+            box-sizing: border-box; transition: 0.2s; color: var(--text-main); font-family: inherit;
+        }
+        .form-input:focus { border-color: var(--brand-color); background: white; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.1); }
         
-        .del-btn { background: #fee2e2; color: #ef4444; border: none; padding: 8px 12px; border-radius: 8px; font-size: 11px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        select.form-input { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 12px auto; }
+
+        /* 🚀 Image Dropzone */
+        .image-upload-wrapper { 
+            border: 2px dashed #cbd5e1; border-radius: 16px; padding: 25px; 
+            text-align: center; background: #f8fafc; cursor: pointer; 
+            margin-bottom: 15px; transition: 0.2s; position: relative;
+        }
+        .image-upload-wrapper:hover, .image-upload-wrapper:focus-within { border-color: var(--brand-color); background: rgba(255, 122, 0, 0.02); }
+        .image-preview { max-width: 100%; height: 140px; border-radius: 12px; object-fit: cover; display: none; margin-top: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        
+        /* 🚀 Submit Button */
+        .submit-btn { 
+            background: var(--brand-gradient); color: white; border: none; width: 100%; 
+            padding: 16px; border-radius: 14px; font-size: 15px; font-weight: 800; 
+            cursor: pointer; transition: 0.2s; box-shadow: 0 8px 25px rgba(255, 122, 0, 0.3);
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        .submit-btn:active { transform: scale(0.97); box-shadow: 0 4px 15px rgba(255, 122, 0, 0.2);}
+        .submit-btn:disabled { background: #cbd5e1; box-shadow: none; cursor: not-allowed; transform: none; color: #94a3b8; }
+
+        .status-card { background: #fef2f2; border: 1px solid #fecaca; color: #ef4444; padding: 14px; border-radius: 14px; font-size: 13px; font-weight: 600; margin-bottom: 20px; display: none; line-height: 1.5; }
+
+        /* 🚀 Active Requests List */
+        .my-list-title { margin: 35px 20px 15px; font-size: 16px; font-weight: 900; color: var(--text-main); letter-spacing: -0.3px;}
+        
+        .req-card { 
+            background: white; margin: 0 20px 15px; padding: 18px; border-radius: 20px; 
+            border: 1px solid #f1f5f9; display: flex; justify-content: space-between; 
+            align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+        .req-title { font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 6px; }
+        .req-meta { font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 8px; display: flex; align-items: center; gap: 6px;}
+        .req-budget { font-size: 14px; font-weight: 900; color: #10b981; }
+        
+        .del-btn { 
+            background: #fee2e2; color: #ef4444; border: 1px solid #fecaca; padding: 10px 15px; 
+            border-radius: 12px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; 
+            display: flex; align-items: center; gap: 6px;
+        }
         .del-btn:active { transform: scale(0.9); }
 
         /* ========================================= */
         /* 🌙 DARK MODE FIXES FOR REQUESTS PAGE      */
         /* ========================================= */
         body.dark-mode { background-color: #020617 !important; }
-        body.dark-mode .app-container { background: #0f172a !important; }
+        body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;}
         
-        body.dark-mode .header { background: #1e293b !important; border-bottom-color: #334155 !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; }
-        body.dark-mode .page-title, body.dark-mode .fa-arrow-left { color: #f1f5f9 !important; }
+        body.dark-mode .header { background: rgba(15, 23, 42, 0.95) !important; border-bottom-color: #334155 !important; }
+        body.dark-mode .page-title { color: #f1f5f9 !important; }
+        body.dark-mode .back-btn { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important;}
+        body.dark-mode .back-btn:active { background: #334155 !important; }
         
         body.dark-mode .request-box { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important; }
         body.dark-mode .request-header { color: #f1f5f9 !important; }
         
         body.dark-mode .form-label { color: #cbd5e1 !important; }
         body.dark-mode .form-input { background: #0f172a !important; color: #f1f5f9 !important; border-color: #334155 !important; }
-        body.dark-mode .form-input:focus { border-color: var(--brand-color) !important; }
+        body.dark-mode .form-input:focus { border-color: var(--brand-color) !important; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.15) !important;}
         
         body.dark-mode .image-upload-wrapper { background: #0f172a !important; border-color: #334155 !important; }
-        body.dark-mode .image-upload-wrapper:hover { border-color: var(--brand-color) !important; background: rgba(255, 122, 0, 0.1) !important; }
+        body.dark-mode .image-upload-wrapper:hover, body.dark-mode .image-upload-wrapper:focus-within { border-color: var(--brand-color) !important; background: rgba(255, 122, 0, 0.1) !important; }
         body.dark-mode .image-upload-wrapper div { color: #94a3b8 !important; }
         
-        body.dark-mode .submit-btn:disabled { background: #334155 !important; color: #64748b !important; }
+        body.dark-mode .submit-btn:disabled { background: #334155 !important; color: #64748b !important; box-shadow: none !important;}
         
         body.dark-mode .status-card { background: rgba(239, 68, 68, 0.1) !important; border-color: #ef4444 !important; color: #fca5a5 !important; }
         
         body.dark-mode .my-list-title { color: #f1f5f9 !important; }
         
-        body.dark-mode .req-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .req-card { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 8px 25px rgba(0,0,0,0.3) !important;}
         body.dark-mode .req-title { color: #f1f5f9 !important; }
         body.dark-mode .req-meta { color: #94a3b8 !important; }
         body.dark-mode .req-budget { color: #34d399 !important; }
         
-        body.dark-mode .del-btn { background: rgba(239, 68, 68, 0.1) !important; border-color: #ef4444 !important; color: #fca5a5 !important; }
+        body.dark-mode .del-btn { background: rgba(239, 68, 68, 0.1) !important; border-color: rgba(239, 68, 68, 0.3) !important; color: #fca5a5 !important; }
     </style>
 </head>
 <body>
+    <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
 
     <div class="app-container">
         
-        <div class="header" style="position: sticky; top: 0; z-index: 100; background: white; border-bottom: 1px solid #f1f5f9; padding: 15px 20px;">
+        <div class="header">
             <div class="header-top-flex">
-                <button onclick="window.history.back()" style="background:none; border:none; font-size:20px; color:var(--text-main); cursor:pointer;"><i class="fas fa-arrow-left"></i></button>
+                <!-- 🚀 SMART BACK BUTTON -->
+                <button onclick="smartBack(event)" class="back-btn"><i class="fas fa-arrow-left"></i></button>
                 <h1 class="page-title">Buyer Requests</h1>
             </div>
         </div>
 
-        <div class="content-area" style="padding: 0 0 90px 0;">
+        <div class="content-area">
             
             <div class="request-box">
-                <div class="request-header"><i class="fas fa-bullhorn" style="color: var(--brand-color);"></i> Post a Request</div>
+                <div class="request-header">
+                    <div style="background: rgba(255, 122, 0, 0.1); width: 35px; height: 35px; border-radius: 10px; display: flex; justify-content: center; align-items: center;">
+                        <i class="fas fa-bullhorn" style="color: var(--brand-color);"></i>
+                    </div>
+                    Post a Request
+                </div>
                 
                 <div id="limit-warning" class="status-card"></div>
 
@@ -135,20 +224,20 @@
 
                     <div class="form-group">
                         <label class="form-label">Extra Details</label>
-                        <textarea id="r-desc" class="form-input" style="height: 80px; resize: none;" placeholder="Any specific color, battery health, or condition?" required></textarea>
+                        <textarea id="r-desc" class="form-input" style="height: 100px; resize: none;" placeholder="Any specific color, battery health, or condition?" required></textarea>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label">Add a Reference Image (Optional)</label>
                         <div class="image-upload-wrapper" onclick="document.getElementById('r-image').click()">
-                            <i class="fas fa-camera" style="font-size: 24px; color: #94a3b8; margin-bottom: 8px;"></i>
-                            <div style="font-size: 12px; color: #64748b; font-weight: bold;">Tap to upload an image</div>
+                            <i class="fas fa-camera" style="font-size: 28px; color: #94a3b8; margin-bottom: 10px;"></i>
+                            <div style="font-size: 13px; color: #64748b; font-weight: 600;">Tap to upload an image</div>
                             <input type="file" id="r-image" accept="image/*" style="display: none;" onchange="previewImage(event)">
                             <img id="img-preview" class="image-preview" src="">
                         </div>
                     </div>
 
-                    <button type="submit" id="submitBtn" class="submit-btn">Broadcast to Vendors</button>
+                    <button type="submit" id="submitBtn" class="submit-btn"><i class="fas fa-paper-plane"></i> Broadcast to Vendors</button>
                 </form>
             </div>
 
@@ -184,6 +273,22 @@
 
         let currentUser = null;
         let selectedFile = null;
+
+        // 🚀 SMART BACK BUTTON LOGIC
+        function getSmartRedirectUrl() {
+            const referrer = document.referrer;
+            const currentWebsite = window.location.origin;
+
+            if (referrer && referrer.startsWith(currentWebsite) && !referrer.includes('/login/') && !referrer.includes('/reset-password/')) {
+                return referrer; 
+            }
+            return "../index.html"; 
+        }
+
+        window.smartBack = function(event) {
+            if (event) event.preventDefault();
+            window.location.href = getSmartRedirectUrl();
+        }
 
         // 🛡️ XSS Sanitizers
         function escapeHTML(str) {
@@ -238,7 +343,7 @@
             const warning = document.getElementById('limit-warning');
             const btn = document.getElementById('submitBtn');
             
-            list.innerHTML = "<p style='text-align:center; font-size:12px; color:#94a3b8;'>Loading...</p>";
+            list.innerHTML = "<p style='text-align:center; font-size:13px; color:#94a3b8; font-weight: 500;'>Loading...</p>";
 
             try {
                 const { data, error } = await supabaseClient
@@ -265,11 +370,11 @@
                 }
 
                 if (activeRequests.length >= 2) {
-                    warning.innerHTML = "<i class='fas fa-exclamation-circle'></i> You have reached the maximum limit of 2 active requests. Please delete one before posting a new one.";
+                    warning.innerHTML = "<i class='fas fa-exclamation-circle' style='margin-right: 5px;'></i> You have reached the maximum limit of 2 active requests. Please delete one before posting a new one.";
                     warning.style.display = "block";
                     btn.disabled = true;
                 } else if (!canPostTime) {
-                    warning.innerHTML = `<i class='fas fa-clock'></i> You can only post one request every 24 hours to prevent spam. You can post again in <b>${hoursLeft} hours</b>.`;
+                    warning.innerHTML = `<i class='fas fa-clock' style='margin-right: 5px;'></i> You can only post one request every 24 hours to prevent spam. You can post again in <b>${hoursLeft} hours</b>.`;
                     warning.style.display = "block";
                     btn.disabled = true;
                 } else {
@@ -278,7 +383,7 @@
                 }
 
                 if (activeRequests.length === 0) {
-                    list.innerHTML = "<p style='text-align:center; font-size:12px; color:#94a3b8;'>You have no active requests.</p>";
+                    list.innerHTML = "<p style='text-align:center; font-size:13px; color:#94a3b8; font-weight: 500; padding: 20px;'>You have no active requests.</p>";
                     return;
                 }
 
@@ -286,16 +391,16 @@
                 activeRequests.forEach(r => {
                     const fPrice = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(r.budget);
                     
-                    // 🛡️ Apply Sanitization to outputs
+                    // 🛡️ Apply Sanitization
                     const safeName = escapeHTML(r.product_name);
                     const safeCat = escapeHTML(r.category);
                     const safeIdJS = escapeJS(r.id);
 
                     list.innerHTML += `
                         <div class="req-card">
-                            <div>
+                            <div style="flex: 1; min-width: 0; padding-right: 15px;">
                                 <div class="req-title">${safeName}</div>
-                                <div class="req-meta"><i class="fas fa-tag"></i> ${safeCat}</div>
+                                <div class="req-meta"><i class="fas fa-tag" style="color: var(--brand-color);"></i> ${safeCat}</div>
                                 <div class="req-budget">Budget: ${fPrice}</div>
                             </div>
                             <button class="del-btn" onclick="deleteRequest('${safeIdJS}')"><i class="fas fa-trash"></i> Delete</button>
@@ -312,13 +417,13 @@
             e.preventDefault();
             const btn = document.getElementById('submitBtn');
             
-            btn.innerText = "Processing...";
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
             btn.disabled = true;
 
             try {
                 let uploadedImageUrl = null;
                 if (selectedFile) {
-                    btn.innerText = "Uploading Image...";
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading Image...';
                     uploadedImageUrl = await uploadToCloudinary(selectedFile);
                 }
 
@@ -331,12 +436,12 @@
                     image_url: uploadedImageUrl 
                 };
 
-                btn.innerText = "Saving Request...";
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving Request...';
                 
                 const { error: insertErr } = await supabaseClient.from('requests').insert([reqData]);
                 if (insertErr) throw insertErr;
 
-                btn.innerText = "Notifying Vendors...";
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Notifying Vendors...';
                 
                 const { data: vendors } = await supabaseClient
                     .from('vendors')
@@ -362,14 +467,14 @@
                 document.getElementById('requestForm').reset();
                 document.getElementById('img-preview').style.display = 'none';
                 selectedFile = null;
-                btn.innerText = "Broadcast to Vendors";
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Broadcast to Vendors';
                 checkLimitsAndLoad(); 
 
             } catch (error) {
                 alert("Failed to post request.");
                 console.error(error);
                 btn.disabled = false;
-                btn.innerText = "Broadcast to Vendors";
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Broadcast to Vendors';
             }
         }
 
@@ -384,4 +489,4 @@
         }
     </script>
 </body>
-</html> 
+</html>

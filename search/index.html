@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
+     <script>
         window.location.replace("../coming-soon/");
     </script>
     <meta charset="UTF-8">
@@ -17,46 +17,111 @@
     <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 
     <style>
-        .search-header-row { display: flex; align-items: center; gap: 15px; width: 100%; }
-        .search-input-wrapper { flex: 1; background: #f1f5f9; border-radius: 12px; display: flex; align-items: center; padding: 10px 15px; margin: 0; }
-        
-        .search-input-wrapper input[type="search"] { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; color: var(--text-main); -webkit-appearance: none; }
-        .search-input-wrapper i { color: #94a3b8; margin-right: 10px; cursor: pointer; }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
 
+        /* 🚀 Reset & Variables */
+        * { box-sizing: border-box; }
+        :root {
+            --brand-color: #FF7A00; 
+            --brand-gradient: linear-gradient(135deg, #FF7A00, #ea580c);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #e2e8f0; 
+            margin: 0; padding: 0; 
+            display: flex; justify-content: center; min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        .app-container {
+            background: #f8fafc; width: 100%; max-width: 480px; min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1); display: flex; flex-direction: column;
+            position: relative;
+        }
+
+        /* 🚀 Glassmorphic Header & Search Bar */
+        .header {
+            background: rgba(255, 255, 255, 0.9); padding: 15px 20px;
+            position: sticky; top: 0; z-index: 100;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+        
+        .search-header-row { display: flex; align-items: center; gap: 15px; width: 100%; }
+        .back-btn { background: white; color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid #e2e8f0; font-size: 16px; cursor: pointer; transition: 0.2s; flex-shrink: 0;}
+        .back-btn:active { transform: scale(0.9); background: #f1f5f9; }
+
+        .search-input-wrapper { 
+            flex: 1; background: #f1f5f9; border-radius: 20px; display: flex; 
+            align-items: center; padding: 12px 18px; margin: 0; border: 2px solid transparent; transition: 0.2s;
+        }
+        .search-input-wrapper:focus-within { border-color: var(--brand-color); background: white; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.1); }
+        .search-input-wrapper input[type="search"] { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; font-weight: 500; color: var(--text-main); font-family: inherit; -webkit-appearance: none; }
+        .search-input-wrapper i { color: #94a3b8; margin-right: 12px; cursor: pointer; font-size: 16px; }
+
+        /* 🚀 Filter Row */
         .filter-row { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr auto; 
-            gap: 8px; 
-            padding: 15px 20px 0; 
-            align-items: center; 
+            display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px; 
+            padding: 15px 20px 0; align-items: center; 
         }
         .filter-input { 
-            width: 100%; padding: 12px 10px; border: 1px solid #e2e8f0; 
-            border-radius: 8px; font-size: 13px; outline: none; 
-            background: white; box-sizing: border-box; 
+            width: 100%; padding: 12px 15px; border: 2px solid #e2e8f0; 
+            border-radius: 12px; font-size: 13px; font-weight: 600; outline: none; 
+            background: white; box-sizing: border-box; font-family: inherit; transition: 0.2s;
         }
-        .filter-input:focus { border-color: var(--brand-color); }
+        .filter-input:focus { border-color: var(--brand-color); box-shadow: 0 4px 10px rgba(255, 122, 0, 0.1);}
+        
         .filter-btn { 
             background: var(--text-main); color: white; border: none; 
-            border-radius: 8px; padding: 0 16px; height: 100%; min-height: 42px; 
-            font-weight: bold; font-size: 13px; cursor: pointer; transition: 0.2s; 
+            border-radius: 12px; padding: 0 20px; height: 100%; min-height: 44px; 
+            font-weight: 800; font-size: 13px; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
-        .filter-btn:active { transform: scale(0.95); }
+        .filter-btn:active { transform: scale(0.95); background: #334155;}
 
-        .result-count-text { font-size: 12px; color: var(--text-muted); font-weight: 600; margin-bottom: 15px; }
+        /* Typography & Layout */
+        .section-wrapper { padding: 0 20px; margin-top: 25px;}
+        .section-title { font-size: 18px; font-weight: 900; color: var(--text-main); letter-spacing: -0.3px; }
+        .result-count-text { font-size: 13px; color: var(--brand-color); font-weight: 700; margin-bottom: 15px; }
         
-        .empty-state { text-align: center; padding: 40px 20px; background: white; border-radius: 16px; border: 1px solid #f1f5f9; margin-bottom: 20px; }
-        .empty-state i { font-size: 40px; color: #cbd5e1; margin-bottom: 10px; }
-        .empty-state h3 { font-size: 15px; color: var(--text-main); margin-bottom: 5px; }
-        .empty-state p { font-size: 12px; color: var(--text-muted); }
+        /* 🚀 Empty State */
+        .empty-state { text-align: center; padding: 50px 20px; background: white; border-radius: 24px; border: 1px solid #e2e8f0; margin-bottom: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.02);}
+        .empty-state i { font-size: 45px; color: #cbd5e1; margin-bottom: 15px; }
+        .empty-state h3 { font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0 0 8px; letter-spacing: -0.5px;}
+        .empty-state p { font-size: 13px; font-weight: 500; color: var(--text-muted); margin: 0;}
+
+        /* 🚀 Grids & Cards */
+        .product-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
+        .card { 
+            background: white; border-radius: 18px; padding: 12px; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; 
+            cursor: pointer; transition: 0.2s; display: flex; flex-direction: column;
+        }
+        .card:active { transform: scale(0.97); background: #f8fafc; }
+        .card-img { width: 100%; height: 130px; object-fit: cover; border-radius: 12px; background: #eee; margin-bottom: 10px; }
+        .card-price { font-size: 15px; font-weight: 900; color: var(--brand-color); margin-bottom: 4px; }
+        .card-title { font-size: 13px; font-weight: 700; color: var(--text-main); line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .card-desc { font-size: 11px; color: var(--text-muted); font-weight: 600; margin-top: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+
+        /* 🚀 Full Width View All Buttons */
+        .full-width-btn {
+            display: flex; justify-content: center; align-items: center; width: 100%; 
+            background: white; color: var(--text-main); border: 2px solid #e2e8f0; 
+            font-weight: 800; font-size: 14px; padding: 16px; border-radius: 16px; 
+            text-decoration: none; margin-top: 20px; transition: 0.2s;
+        }
+        .full-width-btn:active { background: #f8fafc; border-color: var(--brand-color); color: var(--brand-color); transform: scale(0.98);}
 
         /* Skeletons */
-        .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px;}
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        .sk-card { background: white; border-radius: 16px; padding: 10px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; height: 100%; }
-        .sk-img { width: 100%; height: 140px; border-radius: 10px; margin-bottom: 10px; flex-shrink: 0; }
-        .sk-v-avatar { width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 10px; flex-shrink: 0; }
-        .sk-line { height: 12px; border-radius: 4px; margin-bottom: 8px; }
+        .sk-card { background: white; border-radius: 18px; padding: 12px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; height: 100%; }
+        .sk-img { width: 100%; height: 130px; border-radius: 12px; margin-bottom: 12px; flex-shrink: 0; }
+        .sk-v-avatar { width: 70px; height: 70px; border-radius: 50%; margin: 10px auto 15px; flex-shrink: 0; }
+        .sk-line { height: 14px; border-radius: 6px; margin-bottom: 8px; }
         .sk-line.short { width: 40%; }
         .sk-line.medium { width: 70%; }
         .sk-line.long { width: 100%; }
@@ -65,39 +130,48 @@
         /* 🌙 DARK MODE FIXES FOR SEARCH PAGE        */
         /* ========================================= */
         body.dark-mode { background-color: #020617 !important; }
-        body.dark-mode .app-container { background: #0f172a !important; }
+        body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;}
         
-        body.dark-mode .header { background: #1e293b !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; }
-        body.dark-mode .fa-arrow-left { color: #f1f5f9 !important; }
+        body.dark-mode .header { background: rgba(15, 23, 42, 0.95) !important; border-bottom-color: #334155 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .back-btn { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important;}
+        body.dark-mode .back-btn:active { background: #334155 !important; }
         
-        body.dark-mode .search-input-wrapper { background: #0f172a !important; border: 1px solid #334155 !important; }
+        body.dark-mode .search-input-wrapper { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .search-input-wrapper:focus-within { border-color: var(--brand-color) !important; }
         body.dark-mode .search-input-wrapper input { color: #f1f5f9 !important; }
         
         body.dark-mode .filter-input { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
         body.dark-mode .filter-input:focus { border-color: var(--brand-color) !important; }
-        body.dark-mode .filter-btn { background: var(--brand-color) !important; }
+        body.dark-mode .filter-btn { background: #f1f5f9 !important; color: #0f172a !important; }
+        body.dark-mode .filter-btn:active { background: #cbd5e1 !important; }
         
         body.dark-mode .section-title { color: #f1f5f9 !important; }
-        body.dark-mode .result-count-text { color: #94a3b8 !important; }
         
         body.dark-mode .empty-state { background: #1e293b !important; border-color: #334155 !important; }
         body.dark-mode .empty-state h3 { color: #f1f5f9 !important; }
         body.dark-mode .empty-state p { color: #94a3b8 !important; }
         body.dark-mode .empty-state i { color: #334155 !important; }
         
-        body.dark-mode .card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .card { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 8px 25px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .card:active { background: #334155 !important; }
         body.dark-mode .card-title { color: #f1f5f9 !important; }
+        body.dark-mode .card-desc { color: #94a3b8 !important; }
         
+        body.dark-mode .full-width-btn { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+        body.dark-mode .full-width-btn:active { background: #334155 !important; border-color: var(--brand-color) !important; color: var(--brand-color) !important; }
+
         body.dark-mode .sk-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .sk-shimmer { background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%) !important; background-size: 200% 100% !important; }
     </style>
 </head>
 <body>
+    <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
 
     <div class="app-container">
         
         <div class="header">
             <div class="search-header-row">
-                <button onclick="window.history.back()" style="background:none; border:none; font-size:20px; color:var(--text-main); cursor:pointer;"><i class="fas fa-arrow-left"></i></button>
+                <button onclick="window.history.back()" class="back-btn"><i class="fas fa-arrow-left"></i></button>
                 
                 <form class="search-input-wrapper" action="#" onsubmit="return triggerSearch(event)">
                     <i class="fas fa-search" onclick="triggerSearch(event)"></i>
@@ -112,70 +186,55 @@
             <button class="filter-btn" onclick="applyFilters()">Filter</button>
         </div>
 
-        <div class="content-area" style="padding: 15px 0 110px 0;">
+        <div class="content-area" style="padding-bottom: 110px;">
             
             <div class="section-wrapper" id="items-section">
-                <div class="section-header" style="margin-bottom: 5px;">
-                    <div class="section-title">Matched Items</div>
-                </div>
+                <div class="section-title">Matched Items</div>
                 <div class="result-count-text" id="items-count">Searching...</div>
                 
                 <div class="product-grid" id="matched-items-grid">
+                    <!-- Skeletons -->
                     <div class="sk-card"><div class="sk-shimmer sk-img"></div><div class="sk-shimmer sk-line short"></div><div class="sk-shimmer sk-line long"></div><div class="sk-shimmer sk-line medium"></div></div>
                     <div class="sk-card"><div class="sk-shimmer sk-img"></div><div class="sk-shimmer sk-line short"></div><div class="sk-shimmer sk-line long"></div><div class="sk-shimmer sk-line medium"></div></div>
                 </div>
             </div>
 
             <div class="section-wrapper" id="vendors-section">
-                <div class="section-header" style="margin-bottom: 5px;">
-                    <div class="section-title">Matched Vendors</div>
-                </div>
+                <div class="section-title">Matched Vendors</div>
                 <div class="result-count-text" id="vendors-count">Searching...</div>
                 
                 <div class="product-grid" id="matched-vendors-grid">
+                    <!-- Skeletons -->
                     <div class="sk-card" style="align-items: center;"><div class="sk-shimmer sk-v-avatar"></div><div class="sk-shimmer sk-line medium"></div><div class="sk-shimmer sk-line short"></div></div>
                     <div class="sk-card" style="align-items: center;"><div class="sk-shimmer sk-v-avatar"></div><div class="sk-shimmer sk-line medium"></div><div class="sk-shimmer sk-line short"></div></div>
                 </div>
             </div>
 
-            <hr style="border: 0; border-top: 4px solid #f1f5f9; margin: 10px 0 30px;">
+            <hr style="border: 0; border-top: 4px solid #e2e8f0; margin: 30px 20px;">
 
             <div class="section-wrapper">
-                <div class="section-header">
-                    <div class="section-title">Explore More Items</div>
-                    <a href="../items/index.html" class="see-all">See all</a>
-                </div>
+                <div class="section-title" style="margin-bottom: 15px;">Explore More Items</div>
                 <div class="product-grid" id="explore-items-grid"></div>
+                <a href="../items/index.html" class="full-width-btn">Go to All Items</a>
             </div>
 
             <div class="section-wrapper">
-                <div class="section-header">
-                    <div class="section-title">Explore Vendors</div>
-                    <a href="../vendors/index.html" class="see-all">See all</a>
-                </div>
+                <div class="section-title" style="margin-bottom: 15px; margin-top: 15px;">Explore Vendors</div>
                 <div class="product-grid" id="explore-vendors-grid"></div>
+                <a href="../vendors/index.html" class="full-width-btn">Explore More Vendors</a>
             </div>
 
         </div>
 
         <div class="bottom-nav">
-            <a href="../index.html" class="nav-item">
-                <i class="fas fa-home"></i><span>Home</span>
-            </a>
+            <a href="../index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
             <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')">
                 <i class="fas fa-comment-dots"></i>
-                <span class="red-dot msg-dot"></span>
-                <span>Messages</span>
+                <span class="red-dot msg-dot"></span><span>Messages</span>
             </a>
-            <div class="nav-fab" onclick="requireLogin('../add-product/index.html')">
-                <i class="fas fa-plus"></i>
-            </div>
-            <a href="#" class="nav-item" onclick="requireLogin('../saved/index.html')">
-                <i class="fas fa-heart"></i><span>Saved</span>
-            </a>
-            <a href="#" class="nav-item" onclick="requireLogin('../account/index.html')">
-                <i class="fas fa-user"></i><span>Account</span>
-            </a>
+            <div class="nav-fab" onclick="requireLogin('../add-product/index.html')"><i class="fas fa-plus"></i></div>
+            <a href="#" class="nav-item" onclick="requireLogin('../saved/index.html')"><i class="fas fa-heart"></i><span>Saved</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../account/index.html')"><i class="fas fa-user"></i><span>Account</span></a>
         </div>
 
     </div>
@@ -230,6 +289,7 @@
             currentQuery = newQuery;
             executeSearch();
             
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             return false; 
         }
 
@@ -265,10 +325,11 @@
 
             renderVendorsGrid(matchedVendors, 'matched-vendors-grid', 'vendors-count');
 
-            const randomItems = shuffleArray([...allProducts]).slice(0, 10);
+            // 🚀 SMART RANDOMIZERS (30 Items, 14 Vendors)
+            const randomItems = shuffleArray([...allProducts]).slice(0, 30);
             renderItemsGrid(randomItems, 'explore-items-grid', null);
 
-            const randomVendors = shuffleArray([...allVendors]).slice(0, 6);
+            const randomVendors = shuffleArray([...allVendors]).slice(0, 14);
             renderVendorsGrid(randomVendors, 'explore-vendors-grid', null);
         }
 
@@ -297,7 +358,7 @@
                     <div class="card" onclick="window.location.href='../product/index.html?id=${escapeJS(p.id)}'">
                         <img src="${imgUrl}" class="card-img" onerror="this.src='https://via.placeholder.com/300'">
                         <div class="card-price">${fPrice}</div>
-                        <div class="card-text-fix">
+                        <div style="flex:1;">
                             <div class="card-title">${escapeHTML(p.name)}</div>
                             <div class="card-desc">${escapeHTML(p.category)}</div>
                         </div>
@@ -322,7 +383,7 @@
 
             grid.innerHTML = "";
             vendorsArray.forEach(v => {
-                const logo = escapeHTML(v.logo_url || "https://via.placeholder.com/100");
+                const logo = escapeHTML(v.logo_url || "https://via.placeholder.com/150");
                 const descTxt = escapeHTML(v.description ? v.description.substring(0, 25) + '...' : 'Verified Seller');
                 const safeName = escapeHTML(v.business_name);
 
@@ -332,12 +393,12 @@
 
                 grid.insertAdjacentHTML('beforeend', `
                     <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center; height: 100%;" onclick="window.location.href='../vendors/profile/index.html?id=${escapeJS(v.id)}'">
-                        <img src="${logo}" style="width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 10px; flex-shrink: 0; object-fit: cover;" onerror="this.src='https://via.placeholder.com/100'">
-                        <div class="card-text-fix" style="width: 100%;">
-                            <div class="card-title" style="font-size: 13px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                                ${safeName} <i class="fas fa-check-circle" style="color: ${badgeColor};"></i>
+                        <img src="${logo}" style="width: 75px; height: 75px; border-radius: 50%; margin: 10px auto 15px; flex-shrink: 0; object-fit: cover; border: 1px solid #e2e8f0; box-shadow: 0 4px 10px rgba(0,0,0,0.05);" onerror="this.src='https://via.placeholder.com/150'">
+                        <div style="width: 100%; flex: 1;">
+                            <div class="card-title" style="font-size: 14px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px;">
+                                ${safeName} <i class="fas fa-check-circle" style="color: ${badgeColor}; font-size: 12px;"></i>
                             </div>
-                            <div class="card-desc" style="margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${descTxt}</div>
+                            <div class="card-desc" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${descTxt}</div>
                         </div>
                     </div>
                 `);
