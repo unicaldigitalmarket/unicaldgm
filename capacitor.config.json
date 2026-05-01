@@ -1,5 +1,10 @@
 {
   "appId": "com.unicaldgm.app",
-  "appName": "Unical Digital Market",
-  "webDir": "www"
+  "appName": "UNICAL Market",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "url": "https://unicaldgm.com.ng",
+    "cleartext": true
+  }
 }
