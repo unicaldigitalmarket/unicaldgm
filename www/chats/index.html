@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        window.location.replace("../coming-soon/");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chat | UNICAL Market</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+    <meta name="theme-color" content="#FF7A00">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../192.png" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+
+    <style>
+       /* 🚀 FIX: Using 100dvh (Dynamic Viewport Height) locks it perfectly to the mobile screen */
+        body, html { 
+            height: 100dvh; 
+            margin: 0; padding: 0; 
+            background: #f8fafc; 
+            overflow: hidden; /* Stops the whole screen from scrolling */
+        }
+        
+        .chat-container { 
+            display: flex; 
+            flex-direction: column; 
+            height: 100dvh; /* Forces exact fit */
+            width: 100%;
+            max-width: 480px; 
+            margin: 0 auto; 
+            background: white; 
+            box-shadow: 0 0 20px rgba(0,0,0,0.05); 
+            position: relative;
+            overflow: hidden; /* Keeps everything inside */
+        }
+        
+        /* Header */
+        .chat-header { 
+            background: white; padding: 15px 20px; display: flex; align-items: center; 
+            border-bottom: 1px solid #e2e8f0; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.02); 
+            flex-shrink: 0; /* Prevents header from squishing */
+        }
+        .chat-title-area { margin-left: 15px; flex: 1; }
+        .chat-title { font-size: 16px; font-weight: 800; color: #1e293b; margin: 0 0 2px; }
+        .chat-subtitle { font-size: 12px; color: #2d8eff; font-weight: 600; }
+
+        /* Messages Area */
+        .chat-area { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 20px; 
+            background: #f8fafc; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+        }
+        
+        .disclaimer-box { background: #fffbeb; border: 1px solid #fde68a; color: #b45309; padding: 10px 15px; border-radius: 12px; font-size: 11px; text-align: center; margin-bottom: 10px; line-height: 1.5; }
+
+        /* Bubbles */
+        .msg-row { display: flex; flex-direction: column; max-width: 85%; }
+        .msg-row.me { align-self: flex-end; align-items: flex-end; }
+        .msg-row.them { align-self: flex-start; align-items: flex-start; }
+        
+        .bubble { padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.5; word-wrap: break-word; position: relative; }
+        .me .bubble { background: #2d8eff; color: white; border-bottom-right-radius: 4px; }
+        .them .bubble { background: white; color: #1e293b; border-bottom-left-radius: 4px; border: 1px solid #e2e8f0; }
+        .auto-msg .bubble { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; font-size: 13px; font-style: italic; border-bottom-right-radius: 4px; }
+        
+        .msg-img { max-width: 100%; border-radius: 12px; margin-bottom: 8px; cursor: pointer; }
+        .msg-time { font-size: 10px; color: #94a3b8; margin-top: 4px; }
+        .me .msg-time { color: #cbd5e1; text-align: right; }
+
+        /* 🚀 FIX: Added flex-shrink: 0 and safe-area padding for iPhone/Android screens */
+        .input-area { 
+            background: white; 
+            padding: 12px 15px; 
+            padding-bottom: calc(12px + env(safe-area-inset-bottom)); 
+            border-top: 1px solid #e2e8f0; 
+            display: flex; 
+            align-items: flex-end; 
+            gap: 10px; 
+            flex-shrink: 0; 
+        }
+        
+        .attach-btn { background: #f1f5f9; color: #64748b; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 18px; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; }
+        .msg-input { flex: 1; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 20px; padding: 12px 15px; font-size: 14px; outline: none; max-height: 100px; resize: none; font-family: inherit; }
+        .send-btn { background: #2d8eff; color: white; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 16px; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; transition: 0.2s; }
+        .send-btn:active { transform: scale(0.9); }
+        .send-btn:disabled { background: #cbd5e1; }
+
+        .img-preview-bar { display: none; padding: 10px 20px; background: #eff6ff; border-top: 1px solid #bfdbfe; align-items: center; justify-content: space-between; flex-shrink: 0; }
+        .img-preview-bar img { height: 40px; border-radius: 6px; }
+
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES FOR CHAT ROOM          */
+        /* ========================================= */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .chat-container { background: #0f172a !important; }
+        
+        body.dark-mode .chat-header { background: #1e293b !important; border-bottom-color: #334155 !important; }
+        body.dark-mode .chat-header button { color: #f1f5f9 !important; }
+        body.dark-mode .chat-title { color: #f1f5f9 !important; }
+        body.dark-mode .chat-subtitle { color: #60a5fa !important; }
+        
+        body.dark-mode .chat-area { background: #0f172a !important; }
+        
+        body.dark-mode .disclaimer-box { background: rgba(245, 158, 11, 0.1) !important; border-color: rgba(245, 158, 11, 0.3) !important; color: #fbbf24 !important; }
+        
+        body.dark-mode .them .bubble { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+        body.dark-mode .me .bubble { background: var(--brand-color, #FF7A00) !important; color: white !important; }
+        body.dark-mode .auto-msg .bubble { background: rgba(16, 185, 129, 0.1) !important; color: #34d399 !important; border-color: #10b981 !important; }
+        
+        body.dark-mode .msg-time { color: #64748b !important; }
+        body.dark-mode .me .msg-time { color: #94a3b8 !important; }
+
+        body.dark-mode .input-area { background: #1e293b !important; border-top-color: #334155 !important; }
+        body.dark-mode .msg-input { background: #0f172a !important; border-color: #334155 !important; color: #f1f5f9 !important; }
+        body.dark-mode .msg-input::placeholder { color: #64748b !important; }
+        
+        body.dark-mode .attach-btn { background: #0f172a !important; color: #94a3b8 !important; }
+        body.dark-mode .send-btn { background: var(--brand-color, #FF7A00) !important; }
+        body.dark-mode .send-btn:disabled { background: #334155 !important; color: #64748b !important; }
+
+        body.dark-mode .img-preview-bar { background: #1e293b !important; border-top-color: #334155 !important; }
+        body.dark-mode .img-preview-bar span { color: #f1f5f9 !important; }
+    </style>
+</head>
+<body>
+
+    <div class="chat-container">
+        
+        <div class="chat-header">
+            <button onclick="window.history.back()" style="background:none; border:none; font-size:20px; color:#1e293b; cursor:pointer;"><i class="fas fa-arrow-left"></i></button>
+            <div class="chat-title-area">
+                <div class="chat-title" id="head-name">Loading...</div>
+                <div class="chat-subtitle" id="head-product">...</div>
+            </div>
+        </div>
+
+        <div class="chat-area" id="chat-box">
+            <div class="disclaimer-box" id="disclaimer" style="display: none;">
+                <i class="fas fa-shield-alt"></i> Safety Notice: To help vendors contact you quickly, your registered name and phone number will be automatically sent when you send your first message.
+            </div>
+        </div>
+
+        <div class="img-preview-bar" id="img-preview-bar">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <img id="preview-img" src="">
+                <span style="font-size: 12px; color: #1e293b; font-weight: bold;">Image attached</span>
+            </div>
+            <button onclick="clearImage()" style="background:none; border:none; color:#ef4444; font-size:16px; cursor:pointer;"><i class="fas fa-times-circle"></i></button>
+        </div>
+
+        <div class="input-area">
+            <input type="file" id="file-input" accept="image/*" style="display: none;" onchange="handleImageSelect(event)">
+            <button class="attach-btn" onclick="document.getElementById('file-input').click()"><i class="fas fa-image"></i></button>
+            <textarea id="msg-input" class="msg-input" rows="1" placeholder="Type a message..."></textarea>
+            <button class="send-btn" id="send-btn" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
+        </div>
+
+    </div>
+
+    <script src="../asset/script.js"></script>
+
+    <script>
+        const EMAILJS_PUB_KEY = 'EhgRXY4ATiEQet7Pf'; 
+        const EMAILJS_SERVICE = 'service_1coj3hy';
+        const EMAILJS_VENDOR_TEMPLATE = 'template_iq7xyhr'; 
+        const EMAILJS_CUSTOMER_TEMPLATE = 'template_f5538gb'; 
+        emailjs.init(EMAILJS_PUB_KEY);
+
+        const CLOUD_NAME = "dj6yl36fq"; 
+        const UPLOAD_PRESET = "unical_chatsimg";
+
+        let currentUser = null;
+        let userProfile = null;
+        let currentChat = null;
+        let activeChatId = null;
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlChatId = urlParams.get('chat_id');
+        const urlProductId = urlParams.get('product_id');
+        const urlVendorId = urlParams.get('vendor_id');
+
+        let selectedImageFile = null;
+
+        // 🛡️ XSS Sanitizers
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+        function escapeJS(str) {
+            if (!str) return '';
+            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { window.location.href = "../login/index.html"; return; }
+            currentUser = session.user;
+
+            const { data: profile } = await supabaseClient.from('profiles').select('*').eq('id', currentUser.id).single();
+            userProfile = profile;
+
+            await initializeChat();
+        });
+
+        async function initializeChat() {
+            try {
+                if (urlChatId) {
+                    const { data: chat, error } = await supabaseClient
+                        .from('chats')
+                        .select('*, products(name)')
+                        .eq('id', urlChatId)
+                        .single();
+                        
+                    if (error) throw error;
+                    currentChat = chat;
+                    activeChatId = chat.id;
+
+                    const { data: customerProfile } = await supabaseClient
+                        .from('profiles')
+                        .select('full_name')
+                        .eq('id', chat.customer_id)
+                        .single();
+                    if (customerProfile) currentChat.customer_name = customerProfile.full_name;
+
+                } else if (urlProductId && urlVendorId) {
+                    const { data: chat } = await supabaseClient.from('chats')
+                        .select('*, products(name)')
+                        .eq('product_id', urlProductId)
+                        .eq('customer_id', currentUser.id)
+                        .maybeSingle();
+
+                    if (chat) {
+                        currentChat = chat;
+                        activeChatId = chat.id;
+                        
+                        const { data: customerProfile } = await supabaseClient
+                            .from('profiles')
+                            .select('full_name')
+                            .eq('id', chat.customer_id)
+                            .single();
+                        if (customerProfile) currentChat.customer_name = customerProfile.full_name;
+
+                    } else {
+                        document.getElementById('disclaimer').style.display = 'block';
+                        const { data: prod } = await supabaseClient.from('products').select('name').eq('id', urlProductId).single();
+                        if (prod) {
+                            document.getElementById('head-product').innerText = escapeHTML(prod.name);
+                        }
+                        document.getElementById('head-name').innerText = "Vendor";
+                    }
+                }
+
+                if (activeChatId) {
+                    setupHeader();
+                    await fetchMessages();
+                    subscribeToRealtime();
+                    
+                    let readUpdate = {};
+                    if (currentUser.id === currentChat.vendor_id) readUpdate = { unread_by_vendor: false };
+                    if (currentUser.id === currentChat.customer_id) readUpdate = { unread_by_customer: false };
+                    
+                    if (Object.keys(readUpdate).length > 0) {
+                        await supabaseClient.from('chats').update(readUpdate).eq('id', activeChatId);
+                    }
+                }
+
+            } catch (err) { console.error("Initialization Error:", err); }
+        }
+
+        function setupHeader() {
+            if (currentChat && currentChat.products && currentChat.products.name) {
+                document.getElementById('head-product').innerText = escapeHTML(currentChat.products.name);
+            }
+            
+            if (currentChat && currentUser.id === currentChat.vendor_id) {
+                document.getElementById('head-name').innerText = escapeHTML(currentChat.customer_name || "Customer");
+            } else {
+                document.getElementById('head-name').innerText = "Store Vendor";
+            }
+        }
+
+        async function fetchMessages() {
+            const { data: msgs } = await supabaseClient.from('messages').select('*').eq('chat_id', activeChatId).order('created_at', { ascending: true });
+            const box = document.getElementById('chat-box');
+            box.innerHTML = "";
+            msgs.forEach(msg => renderMessage(msg));
+            scrollToBottom();
+        }
+
+        function renderMessage(msg) {
+            const box = document.getElementById('chat-box');
+            const isMe = msg.sender_id === currentUser.id;
+            const rowClass = isMe ? 'me' : 'them';
+            const autoClass = msg.is_auto_message ? 'auto-msg' : '';
+            
+            let imgHTML = "";
+            if (msg.image_url) {
+                imgHTML = `<img src="${escapeHTML(msg.image_url)}" class="msg-img" onclick="window.open('${escapeJS(msg.image_url)}', '_blank')">`;
+            }
+
+            const timeString = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const safeText = msg.text ? `<div>${escapeHTML(msg.text).replace(/\n/g, '<br>')}</div>` : '';
+
+            box.insertAdjacentHTML('beforeend', `
+                <div class="msg-row ${rowClass} ${autoClass}">
+                    <div class="bubble">
+                        ${imgHTML}
+                        ${safeText}
+                    </div>
+                    <div class="msg-time">${timeString}</div>
+                </div>
+            `);
+        }
+
+        function scrollToBottom() {
+            const box = document.getElementById('chat-box');
+            box.scrollTop = box.scrollHeight;
+        }
+
+        function subscribeToRealtime() {
+            supabaseClient.channel('custom-all-channel')
+            .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `chat_id=eq.${activeChatId}` }, (payload) => {
+                if (payload.new.sender_id !== currentUser.id) {
+                    renderMessage(payload.new);
+                    scrollToBottom();
+                    
+                    let readUpdate = {};
+                    if (currentUser.id === currentChat.vendor_id) readUpdate = { unread_by_vendor: false };
+                    if (currentUser.id === currentChat.customer_id) readUpdate = { unread_by_customer: false };
+                    supabaseClient.from('chats').update(readUpdate).eq('id', activeChatId);
+                }
+            }).subscribe();
+        }
+
+        function handleImageSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            selectedImageFile = file;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                document.getElementById('preview-img').src = event.target.result;
+                document.getElementById('img-preview-bar').style.display = 'flex';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearImage() {
+            selectedImageFile = null;
+            document.getElementById('file-input').value = "";
+            document.getElementById('img-preview-bar').style.display = 'none';
+        }
+
+        async function uploadImageToCloudinary() {
+            const formData = new FormData();
+            formData.append('file', selectedImageFile);
+            formData.append('upload_preset', UPLOAD_PRESET);
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
+            const data = await res.json();
+            return data.secure_url;
+        }
+
+       async function sendMessage() {
+            const input = document.getElementById('msg-input');
+            const text = input.value.trim();
+            const btn = document.getElementById('send-btn');
+
+            if (!text && !selectedImageFile) return;
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+
+            try {
+                let imgUrl = null;
+                if (selectedImageFile) {
+                    imgUrl = await uploadImageToCloudinary();
+                    clearImage();
+                }
+
+                if (!activeChatId) {
+                    const { data: newChat, error: chatErr } = await supabaseClient.from('chats').insert([{
+                        product_id: urlProductId,
+                        customer_id: currentUser.id,
+                        vendor_id: urlVendorId,
+                        last_message_text: text || "Sent an image",
+                        unread_by_vendor: true
+                    }]).select().single();
+                    
+                    if(chatErr) throw chatErr;
+                    currentChat = newChat;
+                    activeChatId = newChat.id;
+                    
+                    document.getElementById('disclaimer').style.display = 'none';
+                    subscribeToRealtime();
+
+                    await insertMessage(text, imgUrl, false);
+
+                    const autoText = `System Auto-Contact Details:\nName: ${userProfile.full_name}\nPhone: ${userProfile.phone}`;
+                    await insertMessage(autoText, null, true);
+
+                    const { data: vendorData } = await supabaseClient.from('vendors').select('email').eq('profile_id', urlVendorId).single();
+                    if(vendorData && vendorData.email) {
+                        emailjs.send(EMAILJS_SERVICE, EMAILJS_VENDOR_TEMPLATE, { to_email: vendorData.email }).catch(err => console.error("Vendor Email failed:", err));
+                    }
+                } 
+                else {
+                    await insertMessage(text, imgUrl, false);
+                    
+                    const amIVendor = currentUser.id === currentChat.vendor_id;
+                    
+                    await supabaseClient.from('chats').update({ 
+                        last_message_text: text || "Sent an image", 
+                        last_message_time: new Date(),
+                        unread_by_customer: amIVendor ? true : false, 
+                        unread_by_vendor: !amIVendor ? true : false   
+                    }).eq('id', activeChatId);
+
+                    if (amIVendor && currentChat.vendor_has_replied === false) {
+                        await supabaseClient.from('chats').update({ vendor_has_replied: true }).eq('id', activeChatId);
+                        
+                        const { data: custEmail } = await supabaseClient.rpc('get_customer_email', { uid: currentChat.customer_id });
+                        if(custEmail) {
+                            emailjs.send(EMAILJS_SERVICE, EMAILJS_CUSTOMER_TEMPLATE, { to_email: custEmail }).catch(err => console.error("Customer Email failed:", err));
+                        }
+                    }
+                }
+
+                input.value = "";
+
+            } catch (err) {
+                console.error(err);
+                alert("Failed to send message");
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i>';
+            }
+        }
+        
+        async function insertMessage(text, imgUrl, isAuto) {
+            const msgData = {
+                chat_id: activeChatId,
+                sender_id: currentUser.id,
+                text: text, // Raw text saved to DB (Escaped when rendering!)
+                image_url: imgUrl,
+                is_auto_message: isAuto
+            };
+            
+            const tempMsg = { ...msgData, created_at: new Date().toISOString() };
+            renderMessage(tempMsg);
+            scrollToBottom();
+
+            await supabaseClient.from('messages').insert([msgData]);
+        }
+    </script>
+</body>
+</html>

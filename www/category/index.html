@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <script>
+        window.location.replace("../coming-soon/");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>All Categories | UNICAL Market</title>
+    
+    <meta name="description" content="Explore product and service categories on UNICAL Digital Market. Find exactly what you need from student vendors at the University of Calabar.">
+    <meta name="keywords" content="UNICAL market categories, Calabar student market directory, UnicalDGM categories">
+    <meta name="author" content="UnicalDGM">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://unicaldgm.com.ng/category/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://unicaldgm.com.ng/category/">
+    <meta property="og:title" content="Market Categories | UNICAL Digital Market">
+    <meta property="og:description" content="Quickly find products, services, food, and more on campus.">
+    <meta property="og:image" content="https://unicaldgm.com.ng/512.png">
+
+    <meta name="theme-color" content="#FF7A00">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../192.png" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+
+    <style>
+        /* 🚀 NEW: 3D Emoji Drop Shadow for the List View */
+        .list-emoji {
+            font-size: 26px;
+            line-height: 1;
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+        }
+
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES FOR CATEGORY PAGE      */
+        /* ========================================= */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;}
+        body.dark-mode .header { background: #1e293b !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; }
+        
+        body.dark-mode .logo, 
+        body.dark-mode .back-btn,
+        body.dark-mode .full-cat-title { color: #f1f5f9 !important; }
+        
+        body.dark-mode .full-cat-item { background: #1e293b !important; border-color: #334155 !important; box-shadow: none !important; }
+        body.dark-mode .full-cat-item:active { background: #334155 !important; }
+        body.dark-mode .full-cat-desc { color: #94a3b8 !important; }
+        body.dark-mode .fa-chevron-right { color: #475569 !important; }
+        body.dark-mode .full-cat-icon { background: #0f172a !important; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <div class="header" style="display: flex; align-items: center; gap: 15px; padding-bottom: 15px;">
+            <a href="../index.html" class="back-btn" style="color: var(--text-main); font-size: 20px;"><i class="fas fa-arrow-left"></i></a>
+            <h1 class="logo" style="margin: 0; font-size: 18px;">All Categories</h1>
+        </div>
+
+        <div class="content-area" style="padding: 10px 20px 110px;">
+            
+            <div class="full-cat-list">
+                
+                <a href="../items/index.html?cat=Gadgets" class="full-cat-item">
+                    <div class="full-cat-icon" style="background: #eff6ff;"><span class="list-emoji">💻</span></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Gadgets</div>
+                        <div class="full-cat-desc">Phones, Laptops, Computers, Accessories</div>
+                    </div>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+
+                <a href="../items/index.html?cat=Fashion" class="full-cat-item">
+                    <div class="full-cat-icon" style="background: #fdf2f8;"><span class="list-emoji">👗</span></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Fashion & Clothing</div>
+                        <div class="full-cat-desc">Shirts, Dresses, Shoes, Bags, Jewelry</div>
+                    </div>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+
+                <a href="../items/index.html?cat=Food" class="full-cat-item">
+                    <div class="full-cat-icon" style="background: #fffbeb;"><span class="list-emoji">🍔</span></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Food & Pastries</div>
+                        <div class="full-cat-desc">Fast food, Snacks, Cakes, Drinks</div>
+                    </div>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+
+                <a href="../items/index.html?cat=Transport" class="full-cat-item">
+                    <div class="full-cat-icon" style="background: #fefce8;"><span class="list-emoji">🛵</span></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Transport & Delivery</div>
+                        <div class="full-cat-desc">Bike/Keke Rides, Delivery, Logistics</div>
+                    </div>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+
+                <a href="../items/index.html?cat=Beauty" class="full-cat-item">
+                    <div class="full-cat-icon" style="background: #fff1f2;"><span class="list-emoji">💄</span></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Beauty & Personal Care</div>
+                        <div class="full-cat-desc">Skincare, Makeup, Hair, Fragrances</div>
+                    </div>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+
+                <a href="../items/index.html?cat=Health" class="full-cat-item">
+                    <div class="full-cat-icon" style="background: #ecfdf5;"><span class="list-emoji">💊</span></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Health & Wellness</div>
+                        <div class="full-cat-desc">Pharmacy, Supplements, Fitness, First aid</div>
+                    </div>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+
+                <a href="../items/index.html?cat=CampusServices" class="full-cat-item">
+                    <div class="full-cat-icon" style="background: #d1fae5;"><span class="list-emoji">🖨️</span></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Campus Services</div>
+                        <div class="full-cat-desc">Printing, Typing, Errands, Laundry</div>
+                    </div>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+
+                <a href="../items/index.html?cat=Professional" class="full-cat-item">
+                    <div class="full-cat-icon" style="background: #dbeafe;"><span class="list-emoji">💼</span></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Professional Services</div>
+                        <div class="full-cat-desc">Graphics, Web Design, CV Writing, Media</div>
+                    </div>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+
+                <a href="../items/index.html?cat=Tutorials" class="full-cat-item">
+                    <div class="full-cat-icon" style="background: #f3e8ff;"><span class="list-emoji">🎓</span></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Tutorials & Learning</div>
+                        <div class="full-cat-desc">Academics, Skills, Tech, Exam Prep</div>
+                    </div>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+
+                <a href="../items/index.html?cat=Books" class="full-cat-item">
+                    <div class="full-cat-icon" style="background: #eef2ff;"><span class="list-emoji">📚</span></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Books & Study Materials</div>
+                        <div class="full-cat-desc">Textbooks, Past Questions, Handouts</div>
+                    </div>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+
+                <a href="../items/index.html?cat=Accommodation" class="full-cat-item">
+                    <div class="full-cat-icon" style="background: #ccfbf1;"><span class="list-emoji">🏠</span></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Accommodation</div>
+                        <div class="full-cat-desc">Hostels, Roommates wanted, Lodges</div>
+                    </div>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+
+                <a href="../items/index.html?cat=Electronics" class="full-cat-item">
+                    <div class="full-cat-icon" style="background: #f0f9ff;"><span class="list-emoji">📺</span></div>
+                    <div class="full-cat-text">
+                        <div class="full-cat-title">Electronics</div>
+                        <div class="full-cat-desc">Fans, TVs, Irons, Generators</div>
+                    </div>
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <a href="../index.html" class="nav-item">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </a>
+            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')">
+                <i class="fas fa-comment-dots"></i>
+                <span class="red-dot msg-dot"></span>
+                <span>Messages</span>
+            </a>
+            <div class="nav-fab" onclick="requireLogin('../add-product/index.html')">
+                <i class="fas fa-plus"></i>
+            </div>
+            <a href="#" class="nav-item" onclick="requireLogin('../saved/index.html')">
+                <i class="fas fa-heart"></i>
+                <span>Saved</span>
+            </a>
+            <a href="#" class="nav-item" onclick="requireLogin('../account/index.html')">
+                <i class="fas fa-user"></i>
+                <span>Account</span>
+            </a>
+        </div>
+
+    </div>
+
+    <script src="../asset/script.js"></script>
+
+    <script>
+        async function requireLogin(targetUrl) {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) {
+                window.location.href = targetUrl;
+            } else {
+                window.location.href = "../login/";
+            }
+        }
+    </script>
+</body>
+</html>

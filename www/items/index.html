@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        window.location.replace("../coming-soon/");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>All Items | UNICAL Market</title>
+    
+    <meta name="description" content="Browse all products and services available on UNICAL Digital Market. Discover amazing deals from verified student vendors at the University of Calabar.">
+    <meta name="keywords" content="UNICAL market items, buy products UNICAL, student services Calabar, UnicalDGM shopping, campus deals">
+    <meta name="author" content="UnicalDGM">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://unicaldgm.com.ng/items/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://unicaldgm.com.ng/items/">
+    <meta property="og:title" content="Explore All Items | UNICAL Digital Market">
+    <meta property="og:description" content="Browse hundreds of products and services posted by verified UNICAL students.">
+    <meta property="og:image" content="https://unicaldgm.com.ng/512.png">
+
+    <meta name="theme-color" content="#FF7A00">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../192.png" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+
+    <style>
+        .header-top-flex { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; }
+        .page-title { font-size: 20px; font-weight: 800; color: var(--text-main); margin: 0; }
+        
+        .search-container { background: #f1f5f9; border-radius: 12px; display: flex; align-items: center; padding: 10px 15px; margin: 0; }
+        .search-container input[type="search"] { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; color: var(--text-main); -webkit-appearance: none; }
+        
+        .cat-filter-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 15px 20px; scrollbar-width: none; background: white; border-bottom: 1px solid #f1f5f9; }
+        .cat-filter-scroll::-webkit-scrollbar { display: none; }
+        .filter-pill { 
+            background: white; border: 1px solid #e2e8f0; padding: 8px 16px; border-radius: 20px; 
+            font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; white-space: nowrap; transition: 0.2s;
+        }
+        .filter-pill.active { background: var(--brand-color); color: white; border-color: var(--brand-color); }
+
+        .items-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 20px 20px 0; }
+
+        .product-card { background: white; border-radius: 16px; padding: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); cursor: pointer; border: 1px solid #f1f5f9; position: relative; }
+        .product-img { width: 100%; height: 150px; object-fit: cover; border-radius: 10px; background: #f8fafc; margin-bottom: 10px; }
+        .product-price { font-size: 16px; font-weight: 800; color: #FF7A00; margin-bottom: 4px; }
+        .product-title { font-size: 13px; font-weight: 600; color: var(--text-main); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .product-location { font-size: 10px; color: var(--text-muted); margin-top: 5px; display: flex; align-items: center; gap: 4px; }
+        .multi-img-badge { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); color: white; font-size: 10px; padding: 4px 8px; border-radius: 10px; backdrop-filter: blur(4px); font-weight: bold; }
+
+        .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        
+        .sk-card { background: white; border-radius: 16px; padding: 10px; border: 1px solid #f1f5f9; }
+        .sk-img { width: 100%; height: 150px; border-radius: 10px; margin-bottom: 10px; }
+        .sk-line-1 { width: 60%; height: 14px; border-radius: 4px; margin-bottom: 8px; }
+        .sk-line-2 { width: 90%; height: 12px; border-radius: 4px; margin-bottom: 6px; }
+        .sk-line-3 { width: 70%; height: 12px; border-radius: 4px; }
+
+        .end-message { text-align: center; padding: 30px 20px 40px; color: #94a3b8; font-size: 13px; font-weight: 600; display: none; }
+        .end-message i { font-size: 24px; color: #e2e8f0; margin-bottom: 8px; display: block; }
+
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES FOR ITEMS PAGE         */
+        /* ========================================= */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .app-container { background: #0f172a !important; }
+        body.dark-mode .header { background: #1e293b !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .page-title, body.dark-mode .fa-arrow-left { color: #f1f5f9 !important; }
+        
+        body.dark-mode .search-container { background: #0f172a !important; border: 1px solid #334155 !important; }
+        body.dark-mode .search-container input { color: #f1f5f9 !important; }
+        
+        body.dark-mode .cat-filter-scroll { background: #1e293b !important; border-bottom-color: #334155 !important; }
+        body.dark-mode .filter-pill { background: #0f172a !important; border-color: #334155 !important; color: #94a3b8 !important; }
+        body.dark-mode .filter-pill.active { background: var(--brand-color) !important; color: white !important; border-color: var(--brand-color) !important; }
+        
+        body.dark-mode .product-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .product-title { color: #f1f5f9 !important; }
+        body.dark-mode .product-img { background: #334155 !important; }
+        body.dark-mode .product-location { color: #94a3b8 !important; }
+        
+        body.dark-mode .end-message { color: #94a3b8 !important; }
+        body.dark-mode .end-message i { color: #334155 !important; }
+        body.dark-mode .sk-card { background: #1e293b !important; border-color: #334155 !important; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <div class="header">
+            <div class="header-top-flex">
+                <button onclick="window.history.back()" style="background:none; border:none; font-size:20px; color:var(--text-main); cursor:pointer;"><i class="fas fa-arrow-left"></i></button>
+                <h1 class="page-title">Explore Items</h1>
+            </div>
+            
+            <form class="search-container" action="#" onsubmit="return triggerSearch(event)">
+                <i class="fas fa-search" style="color: #94a3b8; margin-right: 10px;" onclick="triggerSearch(event)"></i>
+                <input type="search" id="item-search" placeholder="Search items, services, foods...">
+            </form>
+        </div>
+
+        <div class="cat-filter-scroll" id="category-filters">
+            <div class="filter-pill active" onclick="filterByCategory('All', this)">All</div>
+            <div class="filter-pill" onclick="filterByCategory('Gadgets', this)">Gadgets</div>
+            <div class="filter-pill" onclick="filterByCategory('Fashion', this)">Fashion</div>
+            <div class="filter-pill" onclick="filterByCategory('Food', this)">Food</div>
+            <div class="filter-pill" onclick="filterByCategory('Transport', this)">Transport</div>
+            <div class="filter-pill" onclick="filterByCategory('Beauty', this)">Beauty</div>
+            <div class="filter-pill" onclick="filterByCategory('Health', this)">Health</div>
+            <div class="filter-pill" onclick="filterByCategory('CampusServices', this)">Campus Services</div>
+            <div class="filter-pill" onclick="filterByCategory('Professional', this)">Professional</div>
+            <div class="filter-pill" onclick="filterByCategory('Tutorials', this)">Tutorials</div>
+            <div class="filter-pill" onclick="filterByCategory('Books', this)">Books</div>
+            <div class="filter-pill" onclick="filterByCategory('Accommodation', this)">Hostels</div>
+            <div class="filter-pill" onclick="filterByCategory('Electronics', this)">Electronics</div>
+        </div>
+
+        <div class="content-area" style="padding: 0 0 90px 0;">
+            
+            <div class="items-grid" id="main-items-grid"></div>
+
+            <div class="items-grid" id="skeleton-loader" style="padding-top: 12px; display: none;">
+                <div class="sk-card"><div class="sk-shimmer sk-img"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-img"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-img"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-img"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-img"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-img"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div></div>
+            </div>
+
+            <div id="scroll-sentinel" style="height: 1px; width: 100%;"></div>
+
+            <div class="end-message" id="end-message">
+                <i class="fas fa-check-circle"></i>
+                You've seen all items in this category.
+            </div>
+
+        </div>
+
+        <div class="bottom-nav">
+            <a href="../index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')">
+                <i class="fas fa-comment-dots"></i>
+                <span class="red-dot msg-dot"></span>
+                <span>Messages</span>
+            </a>
+            <div class="nav-fab" onclick="requireLogin('../add-product/index.html')"><i class="fas fa-plus"></i></div>
+            <a href="#" class="nav-item" onclick="requireLogin('../saved/index.html')"><i class="fas fa-heart"></i><span>Saved</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../account/index.html')"><i class="fas fa-user"></i><span>Account</span></a>
+        </div>
+
+    </div>
+
+    <script src="../asset/script.js"></script>
+
+  <script>
+        let allProducts = [];
+        let currentDisplayList = [];
+        let itemsLoaded = 0;
+        const ITEMS_PER_PAGE = 50;
+        let isFetchingBatch = false;
+        let currentCategory = 'All'; 
+
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchMarketItems();
+        });
+
+        async function fetchMarketItems() {
+            document.getElementById('skeleton-loader').style.display = 'grid';
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const passedCat = urlParams.get('cat');
+
+            const cachedProducts = sessionStorage.getItem('items_page_data');
+            
+            // 🧠 ONLY use cache if we arrived here via the "Back" button (isBackNavigation is from script.js)
+            if (typeof isBackNavigation !== 'undefined' && isBackNavigation && cachedProducts && !passedCat) {
+                allProducts = JSON.parse(cachedProducts);
+                currentDisplayList = [...allProducts];
+                
+                const savedCount = parseInt(sessionStorage.getItem('items_loaded_count') || ITEMS_PER_PAGE);
+                
+                document.getElementById('skeleton-loader').style.display = 'none';
+                renderHTMLBatch(0, savedCount);
+                itemsLoaded = savedCount;
+                
+                observer.observe(document.getElementById('scroll-sentinel'));
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('products')
+                    .select('id, name, price, category, image_urls, status, is_pinned')
+                    .eq('status', 'Active')
+                    .order('is_pinned', { ascending: false });
+
+                if (error) throw error;
+
+                // 🚀 PIN LOGIC: Pinned items at top, unpinned items shuffled below (shuffleArray is from script.js)
+                const pinnedItems = data.filter(p => p.is_pinned === true);
+                const unpinnedItems = shuffleArray(data.filter(p => p.is_pinned !== true));
+
+                allProducts = [...pinnedItems, ...unpinnedItems];
+                currentDisplayList = [...allProducts]; 
+                
+                sessionStorage.setItem('items_page_data', JSON.stringify(allProducts));
+                
+                if (passedCat) {
+                    const pill = Array.from(document.querySelectorAll('.filter-pill')).find(p => p.innerText.includes(passedCat) || p.getAttribute('onclick').includes(`'${passedCat}'`));
+                    if (pill) filterByCategory(passedCat, pill);
+                } else {
+                    loadNextBatch();
+                }
+
+                observer.observe(document.getElementById('scroll-sentinel'));
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('skeleton-loader').style.display = 'none';
+                document.getElementById('main-items-grid').innerHTML = `<p style="grid-column:span 2; text-align:center; color:red; padding: 40px;">Failed to load items.</p>`;
+            }
+        }
+
+        function renderHTMLBatch(startIndex, endIndex) {
+            const grid = document.getElementById('main-items-grid');
+            const batch = currentDisplayList.slice(startIndex, endIndex);
+
+            batch.forEach(p => {
+                const imgUrl = escapeHTML((p.image_urls && p.image_urls.length > 0) ? p.image_urls[0] : 'https://via.placeholder.com/300x300?text=No+Image');
+                const multiImageBadge = (p.image_urls && p.image_urls.length > 1) ? `<div class="multi-img-badge"><i class="far fa-images"></i> ${p.image_urls.length}</div>` : '';
+                const fPrice = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(p.price);
+                
+                // 🚀 The Featured Badge
+                const pinBadge = p.is_pinned ? `<div style="position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.7); color: white; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; backdrop-filter: blur(4px); z-index: 10;">Featured</div>` : '';
+
+                grid.insertAdjacentHTML('beforeend', `
+                    <div class="product-card" onclick="window.location.href='../product/index.html?id=${escapeJS(p.id)}'" style="position: relative;">
+                        ${pinBadge}
+                        <img src="${imgUrl}" class="product-img" onerror="this.src='https://via.placeholder.com/300x300?text=No+Image'">
+                        ${multiImageBadge}
+                        <div class="product-price">${fPrice}</div>
+                        <div class="product-title">${escapeHTML(p.name)}</div>
+                        <div class="product-location"><i class="fas fa-tag" style="color: var(--brand-color);"></i> ${escapeHTML(p.category)}</div>
+                    </div>
+                `);
+            });
+        }
+
+        function loadNextBatch() {
+            if (isFetchingBatch) return;
+
+            const grid = document.getElementById('main-items-grid');
+            const skeleton = document.getElementById('skeleton-loader');
+            const endMsg = document.getElementById('end-message');
+            
+            if (currentDisplayList.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: span 2; text-align: center; padding: 60px 20px; color: #94a3b8;">
+                        <i class="fas fa-box-open" style="font-size: 50px; margin-bottom: 15px; color: #cbd5e1;"></i>
+                        <h3 style="font-size: 16px; color: #1e293b; margin: 0 0 5px;">No items found</h3>
+                        <p style="font-size: 13px;">Try adjusting your search, category, or spelling.</p>
+                    </div>`;
+                endMsg.style.display = 'none';
+                skeleton.style.display = 'none';
+                return;
+            }
+
+            if (itemsLoaded >= currentDisplayList.length) return;
+
+            isFetchingBatch = true;
+            skeleton.style.display = 'grid';
+
+            setTimeout(() => {
+                skeleton.style.display = 'none';
+                
+                renderHTMLBatch(itemsLoaded, itemsLoaded + ITEMS_PER_PAGE);
+
+                itemsLoaded += ITEMS_PER_PAGE;
+                sessionStorage.setItem('items_loaded_count', itemsLoaded); 
+                
+                isFetchingBatch = false;
+
+                if (itemsLoaded >= currentDisplayList.length) {
+                    endMsg.style.display = 'block';
+                }
+
+            }, 600);
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                loadNextBatch();
+            }
+        }, { rootMargin: "100px" });
+
+        function resetAndReload() {
+            itemsLoaded = 0;
+            document.getElementById('main-items-grid').innerHTML = "";
+            document.getElementById('end-message').style.display = 'none';
+            loadNextBatch();
+        }
+
+        function filterByCategory(categoryName, btnElement) {
+            document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+            if(btnElement) btnElement.classList.add('active');
+
+            currentCategory = categoryName;
+            triggerSearch(null); 
+        }
+
+        function triggerSearch(e) {
+            if (e) e.preventDefault(); 
+            if (document.getElementById('item-search')) {
+                document.getElementById('item-search').blur(); 
+            }
+
+            const query = document.getElementById('item-search').value.toLowerCase().trim();
+            
+            const filteredList = allProducts.filter(p => {
+                const matchesSearchText = (p.name || '').toLowerCase().includes(query) || (p.category || '').toLowerCase().includes(query);
+                const matchesCategory = (currentCategory === 'All') || (p.category === currentCategory);
+                return matchesSearchText && matchesCategory;
+            });
+
+            // Keep pinned items at the top of search results
+            const pinnedFiltered = filteredList.filter(p => p.is_pinned === true);
+            const unpinnedFiltered = filteredList.filter(p => p.is_pinned !== true);
+            
+            currentDisplayList = [...pinnedFiltered, ...unpinnedFiltered];
+            
+            resetAndReload();
+            return false;
+        }
+    </script>
+</body>
+</html>

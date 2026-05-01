@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <script>
+        window.location.replace("../coming-soon/");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Read Article | UNICAL Digital Market</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+    <meta name="theme-color" content="#FF7A00">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../192.png" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+
+    <style>
+        /* 🚀 Reset & Variables */
+        * { box-sizing: border-box; }
+        :root {
+            --brand-color: #FF7A00; 
+            --brand-bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+        
+        body { 
+            background: #e2e8f0; 
+            margin: 0; padding: 0; 
+            display: flex; justify-content: center; min-height: 100vh;
+            color: var(--text-main);
+        }
+
+        .app-container {
+            background: white; width: 100%; max-width: 480px; min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1); display: flex; flex-direction: column;
+            position: relative; overflow-x: hidden;
+        }
+
+        /* 🚀 Glassmorphic Hero Buttons */
+        .header { 
+            position: absolute; top: 0; left: 0; width: 100%; 
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent); 
+            padding: 20px; z-index: 20;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .action-btn { 
+            background: rgba(255, 255, 255, 0.25); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); 
+            border: 1px solid rgba(255,255,255,0.4); width: 45px; height: 45px; border-radius: 50%; 
+            color: white; font-size: 18px; cursor: pointer; transition: 0.2s; 
+            display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .action-btn:active { transform: scale(0.9); background: rgba(255,255,255,0.4); }
+
+        /* 🚀 Premium Hero Image */
+        .article-hero { width: 100%; height: 320px; object-fit: cover; background: #e2e8f0; }
+        
+        /* 🚀 Overlapping Curved Article Body */
+        .article-body { 
+            padding: 35px 25px; background: white; margin-top: -30px; 
+            position: relative; border-radius: 30px 30px 0 0; z-index: 10; 
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.08); flex: 1;
+        }
+        
+        .cat-badge { 
+            color: var(--brand-color); background: rgba(255, 122, 0, 0.1); 
+            padding: 6px 14px; border-radius: 10px; font-size: 11px; 
+            font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+            display: inline-block; margin-bottom: 15px; border: 1px solid rgba(255, 122, 0, 0.2);
+        }
+        
+        .article-title { font-size: 26px; font-weight: 900; color: var(--text-main); margin: 0 0 15px 0; line-height: 1.3; letter-spacing: -0.5px;}
+        .article-meta { 
+            display: flex; gap: 15px; color: var(--text-muted); font-size: 13px; 
+            font-weight: 600; margin-bottom: 25px; align-items: center;
+        }
+        
+        /* 🚀 Interaction Bar (Likes & Views) */
+        .interaction-bar { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding-bottom: 25px; border-bottom: 2px solid #f1f5f9; margin-bottom: 25px;
+        }
+        .likes-btn { 
+            display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 800; 
+            color: var(--text-main); cursor: pointer; background: #f8fafc; padding: 10px 20px; 
+            border-radius: 20px; border: 1px solid #e2e8f0; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+        .likes-btn:active { transform: scale(0.95); }
+        .likes-btn i.liked { color: #ef4444; animation: pop 0.3s ease; }
+        @keyframes pop { 50% { transform: scale(1.3); } }
+
+        /* 🚀 Highly Readable Content */
+        .article-content { font-size: 16px; color: #334155; line-height: 1.8; white-space: pre-wrap; margin-bottom: 40px; font-weight: 400;}
+        .article-content a { word-break: break-all; color: var(--brand-color); text-decoration: none; font-weight: 700; } 
+        .article-content a:hover { text-decoration: underline; }
+        
+        /* 🚀 Comments Section */
+        .comments-section { border-top: 5px solid #f8fafc; padding-top: 35px; }
+        .comment-card { display: flex; gap: 15px; margin-bottom: 25px; }
+        .comment-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #e2e8f0; border: 2px solid #f8fafc; box-shadow: 0 4px 10px rgba(0,0,0,0.05);}
+        .comment-bubble { background: #f8fafc; padding: 18px; border-radius: 0 20px 20px 20px; flex: 1; border: 1px solid #e2e8f0; }
+        .comment-name { font-size: 14px; font-weight: 800; color: var(--text-main); margin-bottom: 5px; }
+        .comment-text { font-size: 14px; color: var(--text-muted); line-height: 1.6; }
+
+        .add-comment-box { display: flex; gap: 12px; margin-top: 25px; margin-bottom: 40px; width: 100%; align-items: center;}
+        .comment-input { 
+            flex: 1; min-width: 0; padding: 16px 20px; 
+            border-radius: 30px; border: 2px solid #e2e8f0; background: #f8fafc; 
+            outline: none; font-size: 14px; transition: 0.2s; font-family: inherit; font-weight: 500;
+        }
+        .comment-input:focus { border-color: var(--brand-color); background: white; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.1);}
+        .send-btn { 
+            background: var(--brand-color); color: white; border: none; width: 50px; 
+            height: 50px; border-radius: 50%; display: flex; justify-content: center; 
+            align-items: center; cursor: pointer; font-size: 18px; 
+            box-shadow: 0 6px 15px rgba(255, 122, 0, 0.3); flex-shrink: 0; transition: 0.2s;
+        }
+        .send-btn:active { transform: scale(0.9); }
+
+        /* 🚀 More Blogs Section */
+        .more-blogs-section { background: #f8fafc; padding: 40px 25px; border-top: 1px solid #e2e8f0;}
+        .section-title { font-size: 20px; font-weight: 900; color: var(--text-main); margin-bottom: 20px; letter-spacing: -0.5px;}
+        
+        .small-blog-card { 
+            background: white; border-radius: 20px; padding: 15px; display: flex; gap: 15px; 
+            margin-bottom: 15px; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.02); 
+            cursor: pointer; transition: 0.2s; align-items: center;
+        }
+        .small-blog-card:active { transform: scale(0.98); background: #f1f5f9; }
+        .small-blog-card img { width: 90px; height: 90px; border-radius: 14px; object-fit: cover; }
+        .sbc-info { flex: 1; }
+        .sbc-title { font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 6px; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .sbc-meta { font-size: 12px; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 5px;}
+
+        /* SKELETON LOADER STYLES */
+        .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .sk-hero { width: 100%; height: 320px; }
+        .sk-badge { width: 80px; height: 26px; border-radius: 10px; margin-bottom: 15px; }
+        .sk-title { width: 95%; height: 35px; border-radius: 10px; margin-bottom: 15px; }
+        .sk-meta { width: 150px; height: 18px; border-radius: 6px; margin-bottom: 35px; }
+        .sk-text { width: 100%; height: 16px; border-radius: 6px; margin-bottom: 15px; }
+
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES                        */
+        /* ========================================= */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b; }
+        
+        body.dark-mode .article-body { background: #0f172a !important; box-shadow: 0 -10px 30px rgba(0,0,0,0.5) !important;}
+        body.dark-mode .article-title { color: #f1f5f9 !important; }
+        body.dark-mode .article-content { color: #cbd5e1 !important; }
+        
+        body.dark-mode .interaction-bar { border-bottom-color: #1e293b !important; }
+        body.dark-mode .likes-btn { background: #1e293b !important; border-color: #334155 !important; color: #f1f5f9 !important; }
+        
+        body.dark-mode .comments-section { border-top-color: #1e293b !important; }
+        body.dark-mode .comment-bubble { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .comment-name { color: #f1f5f9 !important; }
+        body.dark-mode .comment-text { color: #94a3b8 !important; }
+        body.dark-mode .comment-avatar { border-color: #0f172a !important; }
+        
+        body.dark-mode .comment-input { background: #1e293b !important; border-color: #334155 !important; color: white; }
+        body.dark-mode .comment-input:focus { border-color: var(--brand-color) !important; }
+        
+        body.dark-mode .more-blogs-section { background: #020617 !important; border-top-color: #1e293b !important;}
+        body.dark-mode .section-title { color: #f1f5f9 !important; }
+        body.dark-mode .small-blog-card { background: #0f172a !important; border-color: #1e293b !important; }
+        body.dark-mode .small-blog-card:active { background: #1e293b !important; }
+        body.dark-mode .sbc-title { color: #f1f5f9 !important; }
+        
+        body.dark-mode .cat-badge { background: rgba(255, 122, 0, 0.15) !important; }
+        body.dark-mode .sk-shimmer { background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%) !important; background-size: 200% 100% !important; }
+    </style>
+</head>
+<body>
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+
+    <div class="app-container">
+        
+        <!-- 🚀 Hero Controls -->
+        <div class="header">
+            <button class="action-btn" onclick="smartBack(event)"><i class="fas fa-arrow-left"></i></button>
+            <button class="action-btn" id="shareTopBtn" style="display: none;"><i class="fas fa-share-alt"></i></button>
+        </div>
+
+        <div id="skeleton-content">
+            <div class="sk-shimmer sk-hero"></div>
+            <div class="article-body">
+                <div class="sk-shimmer sk-badge"></div>
+                <div class="sk-shimmer sk-title"></div>
+                <div class="sk-shimmer sk-meta"></div>
+                
+                <div class="sk-shimmer sk-text"></div>
+                <div class="sk-shimmer sk-text"></div>
+                <div class="sk-shimmer sk-text" style="width: 80%;"></div>
+            </div>
+        </div>
+
+        <div id="real-content" style="display: none; display: flex; flex-direction: column; flex: 1;">
+            <img src="" id="articleImg" class="article-hero" onerror="this.src='https://placehold.co/600x300?text=No+Image'">
+
+            <div class="article-body">
+                <span class="cat-badge" id="articleCat">News</span>
+                <h1 class="article-title" id="articleTitle">Loading Article...</h1>
+                
+                <div class="article-meta">
+                    <span id="articleDate"><i class="far fa-calendar-alt"></i> --</span>
+                </div>
+
+                <div class="interaction-bar">
+                    <div class="likes-btn" onclick="toggleLike()" id="like-btn">
+                        <i class="far fa-heart" id="like-icon"></i> <span id="like-count">0</span>
+                    </div>
+                    <div style="font-size: 14px; color: var(--text-muted); font-weight: 700;">
+                        <i class="far fa-eye" style="margin-right: 4px;"></i> <span id="view-count">0</span>
+                    </div>
+                </div>
+
+                <div class="article-content" id="articleContent"></div>
+
+                <div class="comments-section">
+                    <h3 style="font-size: 20px; font-weight: 900; margin-bottom: 25px; color: var(--text-main);">Comments</h3>
+                    
+                    <div id="commentsList">
+                        <p style="color: #94a3b8; font-size: 14px; font-weight: 600;"><i class="fas fa-spinner fa-spin"></i> Loading comments...</p>
+                    </div>
+
+                    <div class="add-comment-box">
+                        <input type="text" id="commentInput" class="comment-input" placeholder="Share your thoughts...">
+                        <button class="send-btn" onclick="postComment()"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="more-blogs-section">
+                <h3 class="section-title">See More News</h3>
+                <div id="more-blogs-list">
+                    <p style="color: #94a3b8; font-size: 14px; font-weight: 500;">Loading more posts...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../asset/script.js"></script>
+
+    <script>
+        let currentUser = null;
+        let currentBlog = null;
+        
+        // Smart URL Parsing
+        const urlParams = new URLSearchParams(window.location.search);
+        const postParam = urlParams.get('post') || urlParams.get('id');
+        const blogId = postParam ? (postParam.includes('--') ? postParam.split('--').pop() : postParam) : null;
+
+        // 🛡️ XSS Sanitizers
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+        function escapeJS(str) {
+            if (!str) return '';
+            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+        }
+
+        // 🚀 SMART BACK BUTTON LOGIC
+        function getSmartRedirectUrl() {
+            const referrer = document.referrer;
+            const currentWebsite = window.location.origin;
+
+            if (referrer && referrer.startsWith(currentWebsite) && !referrer.includes('/login/') && !referrer.includes('/reset-password/')) {
+                return referrer; 
+            }
+            return "../index.html"; 
+        }
+
+        window.smartBack = function(event) {
+            if (event) event.preventDefault();
+            window.location.href = getSmartRedirectUrl();
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) currentUser = session.user;
+            
+            if (!blogId) {
+                alert("Article not found.");
+                window.location.href = "../index.html";
+                return;
+            }
+
+            loadArticle();
+        });
+
+        function createSlug(title) {
+            return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+        }
+
+        function linkifyText(text) {
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            return text.replace(urlRegex, function(url) {
+                return `<a href="${url}" target="_blank">${url}</a>`;
+            });
+        }
+
+        async function loadArticle() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('blogs')
+                    .select('*')
+                    .eq('id', blogId)
+                    .single();
+
+                if (error || !data) throw error;
+                currentBlog = data;
+
+                const niceSlug = createSlug(data.title);
+                window.history.replaceState(null, '', `?id=${data.id}&post=${niceSlug}`);
+
+                document.title = `${data.title} | UNICAL Digital Market`;
+                
+                document.getElementById('articleImg').src = data.image_url || 'https://placehold.co/600x400?text=No+Image';
+                document.getElementById('articleCat').innerText = escapeHTML(data.category || 'News');
+                document.getElementById('articleTitle').innerText = escapeHTML(data.title);
+                document.getElementById('articleDate').innerHTML = `<i class="far fa-calendar-alt" style="margin-right: 5px;"></i> ${new Date(data.created_at).toLocaleDateString([], { year: 'numeric', month: 'long', day: 'numeric' })}`;
+                
+                // Content Rendering
+                const safeContent = escapeHTML(data.content);
+                const textWithLinks = linkifyText(safeContent);
+                document.getElementById('articleContent').innerHTML = textWithLinks.replace(/\n/g, '<br>');
+
+                // Interaction Bar
+                document.getElementById('view-count').innerText = data.views || 0;
+                updateLikeUI();
+
+                const shareBtn = document.getElementById('shareTopBtn');
+                shareBtn.style.display = 'flex';
+                shareBtn.onclick = () => shareArticle();
+
+                // Track View count robustly
+                const viewed = JSON.parse(sessionStorage.getItem('session_viewed_blogs') || '[]');
+                if (!viewed.includes(blogId)) {
+                    viewed.push(blogId);
+                    sessionStorage.setItem('session_viewed_blogs', JSON.stringify(viewed));
+                    
+                    const newViews = (data.views || 0) + 1;
+                    document.getElementById('view-count').innerText = newViews;
+                    
+                    const { data: latestDb } = await supabaseClient.from('blogs').select('views').eq('id', blogId).single();
+                    if (latestDb) {
+                        const safeNewCount = Math.max(newViews, (latestDb.views || 0) + 1);
+                        await supabaseClient.from('blogs').update({ views: safeNewCount }).eq('id', blogId);
+                    }
+                }
+
+                document.getElementById('skeleton-content').style.display = 'none';
+                document.getElementById('real-content').style.display = 'flex';
+
+                loadComments();
+                loadMoreBlogs();
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('skeleton-content').style.display = 'none';
+                document.getElementById('real-content').style.display = 'flex';
+                document.getElementById('articleTitle').innerText = "Error loading article.";
+            }
+        }
+
+        function updateLikeUI() {
+            const likes = currentBlog.likes || [];
+            const count = likes.length;
+            const isLiked = currentUser && likes.includes(currentUser.id);
+
+            document.getElementById('like-count').innerText = count;
+            const icon = document.getElementById('like-icon');
+            
+            if (isLiked) {
+                icon.className = 'fas fa-heart liked';
+            } else {
+                icon.className = 'far fa-heart';
+            }
+        }
+
+        window.toggleLike = async function() {
+            if (!currentUser) {
+                alert("Please log in to like this post.");
+                window.location.href = "../login/index.html?redirect=" + encodeURIComponent(window.location.href);
+                return;
+            }
+
+            let likes = currentBlog.likes || [];
+            if (likes.includes(currentUser.id)) {
+                likes = likes.filter(id => id !== currentUser.id); 
+            } else {
+                likes.push(currentUser.id); 
+            }
+
+            currentBlog.likes = likes;
+            updateLikeUI();
+
+            try {
+                await supabaseClient.from('blogs').update({ likes: likes }).eq('id', blogId);
+            } catch (e) { console.error("Sync failed"); }
+        }
+
+        async function loadComments() {
+            const list = document.getElementById('commentsList');
+            try {
+                const { data, error } = await supabaseClient
+                    .from('blog_comments')
+                    .select('comment_text, created_at, profiles(full_name, avatar_url)')
+                    .eq('blog_id', blogId)
+                    .order('created_at', { ascending: true });
+
+                if (error) throw error;
+                list.innerHTML = "";
+
+                if (data.length === 0) {
+                    list.innerHTML = '<p style="font-size:14px; color:#94a3b8; text-align: center; padding: 20px; font-weight: 500;">No comments yet. Be the first to share your thoughts!</p>';
+                    return;
+                }
+
+                data.forEach(c => {
+                    const name = escapeHTML(c.profiles?.full_name || "UNICAL Student");
+                    const avatar = escapeHTML(c.profiles?.avatar_url || "../img/person.png");
+                    
+                    list.insertAdjacentHTML('beforeend', `
+                        <div class="comment-card">
+                            <img src="${avatar}" class="comment-avatar" onerror="this.src='../img/person.png'">
+                            <div class="comment-bubble">
+                                <div class="comment-name">${name}</div>
+                                <div class="comment-text">${escapeHTML(c.comment_text)}</div>
+                            </div>
+                        </div>
+                    `);
+                });
+            } catch (err) {
+                list.innerHTML = '<p style="color:#ef4444; font-size:14px; font-weight:600;">Failed to load comments.</p>';
+            }
+        }
+
+        window.postComment = async function() {
+            if (!currentUser) {
+                alert("Please log in to comment.");
+                window.location.href = "../login/index.html?redirect=" + encodeURIComponent(window.location.href);
+                return;
+            }
+            
+            const input = document.getElementById('commentInput');
+            const text = input.value.trim();
+            if (!text || !blogId) return;
+
+            input.value = "Posting..."; 
+            input.disabled = true;
+
+            try {
+                await supabaseClient.from('blog_comments').insert([{ blog_id: blogId, user_id: currentUser.id, comment_text: text }]);
+                input.value = ""; 
+                loadComments(); 
+            } catch (error) {
+                alert("Failed to post comment."); 
+                input.value = text; 
+            } finally { 
+                input.disabled = false; 
+            }
+        }
+
+        async function loadMoreBlogs() {
+            const list = document.getElementById('more-blogs-list');
+            try {
+                const { data, error } = await supabaseClient
+                    .from('blogs')
+                    .select('id, title, category, image_url, created_at')
+                    .neq('id', blogId)
+                    .order('created_at', { ascending: false })
+                    .limit(15);
+
+                if (error) throw error;
+                list.innerHTML = "";
+
+                if (!data || data.length === 0) {
+                    list.innerHTML = '<p style="font-size:14px; color:#94a3b8; font-weight:500;">No other articles found.</p>';
+                    return;
+                }
+
+                // Randomize and pick 3
+                const shuffled = data.sort(() => 0.5 - Math.random()).slice(0, 3);
+
+                shuffled.forEach(b => {
+                    const slug = createSlug(b.title);
+                    const img = escapeHTML(b.image_url || 'https://placehold.co/100x100?text=No+Image');
+                    const date = new Date(b.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' });
+
+                    list.insertAdjacentHTML('beforeend', `
+                        <div class="small-blog-card" onclick="window.location.href='index.html?id=${escapeJS(b.id)}&post=${escapeJS(slug)}'">
+                            <img src="${img}" onerror="this.src='https://placehold.co/100x100?text=No+Image'">
+                            <div class="sbc-info">
+                                <div class="sbc-title">${escapeHTML(b.title)}</div>
+                                <div class="sbc-meta"><span style="color: var(--brand-color); font-weight: 800;">${escapeHTML(b.category)}</span> <span style="margin: 0 4px;">•</span> ${date}</div>
+                            </div>
+                        </div>
+                    `);
+                });
+
+            } catch (err) {
+                list.innerHTML = '';
+            }
+        }
+
+        window.shareArticle = function() {
+            if (!currentBlog) return;
+            const slug = createSlug(currentBlog.title);
+            const baseUrl = window.location.href.split('?')[0]; 
+            const shareUrl = `${baseUrl}?id=${currentBlog.id}&post=${slug}`;
+            const title = currentBlog.title;
+            const snippet = currentBlog.snippet || 'Read the latest update on UNICAL Digital Market.';
+            
+            const shareText = `*${title}*\n\n${snippet}\n\nRead the full article:\n${shareUrl}`;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: "UNICAL Market News",
+                    text: `*${title}*\n${snippet}\n\nRead the full article:`,
+                    url: shareUrl
+                }).catch(err => console.log('Share cancelled', err));
+            } else {
+                const waUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
+                window.open(waUrl, '_blank');
+            }
+        }
+    </script>
+</body>
+</html>

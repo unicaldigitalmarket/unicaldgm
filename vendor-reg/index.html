@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Vendor Registration | UNICAL Digital Market</title>
+    
+    <!-- 🚀 PRIMARY SEO -->
+    <meta name="description" content="Register as a vendor on UNICAL Digital Market. Open your digital shop, list your products, and start selling to the University of Calabar community today.">
+    <meta name="keywords" content="Sell in UNICAL, register as vendor Calabar, open shop UnicalDGM, student entrepreneur UNICAL">
+    <meta name="author" content="UnicalDGM">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://unicaldgm.com.ng/vendor-reg/">
+
+    <!-- 🚀 MOBILE APP & ICONS -->
+    <meta name="theme-color" content="#FF7A00">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../192.png" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+        /* 🚀 Reset & Variables */
+        * { box-sizing: border-box; }
+        :root {
+            --brand-color: #FF7A00; 
+            --brand-gradient: linear-gradient(135deg, #FF7A00, #ea580c);
+            --brand-bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #e2e8f0; 
+            margin: 0; padding: 0; 
+            display: flex; justify-content: center; min-height: 100vh;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            background: var(--brand-bg); width: 100%; max-width: 480px; min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1); display: flex; flex-direction: column;
+            position: relative; z-index: 1;
+        }
+
+        .header { background: white; padding: 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+        .header-top-flex { display: flex; align-items: center; gap: 15px; }
+        .page-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0; }
+        
+        .content-area { padding: 20px 20px 90px; }
+
+        /* 🚀 Clean Bank Card (No Glowing Shadow) */
+        .bank-card { 
+            background: #fff; border: 1px solid #e2e8f0; padding: 20px; 
+            border-radius: 20px; text-align: center; margin-bottom: 25px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02); 
+            position: relative; overflow: hidden;
+        }
+        .bank-title { font-weight: 900; color: var(--text-main); font-size: 16px; margin-bottom: 5px; text-transform: uppercase; }
+        
+        /* 🚀 NEW: Pricing Grid */
+        .pricing-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 15px 0; }
+        .price-box { background: #f8fafc; border: 1px solid #e2e8f0; padding: 12px; border-radius: 12px; display: flex; flex-direction: column; gap: 4px; transition: 0.2s;}
+        .price-box span { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+        .price-box strong { font-size: 15px; color: var(--text-main); font-weight: 900; }
+
+        .acct-box { background: #f8fafc; padding: 15px; border-radius: 14px; margin: 5px 0; border: 1px dashed #cbd5e1; }
+        .acct-num { font-size: 26px; font-weight: 900; letter-spacing: 3px; color: var(--brand-color); display: block; }
+        .bank-name { font-size: 12px; color: var(--text-muted); font-weight: 800; }
+
+        .form-section-title { font-size: 13px; font-weight: 800; color: var(--brand-color); text-transform: uppercase; margin: 35px 0 15px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; letter-spacing: 0.5px;}
+        
+        /* 🚀 Premium Inputs */
+        .form-group { margin-bottom: 20px; }
+        .form-label { display: block; font-size: 13px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+        .form-input { 
+            width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 14px; 
+            font-size: 14px; font-weight: 500; background: white; outline: none; transition: 0.2s; 
+            color: var(--text-main); font-family: 'Inter', sans-serif;
+        }
+        .form-input:focus { border-color: var(--brand-color); box-shadow: 0 4px 15px rgba(255, 122, 0, 0.1); }
+
+        select.form-input { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2394a3b8%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 15px top 50%; background-size: 12px auto; }
+
+        /* 🚀 Category Checkboxes */
+        .category-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .cat-label { 
+            display: block; text-align: center; padding: 12px; background: white; 
+            border: 2px solid #e2e8f0; border-radius: 12px; font-size: 13px; font-weight: 600; 
+            color: var(--text-muted); cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+        .cat-checkbox:checked + .cat-label { background: var(--brand-color); color: white; border-color: var(--brand-color); box-shadow: 0 4px 15px rgba(255, 122, 0, 0.2); }
+        .cat-checkbox { display: none; }
+
+        /* 🚀 File Uploads */
+        .file-upload-box { 
+            border: 2px dashed #cbd5e1; border-radius: 16px; padding: 30px; text-align: center; 
+            cursor: pointer; background: #f8fafc; position: relative; transition: 0.2s; 
+        }
+        .file-upload-box:hover { border-color: var(--brand-color); background: rgba(255, 122, 0, 0.02); }
+        .file-upload-box input { position: absolute; top:0; left:0; width:100%; height:100%; opacity:0; cursor:pointer; }
+        .file-upload-box.has-file { border-style: solid; border-color: #10b981; background: #ecfdf5; }
+
+        /* 🚀 Policy Checkbox */
+        .terms-group { display: flex; align-items: flex-start; gap: 12px; margin: 30px 0 20px; background: white; padding: 15px; border-radius: 14px; border: 1px solid #e2e8f0;}
+        .terms-checkbox { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--brand-color); cursor: pointer; flex-shrink: 0; }
+        .terms-text { font-size: 13px; color: var(--text-muted); font-weight: 500; line-height: 1.5; }
+        .terms-text a { color: var(--brand-color); text-decoration: underline; font-weight: 700; }
+
+        /* 🚀 Submit Button */
+        .submit-btn { 
+            background: var(--brand-gradient); color: white; width: 100%; padding: 18px; 
+            border: none; border-radius: 16px; font-weight: 800; font-size: 16px; cursor: pointer; 
+            box-shadow: 0 8px 25px rgba(255, 122, 0, 0.3); transition: 0.2s; 
+        }
+        .submit-btn:active { transform: scale(0.97); box-shadow: 0 4px 15px rgba(255, 122, 0, 0.2); }
+        .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        /* Loader & Messages */
+        #auth-check-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top-color: var(--brand-color); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        
+        .message-box { padding: 14px; border-radius: 12px; font-size: 13px; font-weight: 600; text-align: center; margin-bottom: 20px; display: none; }
+        .error-msg { color: #ef4444; background: #fef2f2; border: 1px solid #fecaca; }
+        .success-msg { color: #059669; background: #d1fae5; border: 1px solid #6ee7b7; }
+
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES FOR VENDOR REG PAGE    */
+        /* ========================================= */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;}
+        body.dark-mode .header { background: #1e293b !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .page-title, body.dark-mode .fa-arrow-left { color: #f1f5f9 !important; }
+        
+        /* Removed dark mode brand border for consistency */
+        body.dark-mode .bank-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .bank-title { color: #f1f5f9 !important; }
+        
+        /* Dark Mode Pricing Grid */
+        body.dark-mode .price-box { background: #0f172a !important; border-color: #334155 !important; }
+        body.dark-mode .price-box span { color: #94a3b8 !important; }
+        body.dark-mode .price-box strong { color: #f1f5f9 !important; }
+
+        body.dark-mode .acct-box { background: #0f172a !important; border-color: #334155 !important; }
+        body.dark-mode .acct-num { color: var(--brand-color) !important; }
+        body.dark-mode .bank-name { color: #94a3b8 !important; }
+
+        body.dark-mode .form-section-title { border-bottom-color: #334155 !important; }
+        body.dark-mode .form-label { color: #cbd5e1 !important; }
+        body.dark-mode .form-input { background: #0f172a !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+        body.dark-mode .form-input:focus { border-color: var(--brand-color) !important; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.15) !important; }
+        
+        body.dark-mode .cat-label { background: #0f172a !important; border-color: #334155 !important; color: #94a3b8 !important; }
+        body.dark-mode .cat-checkbox:checked + .cat-label { background: var(--brand-color) !important; color: white !important; border-color: var(--brand-color) !important; }
+
+        body.dark-mode .file-upload-box { background: #0f172a !important; border-color: #334155 !important; }
+        body.dark-mode .file-upload-box.has-file { background: rgba(16, 185, 129, 0.1) !important; border-color: #10b981 !important; }
+
+        body.dark-mode .terms-group { background: #1e293b !important; border-color: #334155 !important;}
+        body.dark-mode .terms-text { color: #cbd5e1 !important; }
+
+        body.dark-mode #auth-check-loader { background: #020617 !important; }
+        body.dark-mode .error-msg { background: rgba(239, 68, 68, 0.1) !important; border-color: #ef4444 !important; color: #fca5a5 !important; }
+    </style>
+</head>
+<body>
+
+    <script>
+        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+    </script>
+
+    <div id="auth-check-loader">
+        <div class="spinner"></div>
+        <p style="margin-top: 15px; font-weight: 600; color: #64748b; font-size: 14px;">Checking account status...</p>
+    </div>
+
+    <div class="app-container">
+        <div class="header">
+            <div class="header-top-flex">
+                <button onclick="window.history.back()" style="background:none; border:none; font-size:20px; color:var(--text-main); cursor:pointer;"><i class="fas fa-arrow-left"></i></button>
+                <h1 class="page-title">Vendor Application</h1>
+            </div>
+        </div>
+
+        <div class="content-area">
+            
+            <div class="bank-card">
+                <div class="bank-title">Payment Required</div>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px;">Check the pricing below and transfer the exact amount for your preferred plan.</p>
+                
+                <!-- 🚀 NEW: Upfront Pricing Grid -->
+                <div class="pricing-grid">
+                    <div class="price-box"><span>10 Slots</span><strong>₦2,000</strong></div>
+                    <div class="price-box"><span>15 Slots</span><strong>₦3,000</strong></div>
+                    <div class="price-box"><span>20 Slots</span><strong>₦4,000</strong></div>
+                    <div class="price-box"><span>30 Slots</span><strong>₦5,000</strong></div>
+                </div>
+
+                <div class="acct-box">
+                    <span class="acct-num">0123456789</span>
+                    <span class="bank-name">GTBank - UNICAL Digital Market</span>
+                </div>
+            </div>
+
+            <div class="message-box" id="msg-box"></div>
+
+            <form id="regForm" onsubmit="submitRegistration(event)">
+                
+                <div class="form-section-title">Subscription Plan</div>
+                <div class="form-group">
+                    <select id="v-plan" class="form-input" required>
+                        <option value="" disabled selected>-- Choose your transferred Plan --</option>
+                        <option value="Tier1">Tier 1 - ₦2,000 (10 Slots)</option>
+                        <option value="Tier2">Tier 2 - ₦3,000 (15 Slots)</option>
+                        <option value="Tier3">Tier 3 - ₦4,000 (20 Slots)</option>
+                        <option value="Tier4">Tier 4 - ₦5,000 (30 Slots)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Upload Payment Receipt</label>
+                    <div class="file-upload-box" id="box-receipt">
+                        <i class="fas fa-file-invoice-dollar" style="font-size: 30px; color: #94a3b8; margin-bottom: 10px;"></i>
+                        <div id="lbl-receipt" style="font-size: 13px; font-weight: 600;">Tap to upload Receipt</div>
+                        <input type="file" id="f-receipt" accept="image/*" required onchange="updateFileLabel(this, 'lbl-receipt', 'box-receipt')">
+                    </div>
+                </div>
+
+                <div class="form-section-title">Business Profile</div>
+                
+                <div class="form-group">
+                    <label class="form-label">Business Name</label>
+                    <input type="text" id="v-name" class="form-input" placeholder="e.g. Tola Bakes" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">WhatsApp Number</label>
+                    <input type="tel" id="v-whatsapp" class="form-input" placeholder="e.g. 08012345678" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Location (Hostel / Off-Campus)</label>
+                    <input type="text" id="v-location" class="form-input" placeholder="e.g. Malabo Hall" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Business Description</label>
+                    <textarea id="v-desc" class="form-input" style="height:100px; resize: none;" placeholder="What do you sell?" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Categories (Select 1 to 5)</label>
+                    <div class="category-grid">
+                        <label><input type="checkbox" class="cat-checkbox" value="Gadgets"><span class="cat-label">Gadgets</span></label>
+                        <label><input type="checkbox" class="cat-checkbox" value="Fashion"><span class="cat-label">Fashion</span></label>
+                        <label><input type="checkbox" class="cat-checkbox" value="Food"><span class="cat-label">Food</span></label>
+                        <label><input type="checkbox" class="cat-checkbox" value="Transport"><span class="cat-label">Transport</span></label>
+                        <label><input type="checkbox" class="cat-checkbox" value="Beauty"><span class="cat-label">Beauty</span></label>
+                        <label><input type="checkbox" class="cat-checkbox" value="Health"><span class="cat-label">Health</span></label>
+                        <label><input type="checkbox" class="cat-checkbox" value="CampusServices"><span class="cat-label">Services</span></label>
+                        <label><input type="checkbox" class="cat-checkbox" value="Professional"><span class="cat-label">Professional</span></label>
+                        <label><input type="checkbox" class="cat-checkbox" value="Tutorials"><span class="cat-label">Tutorials</span></label>
+                        <label><input type="checkbox" class="cat-checkbox" value="Books"><span class="cat-label">Books</span></label>
+                        <label><input type="checkbox" class="cat-checkbox" value="Accommodation"><span class="cat-label">Hostels</span></label>
+                        <label><input type="checkbox" class="cat-checkbox" value="Electronics"><span class="cat-label">Electronics</span></label>
+                    </div>
+                </div>
+
+                <div class="form-section-title">Identity & Branding</div>
+
+                <div class="form-group">
+                    <label class="form-label">Business Logo</label>
+                    <div class="file-upload-box" id="box-logo">
+                        <i class="fas fa-image" style="font-size: 30px; color: #94a3b8; margin-bottom: 10px;"></i>
+                        <div id="lbl-logo" style="font-size: 13px; font-weight: 600;">Tap to upload Logo</div>
+                        <input type="file" id="f-logo" accept="image/*" required onchange="updateFileLabel(this, 'lbl-logo', 'box-logo')">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Student ID Card (Kept Private)</label>
+                    <div class="file-upload-box" id="box-id">
+                        <i class="fas fa-id-card" style="font-size: 30px; color: #94a3b8; margin-bottom: 10px;"></i>
+                        <div id="lbl-id" style="font-size: 13px; font-weight: 600;">Tap to upload ID Card</div>
+                        <input type="file" id="f-id" accept="image/*" required onchange="updateFileLabel(this, 'lbl-id', 'box-id')">
+                    </div>
+                </div>
+
+                <div class="terms-group">
+                    <input type="checkbox" id="policy-check" class="terms-checkbox" required>
+                    <span class="terms-text">By applying to be a vendor, you confirm that you have read and agree to the <a href="../vendors-policy/index.html" target="_blank">Policy for Vendors</a>.</span>
+                </div>
+
+                <button type="submit" id="submitBtn" class="submit-btn">Submit Application</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="../asset/script.js"></script>
+
+    <script>
+        const CLOUD_NAME = "dj6yl36fq"; 
+        let currentUser = null;
+
+        function displayMessage(text, isError) {
+            const msgBox = document.getElementById('msg-box');
+            msgBox.innerHTML = isError ? `<i class="fas fa-exclamation-circle"></i> ` : `<i class="fas fa-check-circle"></i> `;
+            msgBox.appendChild(document.createTextNode(text)); 
+            msgBox.className = isError ? 'message-box error-msg' : 'message-box success-msg';
+            msgBox.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' }); 
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { window.location.href = "../login/index.html"; return; }
+            currentUser = session.user;
+
+            try {
+                const { data: existingVendor } = await supabaseClient
+                    .from('vendors').select('id').eq('profile_id', currentUser.id).single();
+
+                if (existingVendor) {
+                    window.location.href = "../add-product/index.html";
+                    return;
+                }
+                document.getElementById('auth-check-loader').style.display = 'none';
+            } catch (error) {
+                document.getElementById('auth-check-loader').style.display = 'none';
+            }
+
+            // Enforce Max 5 Categories logic
+            const checkBoxes = document.querySelectorAll('.cat-checkbox');
+            checkBoxes.forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const checkedCount = document.querySelectorAll('.cat-checkbox:checked').length;
+                    if (checkedCount > 5) {
+                        this.checked = false; 
+                        displayMessage("You can only select up to 5 categories.", true);
+                    } else {
+                        document.getElementById('msg-box').style.display = 'none'; 
+                    }
+                });
+            });
+        });
+
+        function updateFileLabel(input, labelId, boxId) {
+            if (input.files && input.files[0]) {
+                const safeName = String(input.files[0].name).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+                document.getElementById(labelId).innerText = "✅ " + safeName;
+                document.getElementById(boxId).classList.add('has-file');
+            }
+        }
+
+        async function uploadToCloudinary(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', 'unical_images'); 
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error.message);
+            return data.secure_url;
+        }
+
+        async function submitRegistration(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            document.getElementById('msg-box').style.display = 'none';
+
+            // Validate Categories Min 1
+            const selectedCats = [];
+            document.querySelectorAll('.cat-checkbox:checked').forEach(c => selectedCats.push(c.value));
+            if(selectedCats.length === 0) {
+                return displayMessage("Please select at least 1 category.", true);
+            }
+
+            if (!document.getElementById('policy-check').checked) {
+                return displayMessage("You must agree to the Policy for Vendors.", true);
+            }
+
+            btn.disabled = true;
+
+            try {
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading Receipt (1/3)...';
+                const receiptUrl = await uploadToCloudinary(document.getElementById('f-receipt').files[0]);
+
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading Logo (2/3)...';
+                const logoUrl = await uploadToCloudinary(document.getElementById('f-logo').files[0]);
+
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading ID (3/3)...';
+                const idUrl = await uploadToCloudinary(document.getElementById('f-id').files[0]);
+
+                // Map the Subscription Plan to Slots (max_items)
+                const planStr = document.getElementById('v-plan').value;
+                let maxItems = 10; 
+                if(planStr === "Tier2") maxItems = 15;
+                if(planStr === "Tier3") maxItems = 20;
+                if(planStr === "Tier4") maxItems = 30;
+
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting Application...';
+                
+                const { error } = await supabaseClient.from('vendors').insert([{
+                    profile_id: currentUser.id,
+                    email: currentUser.email,
+                    business_name: document.getElementById('v-name').value.trim(),
+                    whatsapp_number: document.getElementById('v-whatsapp').value.trim(),
+                    location: document.getElementById('v-location').value.trim(),
+                    description: document.getElementById('v-desc').value.trim(),
+                    subscription_plan: planStr,
+                    categories: selectedCats.join(", "),
+                    logo_url: logoUrl,
+                    receipt_url: receiptUrl,
+                    student_id_url: idUrl,
+                    max_items: maxItems, 
+                    is_active: false, 
+                    is_suspended: false
+                }]);
+
+                if (error) throw error;
+                
+                displayMessage("Application Submitted! You will be redirected to the dashboard.", false);
+                setTimeout(() => { window.location.href = "../add-product/index.html"; }, 2000);
+
+            } catch (error) {
+                console.error(error);
+                displayMessage("Failed to submit. Please check your network connection.", true);
+                btn.disabled = false;
+                btn.innerText = "Submit Application";
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UNICAL Digital Market | Authentication</title>
+    
+    <meta name="description" content="Sign in or create an account on UNICAL Digital Market to start buying, selling, and saving your favorite student deals on campus.">
+    <meta name="keywords" content="UNICAL market login, UnicalDGM sign in, student login UNICAL, register UnicalDGM, Calabar market account">
+    <meta name="author" content="UnicalDGM">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://unicaldgm.com.ng/login/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://unicaldgm.com.ng/login/">
+    <meta property="og:title" content="Login to UNICAL Digital Market">
+    <meta property="og:description" content="Access your account to manage your store, view saved items, and connect with vendors on campus.">
+    <meta property="og:image" content="https://unicaldgm.com.ng/512.png">
+
+    <meta name="theme-color" content="#FF7A00">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../192.png" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+        /* 🚀 Reset for perfect mobile sizing */
+        * { box-sizing: border-box; }
+
+        :root {
+            --brand-color: #FF7A00; 
+            --brand-gradient: linear-gradient(135deg, #FF7A00, #ea580c);
+            --brand-bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #e2e8f0; 
+            margin: 0; padding: 0; 
+            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            color: var(--text-main);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 🚀 Immersive Background Glow Effects */
+        .bg-glow-1 {
+            position: absolute; width: 350px; height: 350px; background: var(--brand-color);
+            border-radius: 50%; filter: blur(100px); opacity: 0.15; top: -10%; right: -20%; z-index: 0;
+            animation: pulse 6s infinite alternate;
+        }
+        .bg-glow-2 {
+            position: absolute; width: 300px; height: 300px; background: #38bdf8;
+            border-radius: 50%; filter: blur(100px); opacity: 0.1; bottom: -10%; left: -20%; z-index: 0;
+            animation: pulse 6s infinite alternate-reverse;
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+
+        .app-container {
+            background: var(--brand-bg);
+            width: 100%; max-width: 480px; min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1);
+            display: flex; flex-direction: column; justify-content: center;
+            padding: 20px; position: relative; z-index: 1;
+        }
+
+        /* The Premium Form Card */
+        .auth-card {
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            width: 100%; padding: 40px 30px;
+            border-radius: 30px; box-shadow: 0 15px 50px rgba(0,0,0,0.06);
+            border: 1px solid rgba(255,255,255,0.8);
+            position: relative;
+        }
+
+        /* 🚀 Floating Back Button */
+        .floating-back {
+            position: absolute; top: 25px; left: 25px; width: 40px; height: 40px;
+            background: #f1f5f9; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            color: var(--text-muted); text-decoration: none;
+            font-size: 16px; z-index: 10; transition: 0.2s; border: 1px solid transparent;
+        }
+        .floating-back:hover { color: var(--text-main); }
+        .floating-back:active { transform: scale(0.9); background: #e2e8f0; }
+
+        /* 🚀 UNICAL Logo */
+        .auth-logo {
+            width: 85px; height: 85px; object-fit: contain; margin: 0 auto 20px;
+            display: block; border-radius: 20px; background: white;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05); border: 2px solid #f8fafc;
+        }
+
+        .auth-title { text-align: center; font-size: 26px; font-weight: 900; margin: 0 0 5px; letter-spacing: -0.5px; }
+        .auth-subtitle { text-align: center; font-size: 14px; font-weight: 500; color: var(--text-muted); margin: 0 0 30px; }
+
+        /* 🚀 Icon-Embedded Inputs */
+        .form-group { margin-bottom: 18px; width: 100%; }
+        .input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
+        .input-icon { position: absolute; left: 16px; color: #94a3b8; font-size: 18px; transition: 0.2s; }
+        
+        .form-input {
+            width: 100%; padding: 15px 15px 15px 48px; border: 2px solid #e2e8f0;
+            border-radius: 14px; font-size: 14px; font-weight: 500; font-family: 'Inter', sans-serif;
+            outline: none; transition: 0.2s; background: #f8fafc; color: var(--text-main);
+        }
+        .form-input:focus { border-color: var(--brand-color); background: white; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.1); }
+        .form-input:focus + .input-icon { color: var(--brand-color); }
+
+        .toggle-password { position: absolute; right: 16px; color: #94a3b8; cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px; }
+        .toggle-password:active { transform: scale(0.8); }
+
+        .forgot-password { display: block; text-align: right; font-size: 13px; color: var(--brand-color); font-weight: 700; cursor: pointer; margin-top: -5px; margin-bottom: 20px; transition: 0.2s; }
+        .forgot-password:active { opacity: 0.7; }
+
+        /* 🚀 Terms and Conditions Checkbox */
+        .terms-group {
+            display: flex; align-items: flex-start; gap: 10px; margin-bottom: 25px; margin-top: 5px;
+        }
+        .terms-checkbox {
+            width: 18px; height: 18px; margin-top: 2px; accent-color: var(--brand-color); cursor: pointer; flex-shrink: 0;
+        }
+        .terms-text {
+            font-size: 13px; color: var(--text-muted); font-weight: 500; line-height: 1.4;
+        }
+        .terms-text a {
+            color: var(--brand-color); text-decoration: none; font-weight: 700; transition: 0.2s;
+        }
+        .terms-text a:active { opacity: 0.7; }
+
+        /* 🚀 Premium Gradient Button */
+        .auth-btn {
+            width: 100%; background: var(--brand-gradient); color: white; border: none;
+            padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 800;
+            cursor: pointer; transition: 0.2s; box-shadow: 0 8px 25px rgba(255, 122, 0, 0.3);
+            display: flex; justify-content: center; align-items: center; gap: 8px;
+        }
+        .auth-btn:active { transform: scale(0.97); box-shadow: 0 4px 15px rgba(255, 122, 0, 0.2); }
+        .auth-btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .auth-switch { text-align: center; margin-top: 30px; font-size: 14px; font-weight: 500; color: var(--text-muted); }
+        .auth-switch span { color: var(--brand-color); font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .auth-switch span:active { opacity: 0.7; }
+
+        .message-box { padding: 14px; border-radius: 12px; font-size: 13px; font-weight: 600; text-align: center; margin-bottom: 20px; display: none; }
+        .error-msg { color: #ef4444; background: #fef2f2; border: 1px solid #fecaca; }
+        .success-msg { color: #059669; background: #d1fae5; border: 1px solid #6ee7b7; }
+
+        .signup-only { display: none; }
+
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES FOR LOGIN PAGE         */
+        /* ========================================= */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;}
+        
+        body.dark-mode .floating-back { background: #0f172a !important; color: #94a3b8 !important; border-color: #334155 !important; }
+        body.dark-mode .floating-back:hover { color: #f1f5f9 !important; }
+        
+        body.dark-mode .auth-card { 
+            background: rgba(30, 41, 59, 0.9) !important; border-color: #334155 !important; 
+            box-shadow: 0 15px 50px rgba(0,0,0,0.5) !important; 
+        }
+        
+        body.dark-mode .auth-logo { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .auth-title { color: #f1f5f9 !important; }
+        body.dark-mode .auth-subtitle { color: #94a3b8 !important; }
+        
+        body.dark-mode .form-input { 
+            background: #0f172a !important; color: #f1f5f9 !important; border-color: #334155 !important; 
+        }
+        body.dark-mode .form-input:focus { border-color: var(--brand-color) !important; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.15) !important;}
+        body.dark-mode .input-icon { color: #64748b !important; }
+        body.dark-mode .form-input:focus ~ .input-icon { color: var(--brand-color) !important; }
+        
+        body.dark-mode .terms-text { color: #cbd5e1 !important; }
+
+        body.dark-mode .auth-switch { color: #94a3b8 !important; }
+        body.dark-mode .error-msg { background: rgba(239, 68, 68, 0.1) !important; border-color: #ef4444 !important; color: #fca5a5 !important; }
+        body.dark-mode .success-msg { background: rgba(16, 185, 129, 0.1) !important; border-color: #10b981 !important; color: #6ee7b7 !important; }
+    </style>
+</head>
+<body>
+    <script>
+        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+    </script>
+
+    <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
+
+    <div class="app-container">
+        
+        <div class="auth-card">
+            <a href="#" onclick="goBackOrHome(event)" class="floating-back"><i class="fas fa-arrow-left"></i></a>
+
+            <img src="../asset/img/logo.png" alt="UNICAL Market" class="auth-logo" onerror="this.src='../192.png'; this.onerror=null;">
+            
+            <h1 class="auth-title" id="page-title">Welcome Back</h1>
+            <p class="auth-subtitle" id="page-subtitle">Sign in to your student account</p>
+
+            <div class="message-box" id="msg-box"></div>
+
+            <form id="auth-form" onsubmit="processAuth(event)">
+                
+                <div class="form-group signup-only">
+                    <div class="input-wrapper">
+                        <input type="text" id="name" class="form-input" placeholder="Full Name *">
+                        <i class="far fa-user input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group signup-only">
+                    <div class="input-wrapper">
+                        <input type="tel" id="phone" class="form-input" placeholder="Phone Number *">
+                        <i class="fas fa-phone-alt input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="email" id="email" class="form-input" placeholder="example@gmail.com" required>
+                        <i class="far fa-envelope input-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="input-wrapper">
+                        <input type="password" id="password" class="form-input" placeholder="Password *" required>
+                        <i class="fas fa-lock input-icon"></i>
+                        <i class="far fa-eye toggle-password" onclick="toggleVis('password', this)"></i>
+                    </div>
+                </div>
+
+                <div class="signup-only terms-group">
+                    <input type="checkbox" id="terms-check" class="terms-checkbox">
+                    <span class="terms-text">I have read and agree to the <a href="../terms/index.html" target="_blank">Terms & Conditions</a></span>
+                </div>
+
+                <span class="forgot-password" id="forgot-btn" onclick="recoverPassword()">Forgot Password?</span>
+
+                <button type="submit" class="auth-btn" id="submit-btn">Sign In</button>
+            </form>
+
+            <div class="auth-switch" id="switch-text">
+                Don't have an account? <span onclick="switchView()">Create one</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="../asset/script.js"></script>
+
+    <script>
+        let isSignUpMode = false;
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        function displayMessage(text, isError) {
+            const msgBox = document.getElementById('msg-box');
+            msgBox.innerHTML = isError ? `<i class="fas fa-exclamation-circle"></i> ` : `<i class="fas fa-check-circle"></i> `;
+            msgBox.appendChild(document.createTextNode(text)); 
+            msgBox.className = isError ? 'message-box error-msg' : 'message-box success-msg';
+            msgBox.style.display = 'block';
+        }
+
+        window.toggleVis = function(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = "password";
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function getSmartRedirectUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.has('redirect')) {
+                return escapeHTML(urlParams.get('redirect'));
+            }
+
+            const referrer = document.referrer;
+            const currentWebsite = window.location.origin;
+
+            if (referrer && referrer.startsWith(currentWebsite) && !referrer.includes('/login/') && !referrer.includes('/reset-password/')) {
+                return referrer; 
+            }
+
+            return "../index.html";
+        }
+
+        window.goBackOrHome = function(event) {
+            event.preventDefault();
+            window.location.href = getSmartRedirectUrl();
+        }
+
+        window.switchView = function() {
+            isSignUpMode = !isSignUpMode;
+            document.getElementById('msg-box').style.display = 'none';
+
+            const signupFields = document.querySelectorAll('.signup-only');
+
+            if (isSignUpMode) {
+                document.getElementById('page-title').innerText = "Create Account";
+                document.getElementById('page-subtitle').innerText = "Join UNICAL Digital Market";
+                document.getElementById('submit-btn').innerText = "Sign Up";
+                document.getElementById('forgot-btn').style.display = "none";
+                document.getElementById('switch-text').innerHTML = `Already have an account? <span onclick="switchView()">Sign In</span>`;
+                
+                // 🚀 FIX: Used 'block' and 'flex' correctly so inputs stay 100% width
+                signupFields.forEach(f => {
+                    if (f.classList.contains('terms-group')) {
+                        f.style.display = "flex";
+                    } else {
+                        f.style.display = "block";
+                    }
+                });
+                
+                document.getElementById('name').required = true;
+                document.getElementById('phone').required = true;
+                document.getElementById('terms-check').required = true;
+            } else {
+                document.getElementById('page-title').innerText = "Welcome Back";
+                document.getElementById('page-subtitle').innerText = "Sign in to your student account";
+                document.getElementById('submit-btn').innerText = "Sign In";
+                document.getElementById('forgot-btn').style.display = "block";
+                document.getElementById('switch-text').innerHTML = `Don't have an account? <span onclick="switchView()">Create one</span>`;
+                
+                signupFields.forEach(f => f.style.display = "none");
+                
+                document.getElementById('name').required = false;
+                document.getElementById('phone').required = false;
+                document.getElementById('terms-check').required = false;
+            }
+        };
+
+        window.processAuth = async function(event) {
+            event.preventDefault(); 
+            
+            const emailVal = document.getElementById('email').value.trim();
+            const passwordVal = document.getElementById('password').value;
+            const nameVal = document.getElementById('name').value.trim();
+            const phoneVal = document.getElementById('phone').value.trim();
+            const btn = document.getElementById('submit-btn');
+
+            // Hard JavaScript Fallback Validation
+            if (isSignUpMode) {
+                if (!nameVal) return displayMessage("Full Name is required.", true);
+                if (!phoneVal) return displayMessage("Phone Number is required.", true);
+                if (!document.getElementById('terms-check').checked) return displayMessage("You must agree to the Terms & Conditions.", true);
+            }
+
+            document.getElementById('msg-box').style.display = 'none';
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
+            try {
+                if (isSignUpMode) {
+                    const { data, error } = await supabaseClient.auth.signUp({
+                        email: emailVal,
+                        password: passwordVal,
+                        options: {
+                            data: {
+                                full_name: nameVal, 
+                                phone: phoneVal
+                            }
+                        }
+                    });
+
+                    if (error) throw error;
+                    
+                    displayMessage("Success! Redirecting...", false);
+                    setTimeout(() => { window.location.href = getSmartRedirectUrl(); }, 1000);
+
+                } else {
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({
+                        email: emailVal,
+                        password: passwordVal
+                    });
+
+                    if (error) throw error;
+                    
+                    window.location.href = getSmartRedirectUrl();
+                }
+            } catch (error) {
+                console.error("Auth Error:", error);
+                displayMessage(error.message, true);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = isSignUpMode ? "Sign Up" : "Sign In";
+            }
+        };
+
+        window.recoverPassword = async function() {
+            const emailVal = document.getElementById('email').value.trim();
+            if (!emailVal) {
+                displayMessage("Please type your email in the box first, then click Forgot Password.", true);
+                return;
+            }
+
+            document.getElementById('msg-box').style.display = 'none';
+            const btn = document.getElementById('submit-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending Link...';
+            btn.disabled = true;
+
+            try {
+                const { error } = await supabaseClient.auth.resetPasswordForEmail(emailVal, {
+                    redirectTo: window.location.origin + '/reset-password/'
+                });
+
+                if (error) throw error;
+                displayMessage("Reset link sent! Please check your email inbox.", false);
+            } catch (error) {
+                displayMessage(error.message, true);
+            } finally {
+                btn.innerText = "Sign In";
+                btn.disabled = false;
+            }
+        };
+    </script>
+</body>
+</html>

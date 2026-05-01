@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <script>
+        window.location.replace("../coming-soon/");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>All Vendors | UNICAL Market</title>
+    
+    <!-- 🚀 PRIMARY SEO -->
+    <meta name="description" content="Discover verified student entrepreneurs and businesses operating within the University of Calabar. Connect with the best vendors on UNICAL Digital Market.">
+    <meta name="keywords" content="UNICAL vendors, Calabar student business, University of Calabar services, verified student sellers, UnicalDGM shops">
+    <meta name="author" content="UnicalDGM">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://unicaldgm.com.ng/vendors/">
+
+    <!-- 🚀 MOBILE APP & ICONS -->
+    <meta name="theme-color" content="#FF7A00">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../192.png" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+        /* 🚀 Reset & Variables */
+        * { box-sizing: border-box; }
+        :root { 
+            --brand-color: #FF7A00; 
+            --brand-gradient: linear-gradient(135deg, #FF7A00, #ea580c);
+            --brand-bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        /* 🚀 STRICT RESPONSIVENESS FIX: Kills horizontal scroll on all devices */
+        html, body {
+            font-family: 'Poppins', sans-serif;
+            background: #e2e8f0; 
+            margin: 0; padding: 0; 
+            display: flex; justify-content: center; min-height: 100vh;
+            color: var(--text-main);
+            overflow-x: hidden;
+            width: 100%;
+            max-width: 100vw;
+        }
+
+        .app-container {
+            background: var(--brand-bg); width: 100%; max-width: 480px; min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1); display: flex; flex-direction: column;
+            position: relative; z-index: 1; overflow-x: hidden; /* Backup boundary */
+        }
+
+        /* 🚀 Glassmorphic Header */
+        .header {
+            background: rgba(248, 250, 252, 0.9); padding: 15px 20px 10px;
+            position: sticky; top: 0; z-index: 100;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            width: 100%;
+        }
+
+        .header-top-flex { display: flex; align-items: center; gap: 15px; margin-bottom: 15px; width: 100%;}
+        .back-btn { background: white; color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid #e2e8f0; font-size: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02); flex-shrink: 0;}
+        .back-btn:active { transform: scale(0.9); background: #f1f5f9; }
+        .page-title { font-size: 20px; font-weight: 900; color: var(--text-main); margin: 0; letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        
+        /* 🚀 Premium Search Container */
+        .search-container { background: white; border-radius: 16px; display: flex; align-items: center; padding: 12px 18px; margin-bottom: 10px; border: 2px solid transparent; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.02); width: 100%;}
+        .search-container:focus-within { border-color: var(--brand-color); box-shadow: 0 4px 15px rgba(255, 122, 0, 0.1); }
+        .search-container input[type="search"] { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; font-weight: 500; color: var(--text-main); font-family: inherit; -webkit-appearance: none; }
+        .search-container input::placeholder { color: #94a3b8; }
+        .search-icon { color: #94a3b8; margin-right: 12px; cursor: pointer; font-size: 16px; flex-shrink: 0;}
+
+        .content-area { padding: 20px 0 90px 0; width: 100%; }
+        
+        /* 🚀 RESPONSIVENESS FIX: Tighter padding and gaps for narrow screens */
+        .vendor-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 15px; width: 100%;}
+        
+        /* 🚀 Modernized Vendor Card */
+        .vendor-card {
+            background: white; border-radius: 20px; padding: 15px 12px; text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.03); border: 1px solid #e2e8f0;
+            transition: 0.2s; display: flex; flex-direction: column; align-items: center;
+            height: 100%; justify-content: space-between; position: relative; cursor: pointer;
+            width: 100%; min-width: 0; /* Ensures it doesn't break grid */
+        }
+        .vendor-card:active { transform: scale(0.97); background: #f8fafc; }
+
+        /* Reduced logo size to fit nicely on small phones */
+        .vendor-logo {
+            width: 65px; height: 65px; border-radius: 50%; object-fit: cover;
+            border: 1px solid #e2e8f0; background: #f8fafc; margin-bottom: 10px; flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        
+        .vendor-info-wrapper { flex-grow: 1; width: 100%; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
+        
+        .vendor-name { 
+            font-size: 14px; font-weight: 900; color: var(--text-main); margin-bottom: 4px; 
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; display: block; letter-spacing: -0.3px;
+        }
+        
+        .vendor-desc { 
+            font-size: 12px; color: var(--text-muted); line-height: 1.5; font-weight: 500;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; 
+            overflow: hidden; margin-bottom: 10px; word-break: break-word;
+        }
+        
+        /* 🚀 Items Count Badge */
+        .item-count-badge {
+            background: rgba(15, 23, 42, 0.05); color: var(--text-muted); font-size: 11px;
+            font-weight: 700; padding: 4px 10px; border-radius: 8px; margin-bottom: 12px;
+            display: inline-flex; align-items: center; justify-content: center; gap: 4px;
+            white-space: nowrap; max-width: 100%;
+        }
+
+        .visit-btn {
+            background: rgba(255, 122, 0, 0.1); color: var(--brand-color); border: none;
+            width: 100%; padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 800;
+            cursor: pointer; transition: 0.2s; margin-top: auto;
+        }
+        .vendor-card:active .visit-btn { background: var(--brand-color); color: white; }
+
+        /* Skeletons */
+        .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        
+        .sk-card { background: white; border-radius: 20px; padding: 15px 12px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; width: 100%; min-width: 0;}
+        .sk-avatar { width: 65px; height: 65px; border-radius: 50%; margin-bottom: 10px; flex-shrink: 0; }
+        .sk-line-1 { width: 70%; height: 14px; border-radius: 8px; margin-bottom: 8px; }
+        .sk-line-2 { width: 90%; height: 10px; border-radius: 6px; margin-bottom: 6px; }
+        .sk-line-3 { width: 50%; height: 16px; border-radius: 8px; margin-bottom: 12px; }
+        .sk-btn { width: 100%; height: 35px; border-radius: 12px; margin-top: auto; }
+
+        .end-message { text-align: center; padding: 40px 20px; color: #94a3b8; font-size: 14px; font-weight: 600; display: none; }
+        .end-message i { font-size: 28px; color: #e2e8f0; margin-bottom: 10px; display: block; }
+
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES                        */
+        /* ========================================= */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;}
+        
+        body.dark-mode .header { background: rgba(15, 23, 42, 0.95) !important; border-bottom-color: #334155 !important; box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important;}
+        body.dark-mode .page-title { color: #f1f5f9 !important; }
+        body.dark-mode .back-btn { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important;}
+        body.dark-mode .back-btn:active { background: #334155 !important; }
+        
+        body.dark-mode .search-container { background: #1e293b !important; border-color: #334155 !important; box-shadow: none !important;}
+        body.dark-mode .search-container:focus-within { border-color: var(--brand-color) !important; }
+        body.dark-mode .search-container input { color: #f1f5f9 !important; }
+
+        body.dark-mode .vendor-card { background: rgba(30, 41, 59, 0.7) !important; border-color: #334155 !important; box-shadow: 0 8px 25px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .vendor-card:active { background: #1e293b !important; }
+        body.dark-mode .vendor-logo { border-color: #334155 !important; background: #0f172a !important; }
+        
+        body.dark-mode .vendor-name { color: #f1f5f9 !important; }
+        body.dark-mode .vendor-desc { color: #cbd5e1 !important; }
+        body.dark-mode .item-count-badge { background: rgba(255,255,255,0.05) !important; color: #94a3b8 !important;}
+        
+        body.dark-mode .visit-btn { background: rgba(255, 122, 0, 0.15) !important; }
+        body.dark-mode .vendor-card:active .visit-btn { background: var(--brand-color) !important; color: white !important; }
+
+        body.dark-mode .sk-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .sk-shimmer { background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%) !important; background-size: 200% 100% !important; }
+        
+        body.dark-mode .end-message { color: #94a3b8 !important; }
+        body.dark-mode .end-message i { color: #334155 !important; }
+    </style>
+</head>
+<body>
+    <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
+
+    <div class="app-container">
+        
+        <div class="header">
+            <div class="header-top-flex">
+                <!-- 🚀 SMART BACK BUTTON -->
+                <button onclick="smartBack(event)" class="back-btn"><i class="fas fa-arrow-left"></i></button>
+                <h1 class="page-title">Verified Vendors</h1>
+            </div>
+            
+            <form class="search-container" action="#" onsubmit="return triggerSearch(event)">
+                <i class="fas fa-search search-icon" onclick="triggerSearch(event)"></i>
+                <input type="search" id="vendor-search" placeholder="Search by name or category...">
+            </form>
+        </div>
+
+        <div class="content-area">
+            
+            <div class="vendor-grid" id="main-vendor-grid"></div>
+
+            <div class="vendor-grid" id="skeleton-loader" style="padding-top: 15px; display: none;">
+                <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div><div class="sk-shimmer sk-btn"></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div><div class="sk-shimmer sk-btn"></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div><div class="sk-shimmer sk-btn"></div></div>
+                <div class="sk-card"><div class="sk-shimmer sk-avatar"></div><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div><div class="sk-shimmer sk-btn"></div></div>
+            </div>
+
+            <div id="scroll-sentinel" style="height: 1px; width: 100%;"></div>
+
+            <div class="end-message" id="end-message">
+                <i class="fas fa-check-circle"></i>
+                You've seen all verified vendors.
+            </div>
+
+        </div>
+
+        <div class="bottom-nav">
+            <a href="../index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')">
+                <i class="fas fa-comment-dots"></i>
+                <span class="red-dot msg-dot"></span>
+                <span>Messages</span>
+            </a>
+            <div class="nav-fab" onclick="requireLogin('../add-product/index.html')"><i class="fas fa-plus"></i></div>
+            <a href="#" class="nav-item" onclick="requireLogin('../saved/index.html')"><i class="fas fa-heart"></i><span>Saved</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../account/index.html')"><i class="fas fa-user"></i><span>Account</span></a>
+        </div>
+
+    </div>
+
+    <script src="../asset/script.js"></script>
+
+    <script>
+        let allVendors = [];
+        let currentDisplayList = [];
+        let vendorsLoaded = 0;
+        let isFetchingBatch = false;
+        
+        // Object to hold product counts keyed by vendor_id
+        let vendorProductCounts = {};
+
+        // 🚀 SMART BACK BUTTON LOGIC
+        function getSmartRedirectUrl() {
+            const referrer = document.referrer;
+            const currentWebsite = window.location.origin;
+
+            if (referrer && referrer.startsWith(currentWebsite) && !referrer.includes('/login/') && !referrer.includes('/reset-password/')) {
+                return referrer; 
+            }
+            return "../index.html"; 
+        }
+
+        window.smartBack = function(event) {
+            if (event) event.preventDefault();
+            window.location.href = getSmartRedirectUrl();
+        }
+
+        // 🛡️ XSS Sanitizers & Array Shuffle
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+        function escapeJS(str) {
+            if (!str) return '';
+            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+        }
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchActiveVendors();
+        });
+
+        // Fetch the product count for all vendors BEFORE rendering
+        async function fetchProductCounts() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('products')
+                    .select('vendor_id')
+                    .eq('status', 'Active');
+                    
+                if (error) throw error;
+                
+                if(data) {
+                    data.forEach(p => {
+                        if(p.vendor_id) {
+                            vendorProductCounts[p.vendor_id] = (vendorProductCounts[p.vendor_id] || 0) + 1;
+                        }
+                    });
+                }
+            } catch(e) {
+                console.error("Could not fetch product counts:", e);
+            }
+        }
+
+        async function fetchActiveVendors() {
+            document.getElementById('skeleton-loader').style.display = 'grid';
+            
+            // Wait for counts to load first
+            await fetchProductCounts();
+
+            const cachedVendors = sessionStorage.getItem('vendors_page_data');
+
+            // 🧠 ONLY use cache if we arrived via "Back" button
+            if (typeof isBackNavigation !== 'undefined' && isBackNavigation && cachedVendors) {
+                allVendors = JSON.parse(cachedVendors);
+                currentDisplayList = [...allVendors];
+                
+                const savedCount = parseInt(sessionStorage.getItem('vendors_loaded_count') || 50);
+                document.getElementById('skeleton-loader').style.display = 'none';
+                
+                renderHTMLBatch(0, savedCount);
+                vendorsLoaded = savedCount;
+                
+                observer.observe(document.getElementById('scroll-sentinel'));
+                return;
+            }
+
+            try {
+                // Fetch fresh vendors
+                const { data, error } = await supabaseClient
+                    .from('vendors')
+                    .select('id, business_name, description, logo_url, subscription_plan, is_pinned')
+                    .eq('is_active', true)
+                    .order('is_pinned', { ascending: false });
+
+                if (error) throw error;
+
+                // Split pinned and unpinned, shuffle the unpinned
+                const pinnedVendors = data.filter(v => v.is_pinned === true);
+                const unpinnedVendors = shuffleArray(data.filter(v => v.is_pinned !== true));
+
+                allVendors = [...pinnedVendors, ...unpinnedVendors];
+                currentDisplayList = [...allVendors];
+                
+                sessionStorage.setItem('vendors_page_data', JSON.stringify(allVendors));
+                
+                loadNextBatch();
+                observer.observe(document.getElementById('scroll-sentinel'));
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('skeleton-loader').style.display = 'none';
+                document.getElementById('main-vendor-grid').innerHTML = `<p style="grid-column:span 2; text-align:center; color:#ef4444; padding: 40px; font-weight:600;">Failed to load vendors. Please check connection.</p>`;
+            }
+        }
+
+        function renderHTMLBatch(startIndex, endIndex) {
+            const grid = document.getElementById('main-vendor-grid');
+            const batch = currentDisplayList.slice(startIndex, endIndex);
+
+            batch.forEach(v => {
+                const logoUrl = escapeHTML(v.logo_url || 'https://via.placeholder.com/150x150?text=Logo');
+                const safeName = escapeHTML(v.business_name ? v.business_name : 'Verified Vendor');
+                const safeDesc = escapeHTML(v.description || "Verified Seller on UNICAL Digital Market");
+                const safeId = escapeJS(v.id);
+                
+                // Get the item count from our tallied object
+                const itemCount = vendorProductCounts[v.id] || 0;
+
+                let badgeColor = "#38bdf8"; 
+                if (v.subscription_plan === "Influencer") badgeColor = "#fbbf24"; 
+                if (v.subscription_plan === "Icon") badgeColor = "#1e293b"; 
+
+                // 🚀 Pinned Badge (Replaced Featured with Pinned and Thumbtack)
+                const pinBadge = v.is_pinned ? `<div style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: #fbbf24; padding: 3px 8px; border-radius: 8px; font-size: 10px; font-weight: 800; backdrop-filter: blur(4px); z-index: 10;"><i class="fas fa-thumbtack" style="margin-right:3px;"></i> Pinned</div>` : '';
+
+                grid.insertAdjacentHTML('beforeend', `
+                    <div class="vendor-card" onclick="window.location.href='profile/index.html?id=${safeId}'">
+                        ${pinBadge}
+                        <img src="${logoUrl}" class="vendor-logo" onerror="this.src='https://via.placeholder.com/150x150?text=Logo'">
+                        <div class="vendor-info-wrapper">
+                            <div class="vendor-name">${safeName} <i class="fas fa-check-circle" style="color: ${badgeColor};"></i></div>
+                            <div class="vendor-desc">${safeDesc}</div>
+                        </div>
+                        <div class="item-count-badge">
+                            <i class="fas fa-box-open" style="color: var(--brand-color);"></i> Items: ${itemCount}
+                        </div>
+                        <button class="visit-btn">Visit Store</button>
+                    </div>
+                `);
+            });
+        }
+
+        function loadNextBatch() {
+            if (isFetchingBatch) return;
+
+            const grid = document.getElementById('main-vendor-grid');
+            const skeleton = document.getElementById('skeleton-loader');
+            const endMsg = document.getElementById('end-message');
+            
+            if (currentDisplayList.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: span 2; text-align: center; padding: 60px 20px; color: #94a3b8;">
+                        <i class="fas fa-store-slash" style="font-size: 50px; margin-bottom: 15px; color: #cbd5e1;"></i>
+                        <h3 style="font-size: 18px; color: var(--text-main); margin: 0 0 5px; font-weight: 800;">No vendor found</h3>
+                        <p style="font-size: 13px; font-weight:500;">Try adjusting your search or spelling.</p>
+                    </div>`;
+                endMsg.style.display = 'none';
+                skeleton.style.display = 'none';
+                return;
+            }
+
+            if (vendorsLoaded >= currentDisplayList.length) return;
+
+            isFetchingBatch = true;
+            skeleton.style.display = 'grid';
+
+            setTimeout(() => {
+                skeleton.style.display = 'none';
+
+                const batchSize = vendorsLoaded === 0 ? 50 : 40;
+                renderHTMLBatch(vendorsLoaded, vendorsLoaded + batchSize);
+
+                vendorsLoaded += batchSize;
+                sessionStorage.setItem('vendors_loaded_count', vendorsLoaded);
+                
+                isFetchingBatch = false;
+
+                if (vendorsLoaded >= currentDisplayList.length) {
+                    endMsg.style.display = 'block';
+                }
+            }, 500);
+        }
+
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                loadNextBatch();
+            }
+        }, { rootMargin: "100px" });
+
+        function triggerSearch(e) {
+            if (e) e.preventDefault(); 
+            document.getElementById('vendor-search').blur(); 
+            
+            const query = document.getElementById('vendor-search').value.toLowerCase().trim();
+            
+            const filteredList = allVendors.filter(v => {
+                return (
+                    (v.business_name && v.business_name.toLowerCase().includes(query)) || 
+                    (v.description && v.description.toLowerCase().includes(query))
+                );
+            });
+
+            // Keep pinned vendors at top during search
+            const pinnedFiltered = filteredList.filter(v => v.is_pinned === true);
+            const unpinnedFiltered = filteredList.filter(v => v.is_pinned !== true);
+            
+            currentDisplayList = [...pinnedFiltered, ...unpinnedFiltered];
+
+            vendorsLoaded = 0;
+            document.getElementById('main-vendor-grid').innerHTML = "";
+            document.getElementById('end-message').style.display = 'none';
+            loadNextBatch();
+
+            return false;
+        }
+    </script>
+</body>
+</html>

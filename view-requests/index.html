@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <script>
+        window.location.replace("../coming-soon/");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Customer Requests | Vendor Dashboard</title>
+    
+    <!-- 🚀 PRIMARY SEO -->
+    <meta name="description" content="View active customer requests and fulfill orders on UNICAL Digital Market.">
+    <meta name="robots" content="noindex, nofollow">
+
+    <!-- 🚀 MOBILE APP & ICONS -->
+    <meta name="theme-color" content="#FF7A00">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../192.png" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+        /* 🚀 Reset & Variables */
+        * { box-sizing: border-box; }
+        :root {
+            --brand-color: #FF7A00; 
+            --brand-gradient: linear-gradient(135deg, #FF7A00, #ea580c);
+            --brand-bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #e2e8f0; 
+            margin: 0; padding: 0; 
+            display: flex; justify-content: center; min-height: 100vh;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            background: var(--brand-bg); width: 100%; max-width: 480px; min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1); display: flex; flex-direction: column;
+            position: relative; z-index: 1;
+        }
+
+        /* 🚀 Glassmorphic Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95); padding: 15px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .header-top-flex { display: flex; align-items: center; gap: 15px; }
+        .back-btn { background: white; color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid #e2e8f0; font-size: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
+        .back-btn:active { transform: scale(0.9); background: #f1f5f9; }
+        .page-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.3px;}
+
+        .content-area { padding: 0 0 90px 0; flex: 1; }
+
+        /* 🚀 Empty / Access Denied State */
+        #access-denied { display: none; text-align: center; padding: 80px 20px; flex-direction: column; align-items: center; }
+        .empty-icon-box { background: #f1f5f9; width: 100px; height: 100px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-bottom: 25px; }
+        #access-denied i { font-size: 40px; color: var(--brand-color); }
+        #access-denied h3 { font-size: 20px; font-weight: 900; color: var(--text-main); margin: 0 0 10px; letter-spacing: -0.5px;}
+        #access-denied p { font-size: 14px; font-weight: 500; color: var(--text-muted); margin-bottom: 30px; line-height: 1.5; max-width: 280px; }
+        .reg-btn { background: var(--brand-gradient); color: white; padding: 16px 30px; border-radius: 16px; font-weight: 800; font-size: 15px; text-decoration: none; transition: 0.2s; box-shadow: 0 8px 25px rgba(255, 122, 0, 0.3); }
+        .reg-btn:active { transform: scale(0.96); box-shadow: 0 4px 15px rgba(255, 122, 0, 0.2);}
+
+        /* 🚀 Request Feed & Cards */
+        .req-feed { padding: 20px; }
+        .req-card { background: white; border-radius: 24px; padding: 25px 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.03); border: 1px solid #f1f5f9; margin-bottom: 20px; transition: 0.2s;}
+        
+        .req-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+        .req-title { font-size: 16px; font-weight: 900; color: var(--text-main); line-height: 1.4; letter-spacing: -0.3px;}
+        .req-budget { font-size: 15px; font-weight: 900; color: #10b981; background: #ecfdf5; padding: 6px 12px; border-radius: 10px; white-space: nowrap; margin-left: 15px; border: 1px solid #d1fae5;}
+        
+        .req-cat { display: inline-block; font-size: 11px; font-weight: 800; color: var(--brand-color); background: rgba(255, 122, 0, 0.1); padding: 5px 12px; border-radius: 8px; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 0.5px;}
+        
+        .req-desc { 
+            font-size: 14px; font-weight: 500; color: #475569; line-height: 1.6; margin-bottom: 20px; 
+            background: #f8fafc; padding: 15px; border-radius: 12px; border-left: 4px solid var(--brand-color); 
+            max-height: 120px; overflow-y: auto; word-break: break-word; border-right: 1px solid #f1f5f9; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9;
+        }
+        
+        /* IMAGE STYLES */
+        .req-img { width: 100%; height: 180px; object-fit: cover; border-radius: 14px; margin-bottom: 20px; cursor: pointer; border: 1px solid #e2e8f0; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.05);}
+        .req-img:active { opacity: 0.8; transform: scale(0.99);}
+
+        .req-footer { display: flex; justify-content: space-between; align-items: center; border-top: 2px solid #f8fafc; padding-top: 20px; }
+        .customer-info { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; color: var(--text-muted); }
+        .customer-icon-bg { background: #f1f5f9; width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; color: #64748b; font-size: 16px;}
+        
+        /* Contact Button */
+        .wa-btn { background: #25D366; color: white; border: none; padding: 12px 18px; border-radius: 14px; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.2s; text-decoration: none; box-shadow: 0 8px 25px rgba(37, 211, 102, 0.25);}
+        .wa-btn:active { transform: scale(0.96); box-shadow: 0 4px 15px rgba(37, 211, 102, 0.2);}
+        .wa-btn.disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; color: white;}
+
+        /* Skeletons */
+        .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .sk-card { background: white; border-radius: 24px; padding: 25px 20px; border: 1px solid #f1f5f9; margin-bottom: 20px; }
+        .sk-line-1 { width: 50%; height: 20px; border-radius: 6px; margin-bottom: 20px; }
+        .sk-line-2 { width: 100%; height: 80px; border-radius: 12px; margin-bottom: 20px; }
+        .sk-line-3 { width: 100%; height: 45px; border-radius: 12px; }
+
+        /* FULLSCREEN IMAGE MODAL */
+        .img-modal { 
+            display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; 
+            background-color: rgba(15, 23, 42, 0.95); backdrop-filter: blur(5px); flex-direction: column; justify-content: center; align-items: center; 
+        }
+        .img-modal img { max-width: 90%; max-height: 85vh; border-radius: 16px; object-fit: contain; box-shadow: 0 25px 50px rgba(0,0,0,0.5);}
+        .close-modal { position: absolute; top: 20px; right: 20px; color: #94a3b8; font-size: 24px; cursor: pointer; background: rgba(255,255,255,0.1); border-radius: 50%; width: 45px; height: 45px; display: flex; justify-content: center; align-items: center; transition: 0.2s;}
+        .close-modal:active { background: rgba(255,255,255,0.2); transform: scale(0.9);}
+
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES FOR VIEW REQUESTS      */
+        /* ========================================= */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;}
+        
+        body.dark-mode .header { background: rgba(15, 23, 42, 0.95) !important; border-bottom-color: #334155 !important; box-shadow: 0 4px 15px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .page-title { color: #f1f5f9 !important; }
+        body.dark-mode .back-btn { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important;}
+        body.dark-mode .back-btn:active { background: #334155 !important; }
+        
+        body.dark-mode .empty-icon-box { background: #1e293b !important; }
+        body.dark-mode #access-denied h3 { color: #f1f5f9 !important; }
+        body.dark-mode #access-denied p { color: #94a3b8 !important; }
+
+        body.dark-mode .req-card { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;}
+        body.dark-mode .req-title { color: #f1f5f9 !important; }
+        
+        body.dark-mode .req-budget { background: rgba(16, 185, 129, 0.1) !important; color: #34d399 !important; border-color: rgba(16, 185, 129, 0.2) !important;}
+        body.dark-mode .req-cat { background: rgba(255, 122, 0, 0.15) !important; color: var(--brand-color) !important; }
+        
+        body.dark-mode .req-desc { background: #0f172a !important; color: #cbd5e1 !important; border-left-color: var(--brand-color) !important; border-right-color: #334155 !important; border-top-color: #334155 !important; border-bottom-color: #334155 !important;}
+        body.dark-mode .req-img { border-color: #334155 !important; }
+        
+        body.dark-mode .req-footer { border-top-color: #334155 !important; }
+        body.dark-mode .customer-icon-bg { background: #0f172a !important; color: #64748b !important; }
+        
+        body.dark-mode .wa-btn.disabled { background: #334155 !important; color: #94a3b8 !important; }
+        
+        body.dark-mode .sk-card { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .sk-shimmer { background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%) !important; background-size: 200% 100% !important; }
+    </style>
+</head>
+<body>
+    <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
+
+    <div class="app-container">
+        
+        <div class="header">
+            <div class="header-top-flex">
+                <!-- 🚀 SMART BACK BUTTON -->
+                <button onclick="smartBack(event)" class="back-btn"><i class="fas fa-arrow-left"></i></button>
+                <h1 class="page-title">Marketplace Requests</h1>
+            </div>
+        </div>
+
+        <div class="content-area">
+            
+            <div id="access-denied">
+                <div class="empty-icon-box">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h3>Vendor Access Only</h3>
+                <p>You must be an approved vendor to view and fulfill customer requests.</p>
+                <a href="../vendor-reg/index.html" class="reg-btn">Become a Vendor</a>
+            </div>
+
+            <div id="vendor-feed" style="display: none;">
+                <div class="req-feed" id="skeleton-loader">
+                    <div class="sk-card"><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div></div>
+                    <div class="sk-card"><div class="sk-shimmer sk-line-1"></div><div class="sk-shimmer sk-line-2"></div><div class="sk-shimmer sk-line-3"></div></div>
+                </div>
+                
+                <div class="req-feed" id="requests-container"></div>
+            </div>
+
+        </div>
+
+        <div id="imageModal" class="img-modal">
+            <div class="close-modal" onclick="closeModal()">&times;</div>
+            <img id="modalImg" src="">
+        </div>
+
+        <div class="bottom-nav">
+            <a href="../index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')"><i class="fas fa-comment-dots"></i><span>Messages</span></a>
+            <div class="nav-fab" onclick="requireLogin('../add-product/index.html')"><i class="fas fa-plus"></i></div>
+            <a href="#" class="nav-item" onclick="requireLogin('../saved/index.html')"><i class="fas fa-heart"></i><span>Saved</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../account/index.html')"><i class="fas fa-user"></i><span>Account</span></a>
+        </div>
+    </div>
+
+    <script src="../asset/script.js"></script>
+
+    <script>
+        let currentUser = null;
+
+        // 🚀 SMART BACK BUTTON LOGIC
+        function getSmartRedirectUrl() {
+            const referrer = document.referrer;
+            const currentWebsite = window.location.origin;
+
+            if (referrer && referrer.startsWith(currentWebsite) && !referrer.includes('/login/') && !referrer.includes('/reset-password/')) {
+                return referrer; 
+            }
+            return "../index.html"; 
+        }
+
+        window.smartBack = function(event) {
+            if (event) event.preventDefault();
+            window.location.href = getSmartRedirectUrl();
+        }
+
+        // 🛡️ XSS Sanitizers
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { window.location.href = "../login/index.html"; return; }
+            currentUser = session.user;
+            
+            checkVendorAccess();
+        });
+
+        async function requireLogin(targetUrl) {
+            window.location.href = targetUrl;
+        }
+
+        async function checkVendorAccess() {
+            try {
+                const { data: vendor, error } = await supabaseClient
+                    .from('vendors')
+                    .select('*')
+                    .eq('profile_id', currentUser.id)
+                    .eq('is_active', true) 
+                    .single();
+
+                if (error || !vendor) {
+                    document.getElementById('skeleton-loader').style.display = 'none';
+                    document.getElementById('access-denied').style.display = 'flex';
+                    return;
+                }
+
+                document.getElementById('vendor-feed').style.display = 'block';
+                loadRequests();
+
+            } catch (err) {
+                console.error("Access Check Failed:", err);
+            }
+        }
+
+        async function loadRequests() {
+            const container = document.getElementById('requests-container');
+            const skeleton = document.getElementById('skeleton-loader');
+
+            try {
+                const { data: requests, error } = await supabaseClient
+                    .from('requests')
+                    .select('*, image_url')
+                    .eq('status', 'Active')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                skeleton.style.display = 'none';
+
+                if (!requests || requests.length === 0) {
+                    container.innerHTML = `
+                        <div style="text-align:center; padding: 60px 20px;">
+                            <div style="background: #f1f5f9; width: 90px; height: 90px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin: 0 auto 20px;">
+                                <i class="fas fa-box-open" style="font-size:35px; color:#cbd5e1;"></i>
+                            </div>
+                            <h3 style="color:var(--text-main); margin:0 0 8px; font-weight: 800;">No Requests Yet</h3>
+                            <p style="color:var(--text-muted); font-size:14px; font-weight: 500;">Customers haven't posted any active requests right now. Check back later!</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                const uniqueUserIds = [...new Set(requests.map(r => r.user_id))];
+                
+                const { data: profilesData } = await supabaseClient
+                    .from('profiles')
+                    .select('id, full_name, phone')
+                    .in('id', uniqueUserIds);
+
+                const profileDictionary = {};
+                if (profilesData) {
+                    profilesData.forEach(p => profileDictionary[p.id] = p);
+                }
+
+                container.innerHTML = "";
+
+                requests.forEach(req => {
+                    const fPrice = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(req.budget);
+                    
+                    const userProfile = profileDictionary[req.user_id] || {};
+                    const rawPhone = userProfile.phone || null;
+                    const timeAgo = getTimeAgo(req.created_at);
+
+                    // 🛡️ Apply Sanitization
+                    const safeCustomerName = escapeHTML(userProfile.full_name || "Customer");
+                    const safeName = escapeHTML(req.product_name);
+                    const safeCat = escapeHTML(req.category);
+                    const safeDesc = escapeHTML(req.description);
+
+                    let imageHTML = "";
+                    if (req.image_url) {
+                        imageHTML = `<img src="${escapeHTML(req.image_url)}" class="req-img" onclick="openModal('${escapeHTML(req.image_url)}')" alt="Reference Image">`;
+                    }
+
+                    let waButtonHTML = "";
+                    if (rawPhone) {
+                        const cleanPhone = formatPhoneNumber(rawPhone);
+                        const prefilledMessage = encodeURIComponent(`Hi ${safeCustomerName}, I am a vendor on UNICAL Digital Market. I saw your request for '${req.product_name}' (Budget: ${fPrice}) and I can fulfill it!`);
+                        const waLink = `https://wa.me/${cleanPhone}?text=${prefilledMessage}`;
+                        
+                        waButtonHTML = `<a href="${waLink}" target="_blank" class="wa-btn"><i class="fab fa-whatsapp" style="font-size:18px;"></i> Contact Buyer</a>`;
+                    } else {
+                        waButtonHTML = `<button class="wa-btn disabled" disabled><i class="fas fa-phone-slash"></i> No Number</button>`;
+                    }
+
+                    container.insertAdjacentHTML('beforeend', `
+                        <div class="req-card">
+                            <div class="req-header">
+                                <div class="req-title">${safeName}</div>
+                                <div class="req-budget">${fPrice}</div>
+                            </div>
+                            
+                            <div class="req-cat"><i class="fas fa-tag" style="margin-right: 4px;"></i> ${safeCat}</div>
+                            
+                            ${imageHTML}
+                            
+                            <div class="req-desc">"${safeDesc}"</div>
+                            
+                            <div class="req-footer">
+                                <div class="customer-info">
+                                    <div class="customer-icon-bg">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div>
+                                        <div style="color:var(--text-main); font-weight:800; font-size: 13px;">${safeCustomerName}</div>
+                                        <div style="font-size:11px; font-weight:500; color:var(--text-muted);">Posted ${timeAgo}</div>
+                                    </div>
+                                </div>
+                                ${waButtonHTML}
+                            </div>
+                        </div>
+                    `);
+                });
+
+            } catch (err) {
+                console.error("Failed to load requests:", err);
+                skeleton.style.display = 'none';
+                container.innerHTML = `<p style="text-align:center; color:#ef4444; font-weight: 600; padding: 20px;">Error loading requests. Please check your connection.</p>`;
+            }
+        }
+
+        function openModal(imgSrc) {
+            document.getElementById('modalImg').src = imgSrc;
+            document.getElementById('imageModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+            document.getElementById('modalImg').src = '';
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('imageModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        function formatPhoneNumber(phone) {
+            let p = phone.replace(/\D/g, ''); 
+            if (p.startsWith('0')) {
+                p = '234' + p.substring(1);
+            }
+            return p;
+        }
+
+        function getTimeAgo(timestamp) {
+            const seconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + " years ago";
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " months ago";
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + " days ago";
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " hours ago";
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " mins ago";
+            return Math.floor(seconds) + " seconds ago";
+        }
+    </script>
+</body>
+</html>

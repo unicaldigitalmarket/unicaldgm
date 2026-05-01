@@ -1,0 +1,9 @@
+# Dependencies
+node_modules/
+
+# Environment variables (if you ever use a .env file to hide passwords)
+.env
+
+# OS generated files
+.DS_Store
+Thumbs.db

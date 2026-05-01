@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <script>
+        window.location.replace("../coming-soon/");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Account Settings | UNICAL Digital Market</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+    <meta name="theme-color" content="#FF7A00">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../192.png" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+        /* 🚀 Reset & Variables */
+        * { box-sizing: border-box; }
+        :root {
+            --brand-color: #FF7A00; 
+            --brand-gradient: linear-gradient(135deg, #FF7A00, #ea580c);
+            --brand-bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #e2e8f0; 
+            margin: 0; padding: 0; 
+            display: flex; justify-content: center; min-height: 100vh;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            background: var(--brand-bg); width: 100%; max-width: 480px; min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1); display: flex; flex-direction: column;
+            position: relative; z-index: 1;
+        }
+
+        /* 🚀 Glassmorphic Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95); padding: 15px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .header-top-flex { display: flex; align-items: center; gap: 15px; }
+        .back-btn { background: white; color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid #e2e8f0; font-size: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
+        .back-btn:active { transform: scale(0.9); background: #f1f5f9; }
+        .page-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.3px;}
+        
+        .content-area { padding: 20px 20px 90px; }
+
+        /* 🚀 Premium Forms */
+        .form-card { background: white; padding: 25px 20px; border-radius: 24px; box-shadow: 0 8px 30px rgba(0,0,0,0.03); margin-bottom: 25px; border: 1px solid #f1f5f9; }
+        .section-header-title { font-size: 16px; font-weight: 900; color: var(--text-main); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; letter-spacing: -0.3px;}
+        
+        .form-group { margin-bottom: 18px; position: relative; }
+        .form-label { display: block; font-size: 13px; font-weight: 800; color: var(--text-main); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;}
+        
+        .form-input { width: 100%; padding: 15px; border: 2px solid #e2e8f0; border-radius: 14px; font-size: 14px; background: #f8fafc; outline: none; box-sizing: border-box; transition: 0.2s; color: var(--text-main); font-family: inherit; font-weight: 500;}
+        .form-input:focus { border-color: var(--brand-color); background: white; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.1); }
+        
+        .toggle-password { position: absolute; right: 15px; top: 40px; color: #94a3b8; cursor: pointer; font-size: 16px; transition: 0.2s; padding: 5px;}
+        .toggle-password:active { transform: scale(0.9); }
+
+        .save-btn { background: var(--brand-gradient); color: white; border: none; width: 100%; padding: 18px; border-radius: 16px; font-size: 16px; font-weight: 800; cursor: pointer; transition: 0.2s; box-shadow: 0 8px 25px rgba(255, 122, 0, 0.3); display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .save-btn:active { transform: scale(0.96); box-shadow: 0 4px 15px rgba(255, 122, 0, 0.2);}
+        .save-btn:disabled { opacity: 0.7; cursor: not-allowed; box-shadow: none;}
+
+        #msg-box { font-size: 14px; font-weight: 700; padding: 15px; border-radius: 14px; margin-bottom: 25px; text-align: center; display: none; }
+        .msg-error { color: #ef4444; background: #fef2f2; border: 1px solid #fecaca; }
+        .msg-success { color: #10b981; background: #ecfdf5; border: 1px solid #a7f3d0; }
+
+        #loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); backdrop-filter: blur(5px); z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .spinner { width: 45px; height: 45px; border: 4px solid #e2e8f0; border-top-color: var(--brand-color); border-radius: 50%; animation: spin 1s cubic-bezier(0.4, 0, 0.2, 1) infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES                        */
+        /* ========================================= */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;}
+        
+        body.dark-mode .header { background: rgba(15, 23, 42, 0.95) !important; border-bottom-color: #334155 !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .page-title, body.dark-mode .section-header-title { color: #f1f5f9 !important; }
+        body.dark-mode .back-btn { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important;}
+        body.dark-mode .back-btn:active { background: #334155 !important; }
+        
+        body.dark-mode #loading-overlay { background: rgba(2, 6, 23, 0.9) !important; }
+        
+        body.dark-mode .form-card { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;}
+        body.dark-mode .form-label { color: #cbd5e1 !important; }
+        body.dark-mode .form-input { background: #0f172a !important; border-color: #334155 !important; color: #f1f5f9 !important; }
+        body.dark-mode .form-input:focus { border-color: var(--brand-color) !important; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.15) !important; }
+        
+        body.dark-mode #msg-box.msg-error { background: rgba(239, 68, 68, 0.1) !important; border-color: #ef4444 !important; color: #fca5a5 !important; }
+        body.dark-mode #msg-box.msg-success { background: rgba(16, 185, 129, 0.1) !important; border-color: #10b981 !important; color: #6ee7b7 !important; }
+    </style>
+</head>
+<body>
+
+    <script>
+        if (localStorage.getItem('theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p style="margin-top: 15px; font-weight: 700; color: var(--text-muted); font-size: 14px;">Loading Settings...</p>
+    </div>
+
+    <div class="app-container">
+        
+        <div class="header">
+            <div class="header-top-flex">
+                <!-- 🚀 SMART BACK BUTTON -->
+                <button onclick="smartBack(event)" class="back-btn"><i class="fas fa-arrow-left"></i></button>
+                <h1 class="page-title">Account Settings</h1>
+            </div>
+        </div>
+
+        <div class="content-area">
+            
+            <div id="msg-box"></div>
+
+            <form id="settings-form" onsubmit="saveSettings(event)">
+                
+                <div class="form-card">
+                    <div class="section-header-title"><i class="fas fa-user" style="color: var(--brand-color);"></i> Personal Details</div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" id="user-name" class="form-input" placeholder="e.g. John Doe" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Phone Number</label>
+                        <input type="tel" id="user-phone" class="form-input" placeholder="e.g. 08012345678" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Email Address (Cannot be changed)</label>
+                        <input type="email" id="user-email" class="form-input" disabled style="opacity: 0.6; cursor: not-allowed;">
+                    </div>
+                </div>
+
+                <div class="form-card">
+                    <div class="section-header-title"><i class="fas fa-shield-alt" style="color: #10b981;"></i> Security</div>
+                    <p style="font-size: 13px; font-weight: 500; color: var(--text-muted); margin-top: -15px; margin-bottom: 20px; line-height: 1.5;">Leave these fields blank if you do not want to change your password.</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">New Password</label>
+                        <input type="password" id="new-pass" class="form-input" placeholder="Enter new password">
+                        <i class="fas fa-eye toggle-password" onclick="toggleVis('new-pass', this)"></i>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Confirm New Password</label>
+                        <input type="password" id="confirm-pass" class="form-input" placeholder="Type it again">
+                        <i class="fas fa-eye toggle-password" onclick="toggleVis('confirm-pass', this)"></i>
+                    </div>
+                </div>
+
+                <button type="submit" class="save-btn" id="save-btn">
+                    <i class="fas fa-save"></i> Save Changes
+                </button>
+            </form>
+
+        </div>
+    </div>
+
+    <script src="../asset/script.js"></script>
+
+    <script>
+        let currentUser = null;
+
+        // 🚀 SMART BACK BUTTON LOGIC
+        function getSmartRedirectUrl() {
+            const referrer = document.referrer;
+            const currentWebsite = window.location.origin;
+
+            if (referrer && referrer.startsWith(currentWebsite) && !referrer.includes('/login/') && !referrer.includes('/reset-password/')) {
+                return referrer; 
+            }
+            return "../index.html"; 
+        }
+
+        window.smartBack = function(event) {
+            if (event) event.preventDefault();
+            window.location.href = getSmartRedirectUrl();
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) {
+                window.location.href = "../login/index.html";
+                return;
+            }
+            currentUser = session.user;
+            loadUserData();
+        });
+
+        function toggleVis(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === "password") {
+                input.type = "text";
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = "password";
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+        function showMsg(text, isError = false) {
+            const msgBox = document.getElementById('msg-box');
+            msgBox.innerHTML = isError ? `<i class="fas fa-exclamation-triangle"></i> ` : `<i class="fas fa-check-circle"></i> `;
+            msgBox.appendChild(document.createTextNode(text)); 
+            
+            msgBox.className = isError ? 'msg-error' : 'msg-success';
+            msgBox.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function loadUserData() {
+            try {
+                document.getElementById('user-email').value = currentUser.email;
+
+                // Using 'phone' to match database schema
+                const { data, error } = await supabaseClient
+                    .from('profiles')
+                    .select('full_name, phone')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (error) throw error;
+
+                if (data) {
+                    if (data.full_name) document.getElementById('user-name').value = data.full_name;
+                    if (data.phone) document.getElementById('user-phone').value = data.phone;
+                }
+
+                document.getElementById('loading-overlay').style.display = 'none';
+
+            } catch (error) {
+                console.error(error);
+                showMsg("Failed to load your profile data.", true);
+                document.getElementById('loading-overlay').style.display = 'none';
+            }
+        }
+
+        window.saveSettings = async function(event) {
+            event.preventDefault();
+            
+            const btn = document.getElementById('save-btn');
+            const newName = document.getElementById('user-name').value.trim();
+            const newPhone = document.getElementById('user-phone').value.trim();
+            const pass1 = document.getElementById('new-pass').value;
+            const pass2 = document.getElementById('confirm-pass').value;
+
+            document.getElementById('msg-box').style.display = 'none';
+
+            if (pass1 || pass2) {
+                if (pass1.length < 6) return showMsg("Password must be at least 6 characters.", true);
+                if (pass1 !== pass2) return showMsg("Passwords do not match.", true);
+            }
+
+            if (!newName) return showMsg("Full Name cannot be empty.", true);
+            if (!newPhone) return showMsg("Phone Number cannot be empty.", true);
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+
+            try {
+               const { error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .update({ full_name: newName, phone: newPhone })
+                    .eq('id', currentUser.id);
+
+                if (profileError) throw profileError;
+
+                if (pass1) {
+                    const { error: authError } = await supabaseClient.auth.updateUser({
+                        password: pass1
+                    });
+                    if (authError) throw authError;
+                }
+
+                showMsg("Settings updated successfully!");
+                
+                document.getElementById('new-pass').value = '';
+                document.getElementById('confirm-pass').value = '';
+
+            } catch (error) {
+                console.error(error);
+                showMsg(error.message || "An error occurred while saving.", true);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+     <script>
+        window.location.replace("../coming-soon/");
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Student Reviews | UNICAL Digital Market</title>
+    
+    <!-- 🚀 PRIMARY SEO -->
+    <meta name="description" content="Read real reviews from UNICAL students. Find out who the most trusted vendors are on UNICAL Digital Market.">
+    <meta name="keywords" content="UNICAL market reviews, UNICAL vendors, student business Calabar, trusted sellers UnicalDGM">
+    
+    <!-- 🚀 MOBILE APP & ICONS -->
+    <meta name="theme-color" content="#FF7A00">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../192.png" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../asset/style.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+        /* 🚀 Reset & Variables */
+        * { box-sizing: border-box; }
+        :root {
+            --brand-color: #FF7A00; 
+            --brand-gradient: linear-gradient(135deg, #FF7A00, #ea580c);
+            --brand-bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #e2e8f0; 
+            margin: 0; padding: 0; 
+            display: flex; justify-content: center; min-height: 100vh;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            background: var(--brand-bg); width: 100%; max-width: 480px; min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1); display: flex; flex-direction: column;
+            position: relative; z-index: 1;
+        }
+
+        /* 🚀 Glassmorphic Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95); padding: 15px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            position: sticky; top: 0; z-index: 100;
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .header-top-flex { display: flex; align-items: center; gap: 15px; }
+        .back-btn { background: white; color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid #e2e8f0; font-size: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
+        .back-btn:active { transform: scale(0.9); background: #f1f5f9; }
+        .page-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.3px;}
+
+        /* Write Button in Header */
+        .header-write-btn {
+            background: var(--brand-gradient); color: white; border: none;
+            padding: 8px 16px; border-radius: 20px; font-weight: 800; font-size: 12px;
+            cursor: pointer; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.25);
+            transition: 0.2s; display: flex; align-items: center; gap: 6px;
+        }
+        .header-write-btn:active { transform: scale(0.95); }
+
+        .content-area { padding: 0 0 90px 0; flex: 1; }
+
+        /* 🚀 Hero Section */
+        .hero-section { padding: 25px 20px 15px; }
+        .page-header-text { font-size: 26px; font-weight: 900; color: var(--text-main); margin: 0 0 5px; letter-spacing: -0.5px;}
+        .page-subtext { color: var(--text-muted); font-size: 14px; font-weight: 500; margin: 0; line-height: 1.4;}
+
+        /* 🚀 Filter Chips */
+        .filter-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 0 20px 15px; scrollbar-width: none; }
+        .filter-scroll::-webkit-scrollbar { display: none; }
+        .filter-btn {
+            padding: 10px 18px; border: 1px solid #e2e8f0; background: white;
+            border-radius: 24px; font-size: 13px; font-weight: 700; cursor: pointer;
+            white-space: nowrap; color: var(--text-muted); transition: 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.01); display: flex; align-items: center; gap: 6px;
+        }
+        .filter-btn.active { background: var(--text-main); color: white; border-color: var(--text-main); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+
+        /* 🚀 Review Cards */
+        .reviews-container { padding: 0 20px; }
+        .review-card {
+            background: white; border-radius: 20px; padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;
+            margin-bottom: 15px; width: 100%; box-sizing: border-box; transition: 0.2s;
+            /* BUG FIX: Overriding the global homepage slider width restrictions */
+            min-width: 100% !important; max-width: 100% !important;
+        }
+        
+        .rev-header-flex { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;}
+        .rev-user-info { display: flex; align-items: center; gap: 12px; }
+        .rev-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #e2e8f0; border: 2px solid #f8fafc;}
+        .rev-name { font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 2px;}
+        .rev-date { font-size: 11px; color: #94a3b8; font-weight: 600;}
+        
+        .rev-stars { font-size: 12px; color: #f59e0b; margin-bottom: 10px; display: flex; gap: 2px;}
+        .rev-body { font-size: 14px; line-height: 1.6; color: #334155; font-weight: 500;}
+
+        .pending-badge { background: #fef9c3; color: #d97706; padding: 4px 8px; border-radius: 8px; font-size: 10px; font-weight: 900; margin-left: 6px; vertical-align: middle; border: 1px solid #fde047;}
+        
+        /* Action Icons (Edit/Delete) */
+        .action-icon { font-size: 14px; color: #cbd5e1; cursor: pointer; margin-left: 12px; transition: 0.2s; padding: 5px;}
+        .action-icon:active { transform: scale(0.9); }
+        .action-edit:hover { color: #3b82f6; }
+        .action-delete:hover { color: #ef4444; }
+
+        /* Skeletons */
+        .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* 🚀 Call to Action Box */
+        .cta-box { background: linear-gradient(135deg, rgba(255, 122, 0, 0.1), rgba(234, 88, 12, 0.05)); border: 1px solid rgba(255, 122, 0, 0.15); text-align: center; padding: 35px 20px; border-radius: 24px; margin: 30px 0; }
+        .cta-box h3 { font-size: 18px; font-weight: 900; color: var(--text-main); margin: 0 0 8px; letter-spacing: -0.3px;}
+        .cta-box p { font-size: 13px; color: var(--text-muted); margin: 0 0 20px; font-weight: 500;}
+        .cta-btn { background: white; color: var(--text-main); border: 1px solid #e2e8f0; padding: 14px 25px; border-radius: 16px; font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.2s; }
+        .cta-btn:active { transform: scale(0.95); background: #f8fafc;}
+
+        /* 🚀 MODERN MODAL */
+        .modal-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 2000;
+            justify-content: center; align-items: center; padding: 20px;
+        }
+        .modal-content {
+            background: white; padding: 30px 25px; border-radius: 30px; width: 100%; max-width: 400px;
+            position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.25); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes slideUp { from { transform: translateY(30px) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+        
+        .close-modal { position: absolute; top: 20px; right: 20px; width: 35px; height: 35px; border-radius: 50%; background: #f1f5f9; display: flex; justify-content: center; align-items: center; font-size: 18px; color: #64748b; cursor: pointer; border: none; transition: 0.2s; }
+        .close-modal:active { transform: scale(0.9); background: #e2e8f0;}
+
+        .star-selector { display: flex; justify-content: center; gap: 12px; margin: 25px 0; }
+        .star-selector i { font-size: 35px; color: #e2e8f0; cursor: pointer; transition: 0.2s; }
+        .star-selector i.active { color: #f59e0b; text-shadow: 0 0 20px rgba(245, 158, 11, 0.4); transform: scale(1.1);}
+        
+        .modal-textarea {
+            width: 100%; height: 130px; padding: 18px; border: 2px solid #e2e8f0; border-radius: 16px;
+            outline: none; font-size: 14px; font-family: inherit; resize: none; margin-bottom: 20px;
+            box-sizing: border-box; background: #f8fafc; font-weight: 500; transition: 0.2s;
+        }
+        .modal-textarea:focus { border-color: var(--brand-color); background: white; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.1);}
+        
+        .modal-submit-btn { background: var(--brand-gradient); color: white; border: none; width: 100%; padding: 16px; border-radius: 16px; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 8px 25px rgba(255, 122, 0, 0.3); transition: 0.2s;}
+        .modal-submit-btn:active { transform: scale(0.97); }
+
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES FOR REVIEWS PAGE       */
+        /* ========================================= */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;}
+        
+        body.dark-mode .header { background: rgba(15, 23, 42, 0.95) !important; border-bottom-color: #334155 !important; }
+        body.dark-mode .page-title { color: #f1f5f9 !important; }
+        body.dark-mode .back-btn { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important;}
+        body.dark-mode .back-btn:active { background: #334155 !important; }
+        
+        body.dark-mode .page-header-text { color: #f1f5f9 !important; }
+        body.dark-mode .page-subtext { color: #94a3b8 !important; }
+        
+        body.dark-mode .filter-btn { background: #1e293b !important; border-color: #334155 !important; color: #94a3b8 !important; }
+        body.dark-mode .filter-btn.active { background: #f1f5f9 !important; color: #0f172a !important; border-color: #f1f5f9 !important; box-shadow: 0 4px 15px rgba(255,255,255,0.1) !important;}
+        
+        body.dark-mode .review-card { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 8px 25px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .rev-name { color: #f1f5f9 !important; }
+        body.dark-mode .rev-date { color: #64748b !important; }
+        body.dark-mode .rev-body { color: #cbd5e1 !important; }
+        body.dark-mode .rev-avatar { border-color: #0f172a !important; background: #0f172a !important; }
+        
+        body.dark-mode .pending-badge { background: rgba(245, 158, 11, 0.1) !important; color: #fcd34d !important; border-color: rgba(245, 158, 11, 0.3) !important;}
+        
+        body.dark-mode .action-icon { color: #475569 !important; }
+        body.dark-mode .action-edit:hover { color: #60a5fa !important; }
+        body.dark-mode .action-delete:hover { color: #f87171 !important; }
+        
+        body.dark-mode .cta-box { background: rgba(255, 122, 0, 0.05) !important; border-color: rgba(255, 122, 0, 0.1) !important; }
+        body.dark-mode .cta-box h3 { color: #f1f5f9 !important; }
+        body.dark-mode .cta-box p { color: #94a3b8 !important; }
+        body.dark-mode .cta-btn { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
+        body.dark-mode .cta-btn:active { background: #334155 !important; }
+        
+        /* Modal Dark Mode */
+        body.dark-mode .modal-content { background: #0f172a !important; box-shadow: 0 25px 60px rgba(0,0,0,0.8) !important; }
+        body.dark-mode .close-modal { background: #1e293b !important; border: 1px solid #334155; }
+        body.dark-mode #modalTitle { color: #f1f5f9 !important; }
+        body.dark-mode .star-selector i { color: #1e293b !important; }
+        body.dark-mode .star-selector i.active { color: #f59e0b !important; text-shadow: 0 0 20px rgba(245, 158, 11, 0.5) !important;}
+        body.dark-mode .modal-textarea { background: #1e293b !important; border-color: #334155 !important; color: #f1f5f9 !important; }
+        body.dark-mode .modal-textarea:focus { border-color: var(--brand-color) !important; }
+        
+        body.dark-mode .sk-shimmer { background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%) !important; background-size: 200% 100% !important; }
+    </style>
+</head>
+<body>
+    <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
+
+    <div class="app-container">
+        
+        <div class="header">
+            <div class="header-top-flex">
+                <!-- 🚀 SMART BACK BUTTON -->
+                <button onclick="smartBack(event)" class="back-btn"><i class="fas fa-arrow-left"></i></button>
+                <h1 class="page-title">Reviews</h1>
+            </div>
+            <button class="header-write-btn" onclick="openReviewModal()">
+                <i class="fas fa-pen" style="font-size: 10px;"></i> Review
+            </button>
+        </div>
+
+        <div class="content-area">
+            
+            <div class="hero-section">
+                <h1 class="page-header-text">What Students Say</h1>
+                <p class="page-subtext">Real feedback from the UNICAL community.</p>
+            </div>
+
+            <div class="filter-scroll">
+                <button class="filter-btn active" onclick="filterReviews('all', this)">All</button>
+                <button class="filter-btn" onclick="filterReviews(5, this)">5 <i class="fas fa-star" style="color:#f59e0b; margin-left: 2px;"></i></button>
+                <button class="filter-btn" onclick="filterReviews(4, this)">4 <i class="fas fa-star" style="color:#f59e0b; margin-left: 2px;"></i></button>
+                <button class="filter-btn" onclick="filterReviews(3, this)">3 <i class="fas fa-star" style="color:#f59e0b; margin-left: 2px;"></i></button>
+                <button class="filter-btn" onclick="filterReviews(2, this)">2 <i class="fas fa-star" style="color:#f59e0b; margin-left: 2px;"></i></button>
+                <button class="filter-btn" onclick="filterReviews(1, this)">1 <i class="fas fa-star" style="color:#f59e0b; margin-left: 2px;"></i></button>
+            </div>
+
+            <div class="reviews-container" id="reviews-container">
+                <!-- Skeletons -->
+                <div class="review-card">
+                    <div style="display:flex; gap:12px; margin-bottom:15px;">
+                        <div class="sk-shimmer" style="width:45px; height:45px; border-radius:50%;"></div>
+                        <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+                            <div class="sk-shimmer" style="width:40%; height:14px; margin-bottom:8px;"></div>
+                            <div class="sk-shimmer" style="width:25%; height:10px;"></div>
+                        </div>
+                    </div>
+                    <div class="sk-shimmer" style="width:100%; height:12px; margin-bottom:8px;"></div>
+                    <div class="sk-shimmer" style="width:80%; height:12px;"></div>
+                </div>
+
+                <div class="review-card">
+                    <div style="display:flex; gap:12px; margin-bottom:15px;">
+                        <div class="sk-shimmer" style="width:45px; height:45px; border-radius:50%;"></div>
+                        <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
+                            <div class="sk-shimmer" style="width:50%; height:14px; margin-bottom:8px;"></div>
+                            <div class="sk-shimmer" style="width:30%; height:10px;"></div>
+                        </div>
+                    </div>
+                    <div class="sk-shimmer" style="width:90%; height:12px; margin-bottom:8px;"></div>
+                    <div class="sk-shimmer" style="width:95%; height:12px;"></div>
+                </div>
+            </div>
+
+            <div class="reviews-container">
+                <div class="cta-box">
+                    <div style="font-size: 45px; margin-bottom: 10px;">💬</div>
+                    <h3>Share Your Experience</h3>
+                    <p>Help other students make great choices by leaving an honest review of your recent transactions.</p>
+                    <button class="cta-btn" onclick="openReviewModal()"><i class="fas fa-pen" style="margin-right: 5px;"></i> Write a Review</button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- 🚀 MODAL -->
+        <div id="reviewModal" class="modal-overlay">
+            <div class="modal-content">
+                <button class="close-modal" onclick="closeReviewModal()">&times;</button>
+                <h3 id="modalTitle" style="text-align:center; color: var(--text-main); font-size: 20px; font-weight: 900; margin: 0 0 5px; letter-spacing: -0.5px;">Rate your experience</h3>
+                <p style="text-align:center; font-size: 13px; color: var(--text-muted); margin: 0 0 10px;">Tap a star to rate</p>
+                
+                <div class="star-selector" id="starInput">
+                    <i class="fas fa-star" data-val="1"></i>
+                    <i class="fas fa-star" data-val="2"></i>
+                    <i class="fas fa-star" data-val="3"></i>
+                    <i class="fas fa-star" data-val="4"></i>
+                    <i class="fas fa-star" data-val="5"></i>
+                </div>
+                
+                <textarea id="reviewText" class="modal-textarea" placeholder="Be honest. Did you get what you paid for?"></textarea>
+                <p id="reviewError" style="color:#ef4444; font-size:13px; text-align:center; display:none; font-weight: 700; margin-bottom: 15px;"></p>
+                
+                <button class="modal-submit-btn" id="submit-btn" onclick="submitReview()">Post Review</button>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <a href="../index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')">
+                <i class="fas fa-comment-dots"></i>
+                <span class="red-dot msg-dot"></span>
+                <span>Messages</span>
+            </a>
+            <div class="nav-fab" onclick="requireLogin('../add-product/index.html')"><i class="fas fa-plus"></i></div>
+            <a href="#" class="nav-item" onclick="requireLogin('../saved/index.html')"><i class="fas fa-heart"></i><span>Saved</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../account/index.html')"><i class="fas fa-user"></i><span>Account</span></a>
+        </div>
+
+    </div>
+
+    <script src="../asset/script.js"></script>
+
+    <script>
+        let currentUser = null;
+        let allReviews = [];
+        let selectedRating = 0;
+        let editingReviewId = null;
+
+        // 🚀 SMART BACK BUTTON LOGIC
+        function getSmartRedirectUrl() {
+            const referrer = document.referrer;
+            const currentWebsite = window.location.origin;
+
+            if (referrer && referrer.startsWith(currentWebsite) && !referrer.includes('/login/') && !referrer.includes('/reset-password/')) {
+                return referrer; 
+            }
+            return "../index.html"; 
+        }
+
+        window.smartBack = function(event) {
+            if (event) event.preventDefault();
+            window.location.href = getSmartRedirectUrl();
+        }
+
+        // 🛡️ XSS Sanitizers
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+        }
+        function escapeJS(str) {
+            if (!str) return '';
+            return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (session) currentUser = session.user;
+            fetchReviews();
+        });
+
+        async function requireLogin(targetUrl) {
+            if (currentUser) window.location.href = targetUrl;
+            else window.location.href = "../login/index.html";
+        }
+
+        function timeAgo(dateString) {
+            const seconds = Math.floor((new Date() - new Date(dateString)) / 1000);
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + " years ago";
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + " months ago";
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + " days ago";
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + " hours ago";
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + " mins ago";
+            return "Just now";
+        }
+
+        async function fetchReviews() {
+            try {
+                const { data, error } = await supabaseClient
+                    .from('reviews')
+                    .select('id, rating, review_text, status, created_at, reviewer_id, profiles ( full_name, avatar_url )')
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+                allReviews = data.filter(r => r.status === 'approved' || (currentUser && r.reviewer_id === currentUser.id));
+                renderReviews(allReviews);
+            } catch (error) {
+                document.getElementById('reviews-container').innerHTML = `<p style="text-align:center; color:#ef4444; font-weight:600; padding: 20px;">Failed to load reviews. Check your connection.</p>`;
+            }
+        }
+
+        window.renderReviews = function(dataArray) {
+            const container = document.getElementById('reviews-container');
+            container.innerHTML = "";
+
+            if (dataArray.length === 0) {
+                container.innerHTML = `<p style="text-align:center; color:#94a3b8; font-weight:500; padding: 40px 20px;">No reviews found here.</p>`;
+                return;
+            }
+
+            dataArray.forEach(r => {
+                const starsHtml = '<i class="fas fa-star"></i>'.repeat(r.rating);
+                const isPending = r.status === 'pending' ? `<span class="pending-badge">PENDING</span>` : '';
+                
+                // 🛡️ Sanitize Content
+                const authorName = escapeHTML(r.profiles?.full_name || "UNICAL Student");
+                const authorImg = escapeHTML(r.profiles?.avatar_url || "../img/person.png");
+                const safeTextHTML = escapeHTML(r.review_text);
+                const dateText = timeAgo(r.created_at);
+
+                let actionHtml = "";
+                if (currentUser && r.reviewer_id === currentUser.id) {
+                    const safeTextJS = escapeJS(r.review_text);
+                    const safeIdJS = escapeJS(r.id);
+                    actionHtml = `
+                        <div style="display:flex;">
+                            <i class="fas fa-edit action-icon action-edit" onclick="openEditModal('${safeIdJS}', '${safeTextJS}', ${r.rating})"></i>
+                            <i class="fas fa-trash action-icon action-delete" onclick="deleteReview('${safeIdJS}')"></i>
+                        </div>
+                    `;
+                }
+
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="review-card">
+                        <div class="rev-header-flex">
+                            <div class="rev-user-info">
+                                <img src="${authorImg}" class="rev-avatar" onerror="this.src='../img/person.png'">
+                                <div>
+                                    <div class="rev-name">${authorName} ${isPending}</div>
+                                    <div class="rev-date">${dateText}</div>
+                                </div>
+                            </div>
+                            ${actionHtml}
+                        </div>
+                        <div class="rev-stars">${starsHtml}</div>
+                        <div class="rev-body">"${safeTextHTML}"</div>
+                    </div>
+                `);
+            });
+        }
+
+        window.filterReviews = function(rating, btnElement) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btnElement.classList.add('active');
+            if (rating === 'all') renderReviews(allReviews);
+            else renderReviews(allReviews.filter(r => r.rating === rating));
+        }
+
+        window.openReviewModal = function() {
+            if (!currentUser) { 
+                alert("Please log in to drop a review!"); 
+                window.location.href = "../login/index.html?redirect=" + encodeURIComponent(window.location.href); 
+                return; 
+            }
+            const myReviewCount = allReviews.filter(r => r.reviewer_id === currentUser.id).length;
+            if (!editingReviewId && myReviewCount >= 2) { 
+                alert("You have reached the maximum limit of 2 reviews per user."); 
+                return; 
+            }
+            document.getElementById('reviewModal').style.display = 'flex';
+        }
+
+        window.closeReviewModal = function() {
+            document.getElementById('reviewModal').style.display = 'none';
+            selectedRating = 0; editingReviewId = null; updateStars();
+            document.getElementById('reviewText').value = "";
+            document.getElementById('reviewError').style.display = 'none';
+            document.getElementById('modalTitle').innerText = "Rate your experience";
+        }
+
+        window.openEditModal = function(id, text, rating) {
+            editingReviewId = id;
+            document.getElementById('modalTitle').innerText = "Edit your review";
+            document.getElementById('reviewText').value = text;
+            selectedRating = rating;
+            updateStars();
+            document.getElementById('reviewModal').style.display = 'flex';
+        }
+
+        document.querySelectorAll('#starInput i').forEach(star => {
+            star.addEventListener('click', function() {
+                selectedRating = parseInt(this.getAttribute('data-val'));
+                updateStars();
+            });
+        });
+
+        function updateStars() {
+            document.querySelectorAll('#starInput i').forEach(star => {
+                const val = parseInt(star.getAttribute('data-val'));
+                star.className = val <= selectedRating ? 'fas fa-star active' : 'fas fa-star';
+            });
+        }
+
+        window.submitReview = async function() {
+            const text = document.getElementById('reviewText').value.trim();
+            const errorMsg = document.getElementById('reviewError');
+            
+            if (selectedRating === 0) { errorMsg.innerText = "Please select a star rating."; errorMsg.style.display = 'block'; return; }
+            if (text.length < 5) { errorMsg.innerText = "Review is too short. Please add more details."; errorMsg.style.display = 'block'; return; }
+
+            const btn = document.getElementById('submit-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Posting...'; 
+            btn.disabled = true;
+
+            try {
+                if (editingReviewId) {
+                    await supabaseClient.from('reviews').update({ rating: selectedRating, review_text: text, status: 'pending' }).eq('id', editingReviewId);
+                    alert("Review updated! It is pending approval.");
+                } else {
+                    await supabaseClient.from('reviews').insert([{ reviewer_id: currentUser.id, rating: selectedRating, review_text: text, status: 'pending' }]);
+                    alert("Review posted! It will appear as 'PENDING' until approved.");
+                }
+                closeReviewModal(); fetchReviews();
+            } catch (error) { 
+                errorMsg.innerText = "Network error. Try again."; 
+                errorMsg.style.display = 'block'; 
+            } 
+            finally { 
+                btn.innerText = "Post Review"; 
+                btn.disabled = false; 
+            }
+        }
+
+        window.deleteReview = async function(id) {
+            if (!confirm("Are you sure you want to delete this review forever?")) return;
+            try { 
+                await supabaseClient.from('reviews').delete().eq('id', id); 
+                fetchReviews(); 
+            } catch (error) { 
+                alert("Failed to delete review."); 
+            }
+        }
+    </script>
+</body>
+</html>

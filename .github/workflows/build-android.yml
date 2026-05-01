@@ -1,0 +1,43 @@
+name: Build Android APK
+
+# This allows you to trigger the build manually from GitHub
+on:
+  workflow_dispatch: 
+
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install NPM Dependencies
+        run: npm install
+
+      - name: Sync Capacitor Files
+        run: npx cap sync android
+
+      - name: Setup Java (Required for Android)
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Build the APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK for Download
+        uses: actions/upload-artifact@v4
+        with:
+          name: UnicalDGM-App
+          path: android/app/build/outputs/apk/debug/app-debug.apk

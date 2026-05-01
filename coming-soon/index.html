@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Coming Soon | UNICAL Digital Market</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="theme-color" content="#ffffff">
+    <link rel="icon" href="../favicon.ico" type="image/x-icon">
+    <link rel="icon" href="../192.png" sizes="192x192" type="image/png">
+    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
+
+        :root {
+            --brand-color: #FF7A00; /* UNICAL Orange */
+            --bg-light: #f8fafc;
+            --surface-light: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg-light);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Bright Background Glow Effect */
+        .bg-glow {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: var(--brand-color);
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.15;
+            animation: pulse 4s infinite alternate;
+            z-index: 0;
+            top: 10%;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.1; }
+            100% { transform: scale(1.2); opacity: 0.2; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 40px 20px;
+            max-width: 550px;
+            width: 100%;
+        }
+
+        .icon-box {
+            width: 90px;
+            height: 90px;
+            background: rgba(255, 122, 0, 0.1);
+            border: 2px solid rgba(255, 122, 0, 0.2);
+            border-radius: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 40px;
+            color: var(--brand-color);
+            margin: 0 auto 30px;
+            box-shadow: 0 15px 35px rgba(255, 122, 0, 0.15);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        h1 {
+            font-size: 38px;
+            font-weight: 900;
+            margin-bottom: 15px;
+            letter-spacing: -1px;
+            color: #0f172a;
+        }
+
+        p {
+            font-size: 15px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 40px;
+            padding: 0 10px;
+        }
+
+        .action-card {
+            background: var(--surface-light);
+            padding: 25px 20px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            display: inline-block;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+        }
+
+        .action-card span {
+            display: block;
+            font-size: 13px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #475569;
+            margin-bottom: 20px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            padding: 15px 24px;
+            border-radius: 14px;
+            font-weight: 800;
+            font-size: 15px;
+            transition: 0.2s;
+        }
+
+        .btn:active { transform: scale(0.97); }
+
+        .btn-vendor {
+            background: var(--brand-color);
+            color: white;
+            box-shadow: 0 8px 20px rgba(255, 122, 0, 0.25);
+        }
+
+        .btn-whatsapp {
+            background: #f1f5f9;
+            color: #0f172a;
+            border: 1px solid #e2e8f0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="bg-glow"></div>
+
+    <div class="container">
+        <div class="icon-box">
+            <i class="fas fa-rocket"></i>
+        </div>
+        
+        <h1>We're Launching Soon</h1>
+        
+        <p>We are currently building the ultimate digital marketplace for the University of Calabar community. Get ready to buy, sell, and connect like never before.</p>
+
+        <div class="action-card">
+            <span>Are you a student entrepreneur?</span>
+            
+            <div class="btn-group">
+                <a href="../vendor-reg/index.html" class="btn btn-vendor">
+                    <i class="fas fa-store"></i> Register as a Vendor Now
+                </a>
+                
+                <a href="https://wa.me/2349035778034?text=Hi!%20I%20want%20to%20know%20more%20about%20selling%20on%20UNICAL%20Digital%20Market." target="_blank" class="btn btn-whatsapp">
+                    <i class="fab fa-whatsapp" style="font-size: 18px; color: #25D366;"></i> Chat with Admin
+                </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
