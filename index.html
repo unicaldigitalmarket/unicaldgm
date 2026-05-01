@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
-        window.location.replace("coming-soon/");
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UNICAL Digital Market | Home</title>
@@ -254,6 +251,28 @@
     </div>
 
     <script src="asset/script.js"></script>
+
+    <div id="smart-banner" style="display: none; background: #222; color: white; padding: 10px; text-align: center;">
+    <span>Using an Android? Experience the full app.</span>
+    <a href="download/index.html" style="color: #4CAF50; margin-left: 10px; font-weight: bold;">Download Now</a>
+    <button onclick="document.getElementById('smart-banner').style.display='none'" style="float: right; background: none; border: none; color: white; cursor: pointer;">X</button>
+</div>
+
+<script>
+    // Only show the banner to Android users who are NOT already inside the app
+    document.addEventListener("DOMContentLoaded", () => {
+        const userAgent = navigator.userAgent || navigator.vendor;
+        const isAndroid = /android/i.test(userAgent);
+        
+        // Capacitor injects a special variable when running inside the app. 
+        // If it's missing, the user is in a normal web browser.
+        const isBrowser = !window.Capacitor;
+
+        if (isAndroid && isBrowser) {
+            document.getElementById("smart-banner").style.display = "block";
+        }
+    });
+</script>
 
     <script>
         async function checkUnreadNotifications() {

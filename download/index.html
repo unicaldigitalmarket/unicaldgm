@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Unical Digital Market</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            text-align: center;
+            padding: 50px 20px;
+            background-color: #f9f9f9;
+        }
+        /* Hide all sections by default */
+        .device-section {
+            display: none; 
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .btn {
+            display: inline-block;
+            background-color: #000;
+            color: #fff;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ANDROID USERS WILL SEE THIS -->
+    <div id="android-view" class="device-section">
+        <h2>Get the Android App</h2>
+        <p>Experience Unical Digital Market faster and smoother on your phone.</p>
+        <!-- Link this to the APK file you uploaded to your website -->
+        <a href="/assets/UnicalDGM-App.apk" class="btn">Download APK</a>
+    </div>
+
+    <!-- IPHONE (iOS) USERS WILL SEE THIS -->
+    <div id="ios-view" class="device-section">
+        <h2>Install on iPhone</h2>
+        <p>Apple doesn't allow external app downloads, but you can install us directly to your home screen!</p>
+        <ol style="text-align: left;">
+            <li>Tap the <strong>Share</strong> button at the bottom of Safari (the square with an arrow pointing up).</li>
+            <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
+            <li>Tap <strong>Add</strong> in the top right corner.</li>
+        </ol>
+    </div>
+
+    <!-- LAPTOP/DESKTOP USERS WILL SEE THIS -->
+    <div id="desktop-view" class="device-section">
+        <h2>Get the Mobile App</h2>
+        <p>Open this website on your mobile phone to download the Android app or install the iOS shortcut.</p>
+    </div>
+
+    <script>
+        // This script detects the device and shows the right box
+        document.addEventListener("DOMContentLoaded", () => {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
+            if (/android/i.test(userAgent)) {
+                // It's an Android!
+                document.getElementById("android-view").style.display = "block";
+            } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+                // It's an iPhone/iPad!
+                document.getElementById("ios-view").style.display = "block";
+            } else {
+                // It's a Laptop or Desktop!
+                document.getElementById("desktop-view").style.display = "block";
+            }
+        });
+    </script>
+</body>
+</html>
