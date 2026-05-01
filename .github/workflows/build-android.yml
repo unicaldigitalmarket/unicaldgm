@@ -2,7 +2,10 @@ name: Build Android APK
 
 # This allows you to trigger the build manually from GitHub
 on:
-  workflow_dispatch: 
+  push:
+    branches:
+      - android-app-build
+  workflow_dispatch:
 
 jobs:
   build:
