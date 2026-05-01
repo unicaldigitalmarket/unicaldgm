@@ -2,80 +2,111 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Download Unical Digital Market</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Download App | UNICAL Digital Market</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Notice the ../ to go back to the root folder to find your assets -->
+    <link rel="stylesheet" href="../asset/style.css"> 
+    
     <style>
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            text-align: center;
-            padding: 50px 20px;
-            background-color: #f9f9f9;
+        .device-section { display: none; text-align: center; padding: 40px 20px; }
+        .download-icon { font-size: 60px; color: var(--brand-color); margin-bottom: 20px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.1)); }
+        
+        .dl-btn { 
+            display: inline-block; background: var(--brand-color); color: white; 
+            padding: 14px 30px; border-radius: 12px; font-weight: 800; font-size: 16px; 
+            text-decoration: none; margin-top: 20px; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.3); 
+            transition: 0.2s;
         }
-        /* Hide all sections by default */
-        .device-section {
-            display: none; 
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 30px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        .dl-btn:active { transform: scale(0.95); }
+        
+        .step-list { 
+            text-align: left; background: white; padding: 20px; 
+            border-radius: 16px; margin-top: 20px; border: 1px solid #f1f5f9; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
         }
-        .btn {
-            display: inline-block;
-            background-color: #000;
-            color: #fff;
-            padding: 15px 30px;
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: bold;
-            margin-top: 20px;
-        }
+        .step-list li { margin-bottom: 12px; font-size: 13px; color: var(--text-main); line-height: 1.5; }
+        
+        body.dark-mode .step-list { background: #1e293b; border-color: #334155; }
     </style>
 </head>
 <body>
 
-    <!-- ANDROID USERS WILL SEE THIS -->
-    <div id="android-view" class="device-section">
-        <h2>Get the Android App</h2>
-        <p>Experience Unical Digital Market faster and smoother on your phone.</p>
-        <!-- Link this to the APK file you uploaded to your website -->
-        <a href="/assets/UnicalDGM-App.apk" class="btn">Download APK</a>
+    <div class="app-container">
+        
+        <!-- App Header with Back Button -->
+        <div class="header">
+            <div class="header-top">
+                <a href="../index.html" class="logo-link" style="color: var(--text-main); font-size: 20px;">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <div style="font-weight: 800; font-size: 16px; color: var(--text-main);">Download App</div>
+                <div style="width: 20px;"></div> <!-- Spacer to keep text centered -->
+            </div>
+        </div>
+
+        <div class="content-area">
+
+            <!-- ANDROID USERS WILL SEE THIS -->
+            <div id="android-view" class="device-section">
+                <i class="fab fa-android download-icon" style="color: #3DDC84;"></i>
+                <h2 style="color: var(--text-main); margin-bottom: 10px; font-weight: 800;">Get the Android App</h2>
+                <p style="color: var(--text-muted); font-size: 14px; line-height: 1.5;">Experience Unical Digital Market faster, smoother, and completely native on your phone.</p>
+                
+                <!-- Make sure to upload your APK to a folder named 'assets' in your repo, or change this link! -->
+                <a href="../assets/UnicalDGM-App.apk" class="dl-btn">Download APK</a>
+                
+                <div class="step-list">
+                    <li><strong style="color: var(--brand-color);">Step 1:</strong> Tap Download APK above.</li>
+                    <li><strong style="color: var(--brand-color);">Step 2:</strong> Open the downloaded file.</li>
+                    <li><strong style="color: var(--brand-color);">Step 3:</strong> If prompted, go to Settings and toggle on <strong>"Allow from this source"</strong>.</li>
+                </div>
+            </div>
+
+            <!-- IPHONE (iOS) USERS WILL SEE THIS -->
+            <div id="ios-view" class="device-section">
+                <i class="fab fa-apple download-icon" style="color: var(--text-main);"></i>
+                <h2 style="color: var(--text-main); margin-bottom: 10px; font-weight: 800;">Install on iPhone</h2>
+                <p style="color: var(--text-muted); font-size: 14px; line-height: 1.5;">Apple blocks direct app downloads, but you can install us natively to your home screen right now!</p>
+                
+                <div class="step-list">
+                    <li><strong style="color: var(--brand-color);">Step 1:</strong> Tap the <i class="fas fa-share-square"></i> <strong>Share</strong> button at the bottom of Safari.</li>
+                    <li><strong style="color: var(--brand-color);">Step 2:</strong> Scroll down and tap <i class="far fa-plus-square"></i> <strong>Add to Home Screen</strong>.</li>
+                    <li><strong style="color: var(--brand-color);">Step 3:</strong> Tap <strong>Add</strong> in the top right corner.</li>
+                </div>
+            </div>
+
+            <!-- LAPTOP/DESKTOP USERS WILL SEE THIS -->
+            <div id="desktop-view" class="device-section">
+                <i class="fas fa-mobile-alt download-icon"></i>
+                <h2 style="color: var(--text-main); margin-bottom: 10px; font-weight: 800;">Get the Mobile App</h2>
+                <p style="color: var(--text-muted); font-size: 14px; line-height: 1.5;">Scan this QR code with your phone camera to download the Android app or install the iOS shortcut.</p>
+                
+                <!-- This dynamically generates a QR code to your website -->
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://unicaldgm.com.ng" alt="QR Code" style="margin-top: 20px; border-radius: 16px; border: 8px solid white; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+            </div>
+
+        </div>
     </div>
 
-    <!-- IPHONE (iOS) USERS WILL SEE THIS -->
-    <div id="ios-view" class="device-section">
-        <h2>Install on iPhone</h2>
-        <p>Apple doesn't allow external app downloads, but you can install us directly to your home screen!</p>
-        <ol style="text-align: left;">
-            <li>Tap the <strong>Share</strong> button at the bottom of Safari (the square with an arrow pointing up).</li>
-            <li>Scroll down and tap <strong>Add to Home Screen</strong>.</li>
-            <li>Tap <strong>Add</strong> in the top right corner.</li>
-        </ol>
-    </div>
-
-    <!-- LAPTOP/DESKTOP USERS WILL SEE THIS -->
-    <div id="desktop-view" class="device-section">
-        <h2>Get the Mobile App</h2>
-        <p>Open this website on your mobile phone to download the Android app or install the iOS shortcut.</p>
-    </div>
-
+    <!-- The sniff script to detect the device -->
     <script>
-        // This script detects the device and shows the right box
         document.addEventListener("DOMContentLoaded", () => {
             const userAgent = navigator.userAgent || navigator.vendor || window.opera;
             
             if (/android/i.test(userAgent)) {
-                // It's an Android!
                 document.getElementById("android-view").style.display = "block";
             } else if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
-                // It's an iPhone/iPad!
                 document.getElementById("ios-view").style.display = "block";
             } else {
-                // It's a Laptop or Desktop!
                 document.getElementById("desktop-view").style.display = "block";
             }
         });
     </script>
+
+    <!-- Connect your existing JS for dark mode and other features -->
+    <script src="../asset/script.js"></script>
+
 </body>
 </html>

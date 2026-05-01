@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UNICAL Digital Market | Home</title>
@@ -34,6 +35,34 @@
 <body>
 
     <div class="app-container">
+
+        <!-- SMART APP BANNER -->
+        <div id="smart-banner" style="display: none; background: var(--text-main); color: var(--brand-bg); padding: 12px 15px; font-size: 13px; justify-content: space-between; align-items: center; z-index: 2000; transition: 0.3s;">
+            <div style="flex: 1; display: flex; align-items: center; gap: 10px;">
+                <i class="fab fa-android" style="font-size: 24px; color: #3DDC84;"></i>
+                <div>
+                    <strong style="display: block; margin-bottom: 2px;">Experience the full App</strong>
+                    <span style="opacity: 0.8; font-size: 11px;">Faster & smoother on Android</span>
+                </div>
+            </div>
+            <a href="download/index.html" style="background: var(--brand-color); color: white; padding: 6px 14px; border-radius: 20px; text-decoration: none; font-weight: 800; font-size: 12px; margin-right: 10px;">Get App</a>
+            <button onclick="document.getElementById('smart-banner').style.display='none'" style="background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; padding: 0 5px;">&times;</button>
+        </div>
+
+        <script>
+            // Only show the banner to Android users who are NOT already inside the app
+            document.addEventListener("DOMContentLoaded", () => {
+                const userAgent = navigator.userAgent || navigator.vendor;
+                const isAndroid = /android/i.test(userAgent);
+                const isBrowser = !window.Capacitor;
+
+                if (isAndroid && isBrowser) {
+                    // Use flex display instead of block to keep the layout from breaking
+                    document.getElementById("smart-banner").style.display = "flex"; 
+                }
+            });
+        </script>
+        <!-- END SMART APP BANNER -->
         
         <div class="header">
             <div class="header-top">
@@ -251,29 +280,6 @@
     </div>
 
     <script src="asset/script.js"></script>
-
-    <div id="smart-banner" style="display: none; background: #222; color: white; padding: 10px; text-align: center;">
-    <span>Using an Android? Experience the full app.</span>
-    <a href="download/index.html" style="color: #4CAF50; margin-left: 10px; font-weight: bold;">Download Now</a>
-    <button onclick="document.getElementById('smart-banner').style.display='none'" style="float: right; background: none; border: none; color: white; cursor: pointer;">X</button>
-</div>
-
-<script>
-    // Only show the banner to Android users who are NOT already inside the app
-    document.addEventListener("DOMContentLoaded", () => {
-        const userAgent = navigator.userAgent || navigator.vendor;
-        const isAndroid = /android/i.test(userAgent);
-        
-        // Capacitor injects a special variable when running inside the app. 
-        // If it's missing, the user is in a normal web browser.
-        const isBrowser = !window.Capacitor;
-
-        if (isAndroid && isBrowser) {
-            document.getElementById("smart-banner").style.display = "block";
-        }
-    });
-</script>
-
     <script>
         async function checkUnreadNotifications() {
             try {
