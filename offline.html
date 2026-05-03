@@ -4,111 +4,259 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Offline | UNICAL Market</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
-        body { background: #f8fafc; color: #0f172a; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; overflow: hidden; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
         
-        .icon { font-size: 50px; color: #FF7A00; margin-bottom: 10px; }
-        h1 { font-size: 24px; font-weight: 800; margin-bottom: 10px; }
-        p { font-size: 14px; color: #64748b; margin-bottom: 30px; }
-
-        /* The Game Board */
-        #game-container { width: 100%; max-width: 400px; height: 180px; border-bottom: 3px solid #0f172a; position: relative; overflow: hidden; margin-bottom: 20px; border-radius: 12px 12px 0 0; background: white; box-shadow: inset 0 -10px 20px rgba(0,0,0,0.02); }
-        
-        /* The Player */
-        #player { width: 40px; height: 40px; background: #FF7A00; border-radius: 8px; position: absolute; bottom: 0; left: 30px; z-index: 2; box-shadow: 0 4px 10px rgba(255, 122, 0, 0.3); }
-        
-        /* The Obstacle */
-        #obstacle { width: 25px; height: 40px; background: #ef4444; border-radius: 5px; position: absolute; bottom: 0; right: -30px; z-index: 1; }
-        
-        /* Animations */
-        .jump-anim { animation: jump 0.5s linear; }
-        @keyframes jump {
-            0% { bottom: 0; }
-            40% { bottom: 80px; }
-            50% { bottom: 90px; }
-            60% { bottom: 80px; }
-            100% { bottom: 0; }
+        body { 
+            background: #f8fafc; 
+            color: #0f172a; 
+            height: 100vh; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            text-align: center; 
+            padding: 20px; 
+            overflow: hidden; 
+            user-select: none; /* Prevents text highlighting while tapping */
         }
         
-        .move-anim { animation: move 1.2s infinite linear; }
+        .header-section { margin-bottom: 25px; }
+        .icon { font-size: 45px; margin-bottom: 10px; animation: float 3s ease-in-out infinite; }
+        h1 { font-size: 26px; font-weight: 900; letter-spacing: -0.5px; color: #0f172a; }
+        p { font-size: 14px; color: #64748b; max-width: 300px; margin: 5px auto 0; line-height: 1.5; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        /* Modern Game Board */
+        #game-board { 
+            width: 100%; 
+            max-width: 400px; 
+            height: 200px; 
+            background: white; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05); 
+            position: relative; 
+            overflow: hidden; 
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+        }
+
+        /* The Ground Line */
+        #game-board::after {
+            content: '';
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: #e2e8f0;
+            border-radius: 5px;
+        }
+        
+        /* The Player (Using your cached logo!) */
+        #player { 
+            width: 45px; 
+            height: 45px; 
+            position: absolute; 
+            bottom: 23px; /* Just above the ground line */
+            left: 40px; 
+            z-index: 2; 
+            border-radius: 10px;
+            object-fit: cover;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* The Obstacle */
+        #obstacle { 
+            width: 30px; 
+            height: 45px; 
+            background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%); 
+            border-radius: 6px; 
+            position: absolute; 
+            bottom: 23px; 
+            right: -40px; 
+            z-index: 1; 
+            box-shadow: -2px 0 10px rgba(239, 68, 68, 0.3);
+        }
+
+        /* Start/Game Over Overlay */
+        #start-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .play-btn-text {
+            background: #FF7A00;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 14px;
+            box-shadow: 0 4px 15px rgba(255, 122, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Animations */
+        .jump-anim { animation: jump 0.55s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        @keyframes jump {
+            0% { bottom: 23px; transform: rotate(0deg); }
+            50% { bottom: 120px; transform: rotate(10deg); }
+            100% { bottom: 23px; transform: rotate(0deg); }
+        }
+        
+        .move-anim { animation: move 1.4s infinite linear; }
         @keyframes move {
-            0% { right: -30px; }
+            0% { right: -40px; }
             100% { right: 100%; }
         }
 
-        #score-board { font-weight: 800; font-size: 18px; color: #FF7A00; }
+        #score-board { margin-top: 20px; font-weight: 800; font-size: 16px; color: #64748b; }
+        #score { color: #FF7A00; font-size: 20px; font-weight: 900; }
         
-        .btn { background: #0f172a; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 800; border: none; font-size: 14px; cursor: pointer; margin-top: 20px; transition: 0.2s; }
-        .btn:active { transform: scale(0.95); }
+        .refresh-btn { 
+            background: #0f172a; color: white; padding: 14px 28px; 
+            border-radius: 14px; font-weight: 800; border: none; 
+            font-size: 15px; cursor: pointer; margin-top: 30px; 
+            transition: 0.2s; box-shadow: 0 8px 20px rgba(15, 23, 42, 0.15);
+        }
+        .refresh-btn:active { transform: scale(0.96); }
     </style>
 </head>
-<body onclick="jump()">
+<body>
 
-    <div class="icon">📡</div>
-    <h1>You're Offline!</h1>
-    <p>Waiting for your network to come back. Tap the screen to jump and pass the time!</p>
+    <div class="header-section">
+        <div class="icon">📡</div>
+        <h1>You're Offline</h1>
+        <p>Waiting for connection. Jump over the blocks to pass the time!</p>
+    </div>
 
-    <div id="game-container">
-        <div id="player"></div>
+    <!-- The entire game board is clickable -->
+    <div id="game-board">
+        <!-- Notice we are using your cached logo image here! -->
+        <img id="player" src="./asset/img/192.png" alt="UNICAL Logo">
         <div id="obstacle"></div>
+        
+        <!-- The Start Screen Overlay -->
+        <div id="start-overlay">
+            <div id="overlay-text" style="font-size: 20px; font-weight: 900; color: #0f172a; margin-bottom: 15px; display: none;">Game Over!</div>
+            <div class="play-btn-text" id="play-btn-msg">Tap to Start</div>
+        </div>
     </div>
     
     <div id="score-board">Score: <span id="score">0</span></div>
 
-    <button class="btn" onclick="window.location.reload()">Refresh Page</button>
+    <button class="refresh-btn" onclick="window.location.reload()">Refresh Page</button>
 
     <script>
+        const gameBoard = document.getElementById("game-board");
         const player = document.getElementById("player");
         const obstacle = document.getElementById("obstacle");
+        const overlay = document.getElementById("start-overlay");
+        const overlayText = document.getElementById("overlay-text");
+        const playBtnMsg = document.getElementById("play-btn-msg");
         const scoreElement = document.getElementById("score");
+        
+        let isPlaying = false;
         let isJumping = false;
         let score = 0;
-        let gameSpeed = 1.2;
+        let gameLoop;
 
-        // Start the obstacle moving
-        obstacle.classList.add("move-anim");
+        // Listen for a tap or click ANYWHERE on the game board
+        gameBoard.addEventListener("pointerdown", handleTap);
 
-        function jump() {
-            if (!isJumping) {
-                isJumping = true;
-                player.classList.add("jump-anim");
-                setTimeout(() => {
-                    player.classList.remove("jump-anim");
-                    isJumping = false;
-                }, 500); // matches the CSS animation time
+        function handleTap() {
+            if (!isPlaying) {
+                startGame();
+            } else {
+                jump();
             }
         }
 
-        // Check for collisions every 10 milliseconds
-        setInterval(() => {
-            let playerTop = parseInt(window.getComputedStyle(player).getPropertyValue("top"));
-            let obstacleLeft = parseInt(window.getComputedStyle(obstacle).getPropertyValue("left"));
+        function startGame() {
+            isPlaying = true;
+            score = 0;
+            scoreElement.innerText = "0";
+            
+            // Hide the overlay
+            overlay.style.display = "none";
+            overlayText.style.display = "none";
+            
+            // Reset and start the obstacle animation
+            obstacle.style.animation = "none";
+            void obstacle.offsetWidth; // This forces the browser to restart the animation cleanly
+            obstacle.style.animation = "move 1.4s infinite linear";
 
-            // Collision Detection
-            if (obstacleLeft > 10 && obstacleLeft < 60 && playerTop >= 140) {
-                obstacle.style.animation = "none"; // Stop the game
-                obstacle.style.display = "none";
-                alert("Game Over! Score: " + Math.floor(score));
-                score = 0;
-                // Restart Game
+            // Start the collision detector
+            gameLoop = setInterval(checkCollision, 10);
+        }
+
+        function jump() {
+            if (isPlaying && !isJumping) {
+                isJumping = true;
+                player.classList.add("jump-anim");
+                
                 setTimeout(() => {
-                    obstacle.style.display = "block";
-                    obstacle.style.animation = "move " + gameSpeed + "s infinite linear";
-                }, 500);
+                    player.classList.remove("jump-anim");
+                    isJumping = false;
+                }, 550); // Matches the jump CSS animation time exactly
+            }
+        }
+
+        function checkCollision() {
+            // getBoundingClientRect is the industry standard for precise pixel collision
+            const playerRect = player.getBoundingClientRect();
+            const obRect = obstacle.getBoundingClientRect();
+
+            // Check if the boxes are touching/overlapping
+            if (
+                playerRect.right > obRect.left + 5 && // Added a 5px forgiveness buffer
+                playerRect.left < obRect.right - 5 &&
+                playerRect.bottom > obRect.top + 5 &&
+                playerRect.top < obRect.bottom
+            ) {
+                gameOver();
             } else {
-                // Increase score if surviving
-                score += 0.1;
+                // If they aren't touching, increase the score!
+                score += 0.05;
                 scoreElement.innerHTML = Math.floor(score);
                 
-                // Slowly make the game faster as score increases
-                if (Math.floor(score) > 0 && Math.floor(score) % 50 === 0) {
-                    gameSpeed = Math.max(0.6, gameSpeed - 0.05);
-                    obstacle.style.animation = "move " + gameSpeed + "s infinite linear";
+                // Speed up slightly as score gets higher
+                if (Math.floor(score) > 0 && Math.floor(score) % 100 === 0) {
+                    let currentDuration = parseFloat(window.getComputedStyle(obstacle).animationDuration);
+                    if (currentDuration > 0.8) {
+                        obstacle.style.animationDuration = (currentDuration - 0.05) + "s";
+                    }
                 }
             }
-        }, 10);
+        }
+
+        function gameOver() {
+            isPlaying = false;
+            clearInterval(gameLoop); // Stop checking for collisions
+            
+            // Freeze the obstacle exactly where it hit the player
+            const currentRight = window.getComputedStyle(obstacle).getPropertyValue("right");
+            obstacle.style.animation = "none";
+            obstacle.style.right = currentRight;
+            
+            // Update and show the overlay
+            overlayText.style.display = "block";
+            playBtnMsg.innerText = "Tap to Restart";
+            overlay.style.display = "flex";
+        }
     </script>
 
 </body>
