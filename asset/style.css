@@ -312,3 +312,54 @@ body.dark-mode .rec-title { color: #f1f5f9; }
 body.dark-mode .ad-modal-content { background: #0f172a !important; border: 1px solid #334155 !important; }
 body.dark-mode #ad-title { color: #f1f5f9 !important; }
 body.dark-mode #ad-content { color: #cbd5e1 !important; }
+
+
+/* ========================================= */
+/* 🚀 SPLASH SCREEN LOADER                   */
+/* ========================================= */
+.loader-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--brand-bg);
+    z-index: 99999; /* On top of the smart banner and header */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.6s ease, visibility 0.6s ease;
+}
+.loader-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none; 
+}
+.loader-content {
+    position: relative;
+    width: 110px; height: 110px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.loader-logo {
+    width: 60px; height: 60px;
+    border-radius: 12px;
+    object-fit: cover;
+    z-index: 2;
+    animation: pulse-logo 2s infinite ease-in-out;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.loader-spinner {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    border: 4px solid rgba(255, 122, 0, 0.1); 
+    border-top: 4px solid var(--brand-color); 
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    z-index: 1;
+}
+
+/* Dark Mode fix for the loader background */
+body.dark-mode .loader-overlay { background: #020617; }
+body.dark-mode .loader-spinner { border-color: rgba(255, 122, 0, 0.05); border-top-color: var(--brand-color); }
+
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes pulse-logo { 0%, 100% { transform: scale(0.95); } 50% { transform: scale(1.05); } }

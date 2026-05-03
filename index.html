@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
      <script>
         window.location.replace("coming-soon/");
     </script>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UNICAL Digital Market | Home</title>
@@ -45,6 +45,25 @@
 ">
 </head>
 <body>
+<!-- 🚀 SPLASH SCREEN LOADER -->
+    <div id="page-loader" class="loader-overlay">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <img src="asset/img/192.png" alt="UNICAL Logo" class="loader-logo" onerror="this.src='192.png'">
+        </div>
+    </div>
+    
+    <!-- 🚀 THE SCRIPT (Directly in HTML so it never gets blocked by cache) -->
+    <script>
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('page-loader');
+                if (loader) {
+                    loader.classList.add('hidden');
+                }
+            }, 1500); // Fades out after 1.5 seconds
+        });
+    </script>
 
     <div class="app-container">
 
