@@ -1,33 +1,32 @@
-// We bumped the version to v2 so the phone knows to download the new update
-const CACHE_NAME = 'unical-market-v3';
-const OFFLINE_URL = 'offline.html';
+// Bumped to v4 to force an update!
+const CACHE_NAME = 'unical-market-v4';
+const OFFLINE_URL = '/offline.html';
 
-// List all the core static files your app needs, PLUS the new offline page
+// We removed the external CDN links from here. 
+// Now it ONLY downloads your guaranteed local files so the installation never fails.
 const URLS_TO_CACHE = [
-    './',
-    './index.html',
-    './asset/style.css',
-    './asset/script.js',
-    './asset/img/192.png',
-    OFFLINE_URL, // <-- The offline game is now cached here
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-    'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2'
+    '/',
+    '/index.html',
+    '/asset/style.css',
+    '/asset/script.js',
+    '/asset/img/192.png',
+    OFFLINE_URL
 ];
 
-// 1. INSTALL EVENT - Caches the core assets and offline page
+// 1. INSTALL EVENT
 self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then((cache) => {
-                console.log('Opened cache, saving core assets and offline page');
-                return cache.addAll(URLS_TO_CACHE);
-            })
+        caches.open(CACHE_NAME).then((cache) => {
+            console.log('Downloading core assets and offline game...');
+            return cache.addAll(URLS_TO_CACHE);
+        }).catch((error) => {
+            console.error('Cache install failed:', error);
+        })
     );
-    // Force the waiting service worker to become the active service worker
     self.skipWaiting();
 });
 
-// 2. ACTIVATE EVENT - Cleans up old caches (like v1)
+// 2. ACTIVATE EVENT (Clears out v1, v2, v3)
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -44,29 +43,28 @@ self.addEventListener('activate', (event) => {
     self.clients.claim();
 });
 
-// 3. FETCH EVENT - The Brains of the Operation
+// 3. FETCH EVENT
 self.addEventListener('fetch', (event) => {
     // Ignore API requests to Supabase (we want those to be fresh)
     if (event.request.url.includes('supabase.co')) {
         return; 
     }
 
-    // STRATEGY A: For HTML Pages (If they click a link and are offline, show the game!)
+    // STRATEGY A: For HTML Pages (If they are offline, show the game!)
     if (event.request.mode === 'navigate') {
         event.respondWith(
             fetch(event.request).catch(() => {
-                // Network failed! Serve the offline game.
+                // Network failed! Serve the offline game from cache.
                 return caches.match(OFFLINE_URL);
             })
         );
-        return; // Stop here for HTML pages
+        return; 
     }
 
-    // STRATEGY B: For CSS, JS, and Images (Stale-While-Revalidate)
+    // STRATEGY B: For CSS, JS, Images, and CDN links (Stale-While-Revalidate)
     event.respondWith(
         caches.match(event.request).then((cachedResponse) => {
             const fetchPromise = fetch(event.request).then((networkResponse) => {
-                // Only update the cache if it's a valid response and a local asset
                 if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
                     const responseToCache = networkResponse.clone();
                     caches.open(CACHE_NAME).then((cache) => {
@@ -75,11 +73,9 @@ self.addEventListener('fetch', (event) => {
                 }
                 return networkResponse;
             }).catch(() => {
-                // If offline, just fail gracefully (the cached UI will still show)
-                console.log("Network request failed for asset, serving from cache.");
+                console.log("Network request failed, serving from cache if available.");
             });
 
-            // Return the cached response immediately if we have it, otherwise wait for the network
             return cachedResponse || fetchPromise;
         })
     );
