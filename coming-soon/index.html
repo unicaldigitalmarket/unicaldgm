@@ -35,6 +35,54 @@
             position: relative;
         }
 
+        /* ========================================= */
+        /* 🚀 NEW: LOADING SCREEN STYLES             */
+        /* ========================================= */
+        .loader-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-light);
+            z-index: 99999; /* Keeps it on top of everything */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        /* When this class is added, the loader fades away */
+        .loader-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none; 
+        }
+        .loader-content {
+            position: relative;
+            width: 110px; height: 110px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .loader-logo {
+            width: 60px; height: 60px;
+            border-radius: 12px;
+            object-fit: cover;
+            z-index: 2;
+            animation: pulse-logo 2s infinite ease-in-out;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        /* The spinning orange ring */
+        .loader-spinner {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            border: 4px solid rgba(255, 122, 0, 0.1); /* Faded orange track */
+            border-top: 4px solid var(--brand-color); /* Bright orange moving part */
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            z-index: 1;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes pulse-logo { 0%, 100% { transform: scale(0.95); } 50% { transform: scale(1.05); } }
+        /* ========================================= */
+
         /* Bright Background Glow Effect */
         .bg-glow {
             position: absolute;
@@ -97,7 +145,7 @@
             font-size: 15px;
             color: var(--text-muted);
             line-height: 1.6;
-            margin-bottom: 30px; /* Reduced to fit the new button well */
+            margin-bottom: 30px;
             padding: 0 10px;
         }
 
@@ -143,12 +191,11 @@
 
         .btn:active { transform: scale(0.97); }
 
-        /* NEW: Download App Button Style */
         .btn-download {
             background: var(--text-main);
             color: white;
             box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
-            margin-bottom: 25px; /* Spaces it from the vendor card */
+            margin-bottom: 25px;
         }
 
         .btn-vendor {
@@ -167,6 +214,24 @@
 </head>
 <body>
 
+    <!-- 🚀 NEW: THE LOADING SCREEN HTML -->
+    <div id="page-loader" class="loader-overlay">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <!-- Using your 192.png logo -->
+            <img src="../192.png" alt="UNICAL Digital Market Logo" class="loader-logo" onerror="this.src='../asset/img/192.png'"> 
+        </div>
+    </div>
+    <!-- 🚀 NEW: THE SCRIPT TO HIDE IT AFTER 1.5 SECONDS -->
+    <script>
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('page-loader').classList.add('hidden');
+            }, 2500); // 1500 milliseconds = 1.5 seconds
+        });
+    </script>
+
+
     <div class="bg-glow"></div>
 
     <div class="container">
@@ -178,7 +243,6 @@
         
         <p>We are currently building the ultimate digital marketplace for the University of Calabar community. Get ready to buy, sell, and connect like never before.</p>
 
-        <!-- NEW: Early Access Download Button -->
         <a href="../download/" class="btn btn-download">
             <i class="fas fa-mobile-alt" style="font-size: 18px;"></i> Get the App for Early Access
         </a>
