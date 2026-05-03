@@ -1,6 +1,6 @@
 // Version 5: The Bulletproof Failsafe
 const CACHE_NAME = 'unical-market-v5';
-const OFFLINE_URL = 'offline.html';
+const OFFLINE_URL = '/offline.html';
 
 // 1. INSTALL EVENT - ONLY cache the offline page to guarantee 100% success.
 self.addEventListener('install', (event) => {
