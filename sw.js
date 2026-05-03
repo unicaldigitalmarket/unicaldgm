@@ -1,6 +1,6 @@
 // Bumped to v4 to force an update!
 const CACHE_NAME = 'unical-market-v4';
-const OFFLINE_URL = '/offline.html';
+const OFFLINE_URL = 'offline.html';
 
 // We removed the external CDN links from here. 
 // Now it ONLY downloads your guaranteed local files so the installation never fails.
