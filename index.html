@@ -34,6 +34,15 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="asset/style.css">
+
+    <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self' https://unicaldgm.com.ng capacitor://localhost;
+    script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
+    style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
+    font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
+    connect-src 'self' https://tqukdcajpkhbunsxovjf.supabase.co wss://tqukdcajpkhbunsxovjf.supabase.co;
+    img-src 'self' data: https:;
+">
 </head>
 <body>
 
@@ -237,7 +246,7 @@
                         <a href="about/">About</a>
                         <a href="safety/">Safety</a>
                         <a href="terms/">T&C</a>
-                        <a href="contact/">Contact</a>
+                        <a href="privacy-policy/">Privacy</a>
                     </div>
                     <p class="copyright-text">
                         &copy; 2026 UNICAL Digital Market
