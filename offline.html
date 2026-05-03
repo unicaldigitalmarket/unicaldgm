@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Offline | UNICAL Market</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Poppins', sans-serif; }
+        body { background: #f8fafc; color: #0f172a; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; overflow: hidden; }
+        
+        .icon { font-size: 50px; color: #FF7A00; margin-bottom: 10px; }
+        h1 { font-size: 24px; font-weight: 800; margin-bottom: 10px; }
+        p { font-size: 14px; color: #64748b; margin-bottom: 30px; }
+
+        /* The Game Board */
+        #game-container { width: 100%; max-width: 400px; height: 180px; border-bottom: 3px solid #0f172a; position: relative; overflow: hidden; margin-bottom: 20px; border-radius: 12px 12px 0 0; background: white; box-shadow: inset 0 -10px 20px rgba(0,0,0,0.02); }
+        
+        /* The Player */
+        #player { width: 40px; height: 40px; background: #FF7A00; border-radius: 8px; position: absolute; bottom: 0; left: 30px; z-index: 2; box-shadow: 0 4px 10px rgba(255, 122, 0, 0.3); }
+        
+        /* The Obstacle */
+        #obstacle { width: 25px; height: 40px; background: #ef4444; border-radius: 5px; position: absolute; bottom: 0; right: -30px; z-index: 1; }
+        
+        /* Animations */
+        .jump-anim { animation: jump 0.5s linear; }
+        @keyframes jump {
+            0% { bottom: 0; }
+            40% { bottom: 80px; }
+            50% { bottom: 90px; }
+            60% { bottom: 80px; }
+            100% { bottom: 0; }
+        }
+        
+        .move-anim { animation: move 1.2s infinite linear; }
+        @keyframes move {
+            0% { right: -30px; }
+            100% { right: 100%; }
+        }
+
+        #score-board { font-weight: 800; font-size: 18px; color: #FF7A00; }
+        
+        .btn { background: #0f172a; color: white; padding: 12px 24px; border-radius: 12px; font-weight: 800; border: none; font-size: 14px; cursor: pointer; margin-top: 20px; transition: 0.2s; }
+        .btn:active { transform: scale(0.95); }
+    </style>
+</head>
+<body onclick="jump()">
+
+    <div class="icon">📡</div>
+    <h1>You're Offline!</h1>
+    <p>Waiting for your network to come back. Tap the screen to jump and pass the time!</p>
+
+    <div id="game-container">
+        <div id="player"></div>
+        <div id="obstacle"></div>
+    </div>
+    
+    <div id="score-board">Score: <span id="score">0</span></div>
+
+    <button class="btn" onclick="window.location.reload()">Refresh Page</button>
+
+    <script>
+        const player = document.getElementById("player");
+        const obstacle = document.getElementById("obstacle");
+        const scoreElement = document.getElementById("score");
+        let isJumping = false;
+        let score = 0;
+        let gameSpeed = 1.2;
+
+        // Start the obstacle moving
+        obstacle.classList.add("move-anim");
+
+        function jump() {
+            if (!isJumping) {
+                isJumping = true;
+                player.classList.add("jump-anim");
+                setTimeout(() => {
+                    player.classList.remove("jump-anim");
+                    isJumping = false;
+                }, 500); // matches the CSS animation time
+            }
+        }
+
+        // Check for collisions every 10 milliseconds
+        setInterval(() => {
+            let playerTop = parseInt(window.getComputedStyle(player).getPropertyValue("top"));
+            let obstacleLeft = parseInt(window.getComputedStyle(obstacle).getPropertyValue("left"));
+
+            // Collision Detection
+            if (obstacleLeft > 10 && obstacleLeft < 60 && playerTop >= 140) {
+                obstacle.style.animation = "none"; // Stop the game
+                obstacle.style.display = "none";
+                alert("Game Over! Score: " + Math.floor(score));
+                score = 0;
+                // Restart Game
+                setTimeout(() => {
+                    obstacle.style.display = "block";
+                    obstacle.style.animation = "move " + gameSpeed + "s infinite linear";
+                }, 500);
+            } else {
+                // Increase score if surviving
+                score += 0.1;
+                scoreElement.innerHTML = Math.floor(score);
+                
+                // Slowly make the game faster as score increases
+                if (Math.floor(score) > 0 && Math.floor(score) % 50 === 0) {
+                    gameSpeed = Math.max(0.6, gameSpeed - 0.05);
+                    obstacle.style.animation = "move " + gameSpeed + "s infinite linear";
+                }
+            }
+        }, 10);
+    </script>
+
+</body>
+</html>
