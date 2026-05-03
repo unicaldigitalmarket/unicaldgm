@@ -1,6 +1,6 @@
 // We bumped the version to v2 so the phone knows to download the new update
-const CACHE_NAME = 'unical-market-v2';
-const OFFLINE_URL = './offline.html';
+const CACHE_NAME = 'unical-market-v3';
+const OFFLINE_URL = 'offline.html';
 
 // List all the core static files your app needs, PLUS the new offline page
 const URLS_TO_CACHE = [
