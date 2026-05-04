@@ -161,6 +161,26 @@
 <body>
     <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
 
+    <!-- 🚀 SPLASH SCREEN LOADER -->
+    <div id="page-loader" class="loader-overlay">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <img src="../asset/img/192.png" alt="UNICAL Logo" class="loader-logo" onerror="this.src='../192.png'">
+        </div>
+    </div>
+    
+    <!-- 🚀 THE SCRIPT (Directly in HTML so it never gets blocked by cache) -->
+    <script>
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                const loader = document.getElementById('page-loader');
+                if (loader) {
+                    loader.classList.add('hidden');
+                }
+            }, 2000); // Fades out after 1.5 seconds
+        });
+    </script>
+
     <div class="app-container">
         
         <div class="header">
