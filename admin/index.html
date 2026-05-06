@@ -743,10 +743,17 @@
         window.deleteBlog = async function(id) { 
             if(confirm("Delete post permanently?")){ 
                 try {
-                    await supabaseClient.from('blogs').delete().eq('id', id); 
+                    // We must capture the 'error' object from Supabase
+                    const { error } = await supabaseClient.from('blogs').delete().eq('id', id); 
+                    
+                    // If Supabase sends an error back, throw it so the catch block triggers!
+                    if (error) throw error; 
+
+                    alert("Post deleted successfully.");
                     loadAdminBlogs(); 
                 } catch(e) {
                     alert("Failed to delete post: " + e.message);
+                    console.error(e);
                 }
             } 
         }
