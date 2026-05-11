@@ -1,12 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script>
-        window.location.replace("../coming-soon/");
-    </script>
+   
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>All Items | UNICAL Market</title>
+    <title>All Items | UNICAL Digital Market</title>
     
     <meta name="description" content="Browse all products and services available on UNICAL Digital Market. Discover amazing deals from verified student vendors at the University of Calabar.">
     <meta name="keywords" content="UNICAL market items, buy products UNICAL, student services Calabar, UnicalDGM shopping, campus deals">
@@ -145,15 +143,15 @@
         </div>
 
         <div class="bottom-nav">
-            <a href="../index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
-            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')">
+            <a href="../" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../messages/')">
                 <i class="fas fa-comment-dots"></i>
                 <span class="red-dot msg-dot"></span>
                 <span>Messages</span>
             </a>
-            <div class="nav-fab" onclick="requireLogin('../add-product/index.html')"><i class="fas fa-plus"></i></div>
-            <a href="#" class="nav-item" onclick="requireLogin('../saved/index.html')"><i class="fas fa-heart"></i><span>Saved</span></a>
-            <a href="#" class="nav-item" onclick="requireLogin('../account/index.html')"><i class="fas fa-user"></i><span>Account</span></a>
+            <div class="nav-fab" onclick="requireLogin('../add-product/')"><i class="fas fa-plus"></i></div>
+            <a href="#" class="nav-item" onclick="requireLogin('../saved/')"><i class="fas fa-heart"></i><span>Saved</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../account/')"><i class="fas fa-user"></i><span>Account</span></a>
         </div>
 
     </div>
@@ -239,7 +237,7 @@
                 const fPrice = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(p.price);
                 
                 // 🚀 The Featured Badge
-                const pinBadge = p.is_pinned ? `<div style="position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.7); color: white; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; backdrop-filter: blur(4px); z-index: 10;">Featured</div>` : '';
+                const pinBadge = p.is_pinned ? `<div style="position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.7); color: white; padding: 4px 10px; border-radius: 8px; font-size: 10px; font-weight: 800; backdrop-filter: blur(4px); z-index: 10;">Pinned</div>` : '';
 
                 grid.insertAdjacentHTML('beforeend', `
                     <div class="product-card" onclick="window.location.href='../product/index.html?id=${escapeJS(p.id)}'" style="position: relative;">

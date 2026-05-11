@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     <script>
-        window.location.replace("../coming-soon/");
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Item Details | UNICAL Digital Market</title>
@@ -279,22 +276,6 @@
             return array;
         }
 
-        // 🚀 SMART BACK BUTTON LOGIC
-        function getSmartRedirectUrl() {
-            const referrer = document.referrer;
-            const currentWebsite = window.location.origin;
-
-            if (referrer && referrer.startsWith(currentWebsite) && !referrer.includes('/login/') && !referrer.includes('/reset-password/')) {
-                return referrer; 
-            }
-            return "../index.html"; 
-        }
-
-        window.smartBack = function(event) {
-            if (event) event.preventDefault();
-            window.location.href = getSmartRedirectUrl();
-        }
-
         document.addEventListener("DOMContentLoaded", async () => {
             const urlParams = new URLSearchParams(window.location.search);
             let productId = urlParams.get('id');
@@ -418,24 +399,25 @@
             }, 4000); 
         }
 
-        // 🚀 SMART RELATED ITEMS (Shuffles and limits to exactly 30)
+        // 🚀 SMART RELATED ITEMS (Shuffles a large pool and limits to exactly 40)
         async function loadRelatedItems(category, currentId) {
             const grid = document.getElementById('related-grid');
             try {
+                // Fetch a massive pool (300 items) so the randomizer has a lot to work with on every refresh
                 const { data } = await supabaseClient.from('products')
                     .select('id, name, price, image_urls')
                     .eq('category', category)
                     .eq('status', 'Active')
                     .neq('id', currentId) 
-                    .limit(100); // Fetch a large pool to pick from
+                    .limit(300); 
                 
                 if(!data || data.length === 0) {
                     grid.innerHTML = "<p style='grid-column: span 2; text-align: center; color: #94a3b8; font-size: 14px; padding: 30px 0; font-weight: 500;'>No similar items right now.</p>";
                     return;
                 }
 
-                // Randomly shuffle the pool and grab exactly 30
-                const randomizedItems = shuffleArray(data).slice(0, 30);
+                // Randomly shuffle the massive pool and grab exactly 40 items
+                const randomizedItems = shuffleArray(data).slice(0, 40);
 
                 grid.innerHTML = "";
                 randomizedItems.forEach(p => {

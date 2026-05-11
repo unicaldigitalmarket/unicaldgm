@@ -6,7 +6,7 @@
     </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Store Profile | UNICAL Market</title>
+    <title>Store Profile | UNICAL Digital Market</title>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -280,11 +280,11 @@
 
             <div class="section-heading" style="margin-top: 40px;"><i class="fas fa-compass" style="color: #F5A623;"></i> Explore More Items</div>
             <div class="items-grid" id="explore-items"></div>
-            <a href="../../items/index.html" class="view-all-btn">View All Market Items</a>
+            <a href="../../items/" class="view-all-btn">View All Market Items</a>
 
             <div class="section-heading" style="margin-top: 40px;"><i class="fas fa-store" style="color: #10b981;"></i> Discover Other Vendors</div>
             <div class="vendors-grid" id="other-vendors"></div>
-            <a href="../../vendors/index.html" class="view-all-btn" style="margin-bottom: 20px;">View All Vendors</a>
+            <a href="../../vendors/" class="view-all-btn" style="margin-bottom: 20px;">View All Vendors</a>
         </div>
 
         <div class="modal-bg" id="review-modal">
@@ -312,7 +312,7 @@
 
     <script src="../../asset/script.js"></script>
 
-    <script>
+   <script>
         let currentUser = null;
         let currentVendor = null;
         let vendorId = new URLSearchParams(window.location.search).get('id');
@@ -468,7 +468,7 @@
             });
         }
 
-        // 🚀 SMART EXPLORE ITEMS (Shuffles and limits to 16)
+        // 🚀 SMART EXPLORE ITEMS (Shuffles from 300, limits to 30)
         async function loadExploreItems() {
             const grid = document.getElementById('explore-items');
             
@@ -476,11 +476,11 @@
                 .select('*')
                 .neq('vendor_id', vendorId)
                 .eq('status', 'Active')
-                .limit(50); 
+                .limit(300); // 300 massive pool
             
             if (!products || products.length === 0) return;
             
-            const randomizedItems = shuffleArray(products).slice(0, 16);
+            const randomizedItems = shuffleArray(products).slice(0, 30); // Random 30
 
             grid.innerHTML = "";
             randomizedItems.forEach(p => {
@@ -490,7 +490,7 @@
             });
         }
 
-        // 🚀 SMART DISCOVER VENDORS (Shuffles and limits to 8)
+        // 🚀 SMART DISCOVER VENDORS (Shuffles from 100, limits to 14)
         async function loadOtherVendors() {
             const grid = document.getElementById('other-vendors');
             
@@ -498,11 +498,11 @@
                 .select('*')
                 .neq('id', vendorId)
                 .eq('is_active', true)
-                .limit(30);
+                .limit(100); // 100 pool for solid randomness
             
             if (!vendors || vendors.length === 0) return;
             
-            const randomizedVendors = shuffleArray(vendors).slice(0, 8);
+            const randomizedVendors = shuffleArray(vendors).slice(0, 14); // Random 14
 
             grid.innerHTML = "";
             randomizedVendors.forEach(v => {
