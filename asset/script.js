@@ -501,6 +501,32 @@ if ('serviceWorker' in navigator) {
 }
 
 // =========================================
+// 🚀 UNIVERSAL SMART BACK BUTTON
+// =========================================
+window.smartBack = function(event) {
+    if (event) event.preventDefault();
+
+    const referrer = document.referrer;
+    const currentWebsite = window.location.origin;
+
+    // 1. If direct link (no history) OR coming from an external app like WhatsApp
+    if (!referrer || !referrer.startsWith(currentWebsite)) {
+        window.location.href = '/'; // Send to the main homepage
+        return;
+    }
+
+    // 2. If coming from a login page, don't trap them there, send them home
+    if (referrer.includes('/login/') || referrer.includes('/reset-password/')) {
+        window.location.href = '/';
+        return;
+    }
+
+    // 3. Normal navigation: Use the browser's true history!
+    // This perfectly solves the infinite loop between product pages.
+    window.history.back();
+};
+
+// =========================================
 // 🚀 PWA INSTALL PROMPT LOGIC
 // =========================================
 let deferredPrompt;

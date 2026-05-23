@@ -5,21 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>About Us | UNICAL Digital Market</title>
 
-    <!-- 🚀 PRIMARY SEO -->
-    <meta name="description" content="Learn more about UNICAL Digital Market (UnicalDGM), the student-driven ecosystem empowering University of Calabar entrepreneurs to grow their businesses.">
-    <meta name="keywords" content="About UnicalDGM, UNICAL student business, University of Calabar digital market, UNICAL vendors">
-    <meta name="author" content="UnicalDGM">
+    <meta name="description" content="Learn more about UNICAL Digital Market (UnicalDGM), founded by Favour John Felix. We are the student-driven ecosystem empowering University of Calabar entrepreneurs to grow their businesses.">
+    <meta name="keywords" content="Favour John Felix, About UnicalDGM, UNICAL student business, University of Calabar digital market, UNICAL vendors">
+    <meta name="author" content="Favour John Felix">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://unicaldgm.com.ng/about/">
 
-    <!-- 🚀 SOCIAL MEDIA & WHATSAPP PREVIEWS -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "UNICAL Digital Market",
+      "alternateName": "UnicalDGM",
+      "url": "https://unicaldgm.com.ng/",
+      "logo": "https://unicaldgm.com.ng/512.png",
+      "founder": {
+        "@type": "Person",
+        "name": "Favour John Felix"
+      },
+      "description": "A student-driven digital ecosystem built to empower, promote, and scale businesses within the University of Calabar community."
+    }
+    </script>
+
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://unicaldgm.com.ng/about/">
     <meta property="og:title" content="About UNICAL Digital Market">
-    <meta property="og:description" content="We exist to bridge the gap between student entrepreneurs, digital visibility, and real business growth at UNICAL.">
+    <meta property="og:description" content="Founded by Favour John Felix, we exist to bridge the gap between student entrepreneurs, digital visibility, and real business growth at UNICAL.">
     <meta property="og:image" content="https://unicaldgm.com.ng/512.png">
 
-    <!-- 🚀 MOBILE APP & ICONS -->
     <meta name="theme-color" content="#FF7A00">
     <link rel="icon" href="../favicon.ico" type="image/x-icon">
     <link rel="icon" href="../192.png" sizes="192x192" type="image/png">
@@ -54,71 +67,98 @@
             background: var(--brand-bg); width: 100%; max-width: 480px; min-height: 100vh;
             box-shadow: 0 0 40px rgba(0,0,0,0.1); display: flex; flex-direction: column;
             position: relative; z-index: 1;
+            overflow: hidden; /* Contains the glow */
         }
 
         /* 🚀 Immersive Background Glow Effect */
         .bg-glow-1 {
-            position: absolute; width: 350px; height: 350px; background: var(--brand-color);
-            border-radius: 50%; filter: blur(100px); opacity: 0.1; top: -10%; left: -20%; z-index: 0;
-            animation: pulse 6s infinite alternate;
+            position: absolute; width: 400px; height: 400px; background: var(--brand-color);
+            border-radius: 50%; filter: blur(120px); opacity: 0.15; top: -5%; right: -20%; z-index: 0;
+            animation: pulse 8s infinite alternate ease-in-out;
         }
-        @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+        .bg-glow-2 {
+            position: absolute; width: 300px; height: 300px; background: #3b82f6; /* Subtle blue contrast */
+            border-radius: 50%; filter: blur(100px); opacity: 0.08; bottom: 10%; left: -20%; z-index: 0;
+            animation: pulse 6s infinite alternate-reverse ease-in-out;
+        }
+        @keyframes pulse { 0% { transform: scale(1) translate(0, 0); } 100% { transform: scale(1.1) translate(20px, 20px); } }
 
         /* 🚀 Header */
         .page-header { 
-            position: sticky; top: 0; background: rgba(248, 250, 252, 0.9); 
-            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            position: sticky; top: 0; background: rgba(248, 250, 252, 0.85); 
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
             z-index: 100; display: flex; align-items: center; padding: 15px 20px; 
-            border-bottom: 1px solid rgba(226, 232, 240, 0.8); gap: 15px; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.4); gap: 15px; 
         }
         .back-btn { 
             background: white; color: var(--text-main); width: 40px; height: 40px; 
             border-radius: 50%; display: flex; justify-content: center; align-items: center; 
             border: 1px solid #e2e8f0; font-size: 16px; cursor: pointer; transition: 0.2s; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
         }
         .back-btn:active { transform: scale(0.9); background: #f1f5f9; }
         .page-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.5px;}
         
-        .doc-content { padding: 20px; padding-bottom: 50px; position: relative; z-index: 1;}
+        .doc-content { padding: 30px 20px 60px; position: relative; z-index: 1;}
         
-        /* 🚀 Hero Section */
-        .hero-icon-wrapper { text-align: center; margin-bottom: 30px; padding: 10px 0; }
-        .hero-icon { 
-            font-size: 50px; color: white; background: var(--brand-gradient); 
-            width: 110px; height: 110px; border-radius: 35px; display: inline-flex; 
-            justify-content: center; align-items: center; 
-            box-shadow: 0 15px 30px rgba(255, 122, 0, 0.3);
-            animation: float 4s ease-in-out infinite;
+        /* 🚀 SCROLL ANIMATION CLASSES */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            will-change: opacity, transform;
         }
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-10px); } 100% { transform: translateY(0px); } }
-        
-        /* 🚀 Premium Cards */
+        .reveal-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 🚀 Sleek Glassmorphism Cards */
         .doc-card { 
-            background: white; border-radius: 20px; padding: 25px; margin-bottom: 15px; 
-            border: 1px solid #e2e8f0; box-shadow: 0 8px 20px rgba(0,0,0,0.02); 
+            background: rgba(255, 255, 255, 0.7); /* Glassy transparency */
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px; padding: 25px; margin-bottom: 20px; 
+            border: 1px solid rgba(255, 255, 255, 0.9); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03), inset 0 1px 0 rgba(255,255,255,1); 
             position: relative; overflow: hidden;
         }
         
         /* Heading with Mini Icon */
         .doc-h2 { 
-            font-size: 17px; font-weight: 800; color: var(--text-main); 
-            margin-bottom: 15px; display: flex; align-items: center; gap: 12px; letter-spacing: -0.3px;
+            font-size: 18px; font-weight: 800; color: var(--text-main); 
+            margin-bottom: 18px; display: flex; align-items: center; gap: 12px; letter-spacing: -0.3px;
         }
         .h2-icon-box {
-            width: 32px; height: 32px; border-radius: 10px; background: rgba(255, 122, 0, 0.1);
+            width: 36px; height: 36px; border-radius: 12px; background: rgba(255, 122, 0, 0.1);
             color: var(--brand-color); display: flex; justify-content: center; align-items: center;
-            font-size: 14px; flex-shrink: 0;
+            font-size: 16px; flex-shrink: 0; box-shadow: 0 4px 10px rgba(255, 122, 0, 0.1);
         }
 
-        .doc-p { font-size: 14px; color: #475569; line-height: 1.7; margin-bottom: 15px; font-weight: 500;}
+        .doc-p { font-size: 14.5px; color: #475569; line-height: 1.7; margin-bottom: 15px; font-weight: 500;}
         .doc-p:last-child { margin-bottom: 0; }
         .doc-p strong { color: var(--text-main); font-weight: 800; }
         
+        /* 🚀 Founder Profile Block - Centered Premium Layout */
+        .founder-profile-block {
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            text-align: center; gap: 12px; margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.9); padding: 30px 15px; border-radius: 18px; 
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+        .founder-img {
+            width: 85px; height: 85px; border-radius: 50%; object-fit: cover;
+            border: 3px solid white; outline: 2px solid var(--brand-color); 
+            box-shadow: 0 6px 15px rgba(255, 122, 0, 0.2);
+            background: #f1f5f9; padding: 2px; margin-bottom: 5px;
+        }
+        .founder-name { font-size: 18px; font-weight: 900; color: var(--text-main); margin-bottom: 2px; letter-spacing: -0.3px;}
+        .founder-title { font-size: 13px; font-weight: 800; color: var(--brand-color); text-transform: uppercase; letter-spacing: 0.5px;}
+
         /* Clean Lists */
         .doc-ul { list-style: none; padding: 0; margin: 0 0 15px 0; display: flex; flex-direction: column; gap: 12px;}
-        .doc-li { font-size: 14px; color: #475569; line-height: 1.6; display: flex; align-items: flex-start; gap: 12px; font-weight: 500;}
-        .doc-li i { color: var(--brand-color); font-size: 14px; margin-top: 4px; flex-shrink: 0; }
+        .doc-li { font-size: 14.5px; color: #475569; line-height: 1.6; display: flex; align-items: flex-start; gap: 12px; font-weight: 500;}
+        .doc-li i { color: var(--brand-color); font-size: 15px; margin-top: 4px; flex-shrink: 0; }
 
         /* ========================================= */
         /* 🌙 DARK MODE FIXES                        */
@@ -126,14 +166,23 @@
         body.dark-mode { background-color: #020617 !important; }
         body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;}
         
-        body.dark-mode .page-header { background: rgba(15, 23, 42, 0.9) !important; border-bottom-color: #334155 !important; }
+        body.dark-mode .page-header { background: rgba(15, 23, 42, 0.8) !important; border-bottom-color: rgba(255,255,255,0.05) !important; }
         body.dark-mode .back-btn { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
         body.dark-mode .back-btn:active { background: #334155 !important; }
         body.dark-mode .page-title { color: #f1f5f9 !important; }
         
-        body.dark-mode .doc-card { background: rgba(30, 41, 59, 0.7) !important; border-color: #334155 !important; box-shadow: 0 8px 25px rgba(0,0,0,0.5) !important;}
+        body.dark-mode .doc-card { 
+            background: rgba(30, 41, 59, 0.6) !important; 
+            border-color: rgba(255, 255, 255, 0.05) !important; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05) !important;
+        }
         body.dark-mode .doc-h2 { color: #f1f5f9 !important; }
         body.dark-mode .h2-icon-box { background: rgba(255, 122, 0, 0.15) !important; }
+        
+        /* Dark Mode Founder Block */
+        body.dark-mode .founder-profile-block { background: rgba(15, 23, 42, 0.6) !important; border-color: #334155 !important; }
+        body.dark-mode .founder-name { color: #f1f5f9 !important; }
+        body.dark-mode .founder-img { border-color: #0f172a !important; background: #1e293b !important;}
         
         body.dark-mode .doc-p, body.dark-mode .doc-li { color: #cbd5e1 !important; }
         body.dark-mode .doc-p strong { color: #f1f5f9 !important; }
@@ -143,6 +192,7 @@
     <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
 
     <div class="bg-glow-1"></div>
+    <div class="bg-glow-2"></div>
 
     <div class="app-container">
         
@@ -153,20 +203,34 @@
 
         <div class="doc-content">
             
-           <div class="hero-icon-wrapper">
-    <img src="../asset/img/logo.png" alt="UNICAL Digital Market" style="width: 120px; height: 120px; border-radius: 30px; object-fit: cover; box-shadow: 0 15px 35px rgba(255, 122, 0, 0.2); animation: float 4s ease-in-out infinite; background: white; border: 2px solid #f1f5f9;">
-</div>
+            <div class="doc-card reveal-on-scroll">
+                <h2 class="doc-h2">
+                    <div class="h2-icon-box"><i class="fas fa-user-tie"></i></div> 
+                    Our Founder
+                </h2>
+                
+                <div class="founder-profile-block">
+                    <img src="../asset/img/founder.jpg" alt="Favour John Felix" class="founder-img" onerror="this.src='https://via.placeholder.com/150/FF7A00/FFFFFF?text=FJF'">
+                    <div>
+                        <div class="founder-name">Favour John Felix</div>
+                        <div class="founder-title">Founder & Creator</div>
+                    </div>
+                </div>
 
-            <div class="doc-card">
+                <p class="doc-p"><strong>UNICAL Digital Market (UnicalDGM)</strong> was founded and created by Favour John Felix.</p>
+                <p class="doc-p">Driven by a vision to elevate student entrepreneurship, Favour built this ecosystem to ensure that business owners at the University of Calabar have the tools, digital visibility, and community backing they need to thrive beyond the campus walls.</p>
+            </div>
+
+            <div class="doc-card reveal-on-scroll">
                 <h2 class="doc-h2">
                     <div class="h2-icon-box"><i class="fas fa-info"></i></div> 
                     Who We Are
                 </h2>
-                <p class="doc-p"><strong>UnicalDGM (Unical Digital Marketing)</strong> is a student-driven digital ecosystem built to empower, promote, and scale businesses within the University of Calabar community and beyond.</p>
+                <p class="doc-p">We are a digital ecosystem built to empower, promote, and scale businesses within the University of Calabar community and beyond.</p>
                 <p class="doc-p">We exist to bridge the gap between student entrepreneurs, digital visibility, and real business growth. At UnicalDGM, we understand that many student-owned businesses struggle, not because they lack quality products or services, but because they lack the right exposure, strategy, and digital presence. That’s where we come in.</p>
             </div>
 
-            <div class="doc-card">
+            <div class="doc-card reveal-on-scroll">
                 <h2 class="doc-h2">
                     <div class="h2-icon-box"><i class="fas fa-briefcase"></i></div> 
                     What We Do
@@ -181,7 +245,7 @@
                 <p class="doc-p">Beyond visibility, we are building a learning and growth community. Through conferences, trainings, and expert-led sessions, we equip students with modern business and digital marketing knowledge that goes beyond the classroom.</p>
             </div>
 
-            <div class="doc-card">
+            <div class="doc-card reveal-on-scroll">
                 <h2 class="doc-h2">
                     <div class="h2-icon-box"><i class="fas fa-eye"></i></div> 
                     Our Vision
@@ -189,7 +253,7 @@
                 <p class="doc-p">To be the platform where businesses are not just listed, but truly seen, trusted, and chosen.</p>
             </div>
 
-            <div class="doc-card">
+            <div class="doc-card reveal-on-scroll">
                 <h2 class="doc-h2">
                     <div class="h2-icon-box"><i class="fas fa-bullseye"></i></div> 
                     Our Mission
@@ -202,7 +266,7 @@
                 </ul>
             </div>
 
-            <div class="doc-card">
+            <div class="doc-card reveal-on-scroll">
                 <h2 class="doc-h2">
                     <div class="h2-icon-box"><i class="fas fa-fire"></i></div> 
                     Why UnicalDGM?
@@ -218,5 +282,32 @@
             
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15 // Trigger when 15% of the card is visible
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        // Small delay stagger for initial load
+                        setTimeout(() => {
+                            entry.target.classList.add('is-visible');
+                        }, index * 100); 
+                        observer.unobserve(entry.target); // Only animate once
+                    }
+                });
+            }, observerOptions);
+
+            // Select all elements with the 'reveal-on-scroll' class
+            document.querySelectorAll('.reveal-on-scroll').forEach(section => {
+                observer.observe(section);
+            });
+        });
+    </script>
 </body>
 </html>
