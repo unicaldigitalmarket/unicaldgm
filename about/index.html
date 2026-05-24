@@ -21,7 +21,8 @@
       "logo": "https://unicaldgm.com.ng/512.png",
       "founder": {
         "@type": "Person",
-        "name": "Favour John Felix"
+        "name": "Favour John Felix",
+        "gender": "https://schema.org/Female"
       },
       "description": "A student-driven digital ecosystem built to empower, promote, and scale businesses within the University of Calabar community."
     }
@@ -218,7 +219,7 @@
                 </div>
 
                 <p class="doc-p"><strong>UNICAL Digital Market (UnicalDGM)</strong> was founded and created by Favour John Felix.</p>
-                <p class="doc-p">Driven by a vision to elevate student entrepreneurship, Favour built this ecosystem to ensure that business owners at the University of Calabar have the tools, digital visibility, and community backing they need to thrive beyond the campus walls.</p>
+                <p class="doc-p">Driven by <strong>her</strong> vision to elevate student entrepreneurship, Favour built this ecosystem to ensure that business owners at the University of Calabar have the tools, digital visibility, and community backing they need to thrive beyond the campus walls.</p>
             </div>
 
             <div class="doc-card reveal-on-scroll">
@@ -288,22 +289,20 @@
             const observerOptions = {
                 root: null,
                 rootMargin: '0px',
-                threshold: 0.15 // Trigger when 15% of the card is visible
+                threshold: 0.15 
             };
 
             const observer = new IntersectionObserver((entries, observer) => {
                 entries.forEach((entry, index) => {
                     if (entry.isIntersecting) {
-                        // Small delay stagger for initial load
                         setTimeout(() => {
                             entry.target.classList.add('is-visible');
                         }, index * 100); 
-                        observer.unobserve(entry.target); // Only animate once
+                        observer.unobserve(entry.target); 
                     }
                 });
             }, observerOptions);
 
-            // Select all elements with the 'reveal-on-scroll' class
             document.querySelectorAll('.reveal-on-scroll').forEach(section => {
                 observer.observe(section);
             });
