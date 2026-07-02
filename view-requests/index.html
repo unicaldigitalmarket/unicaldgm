@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     <script>
-        window.location.replace("../coming-soon/");
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Customer Requests | Vendor Dashboard</title>
@@ -174,7 +171,7 @@
                 </div>
                 <h3>Vendor Access Only</h3>
                 <p>You must be an approved vendor to view and fulfill customer requests.</p>
-                <a href="../vendor-reg/index.html" class="reg-btn">Become a Vendor</a>
+                <a href="../vendor-reg/" class="reg-btn">Become a Vendor</a>
             </div>
 
             <div id="vendor-feed" style="display: none;">
@@ -194,11 +191,11 @@
         </div>
 
         <div class="bottom-nav">
-            <a href="../index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
-            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')"><i class="fas fa-comment-dots"></i><span>Messages</span></a>
-            <div class="nav-fab" onclick="requireLogin('../add-product/index.html')"><i class="fas fa-plus"></i></div>
-            <a href="#" class="nav-item" onclick="requireLogin('../saved/index.html')"><i class="fas fa-heart"></i><span>Saved</span></a>
-            <a href="#" class="nav-item" onclick="requireLogin('../account/index.html')"><i class="fas fa-user"></i><span>Account</span></a>
+            <a href="../" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../messages/')"><i class="fas fa-comment-dots"></i><span>Messages</span></a>
+            <div class="nav-fab" onclick="requireLogin('../add-product/')"><i class="fas fa-plus"></i></div>
+            <a href="#" class="nav-item" onclick="requireLogin('../saved/')"><i class="fas fa-heart"></i><span>Saved</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../account/')"><i class="fas fa-user"></i><span>Account</span></a>
         </div>
     </div>
 
@@ -231,7 +228,7 @@
 
         document.addEventListener("DOMContentLoaded", async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
-            if (!session) { window.location.href = "../login/index.html"; return; }
+            if (!session) { window.location.href = "../login/"; return; }
             currentUser = session.user;
             
             checkVendorAccess();

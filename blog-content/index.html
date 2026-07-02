@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     <script>
-        window.location.replace("../coming-soon/");
-    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Read Article | UNICAL Digital Market</title>
@@ -288,22 +285,6 @@
             return String(str).replace(/'/g, "\\'").replace(/"/g, '&quot;').replace(/\n/g, '\\n');
         }
 
-        // 🚀 SMART BACK BUTTON LOGIC
-        function getSmartRedirectUrl() {
-            const referrer = document.referrer;
-            const currentWebsite = window.location.origin;
-
-            if (referrer && referrer.startsWith(currentWebsite) && !referrer.includes('/login/') && !referrer.includes('/reset-password/')) {
-                return referrer; 
-            }
-            return "../index.html"; 
-        }
-
-        window.smartBack = function(event) {
-            if (event) event.preventDefault();
-            window.location.href = getSmartRedirectUrl();
-        }
-
         document.addEventListener("DOMContentLoaded", async () => {
             const { data: { session } } = await supabaseClient.auth.getSession();
             if (session) currentUser = session.user;
@@ -510,7 +491,7 @@
                 }
 
                 // Randomize and pick 3
-                const shuffled = data.sort(() => 0.5 - Math.random()).slice(0, 3);
+                const shuffled = data.sort(() => 0.5 - Math.random()).slice(0, 5);
 
                 shuffled.forEach(b => {
                     const slug = createSlug(b.title);
@@ -545,7 +526,7 @@
 
             if (navigator.share) {
                 navigator.share({
-                    title: "UNICAL Market News",
+                    title: "UNICAL Digital Market News",
                     text: `*${title}*\n${snippet}\n\nRead the full article:`,
                     url: shareUrl
                 }).catch(err => console.log('Share cancelled', err));
