@@ -5,262 +5,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Coming Soon | UNICAL Digital Market</title>
     
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <meta name="theme-color" content="#ffffff">
-    <link rel="icon" href="../favicon.ico" type="image/x-icon">
-    <link rel="icon" href="../192.png" sizes="192x192" type="image/png">
-    <link rel="apple-touch-icon" href="../apple-touch-icon.png">
+    <link rel="stylesheet" href="../asset/style.css">
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap');
-
-        :root {
-            --brand-color: #FF7A00; /* UNICAL Orange */
-            --bg-light: #f8fafc;
-            --surface-light: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
+        .hero-section { padding: 40px 20px 20px; text-align: center; }
+        .hero-icon {
+            width: 80px; height: 80px; background: rgba(255, 122, 0, 0.1); color: var(--brand-color);
+            border-radius: 24px; display: flex; justify-content: center; align-items: center;
+            font-size: 36px; margin: 0 auto 20px; animation: bounceIn 1s ease-out;
         }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-
-        body {
-            background-color: var(--bg-light);
-            color: var(--text-main);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* ========================================= */
-        /* 🚀 NEW: LOADING SCREEN STYLES             */
-        /* ========================================= */
-        .loader-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-light);
-            z-index: 99999; /* Keeps it on top of everything */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.6s ease, visibility 0.6s ease;
-        }
-        /* When this class is added, the loader fades away */
-        .loader-overlay.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none; 
-        }
-        .loader-content {
-            position: relative;
-            width: 110px; height: 110px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .loader-logo {
-            width: 60px; height: 60px;
-            border-radius: 12px;
-            object-fit: cover;
-            z-index: 2;
-            animation: pulse-logo 2s infinite ease-in-out;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-        }
-        /* The spinning orange ring */
-        .loader-spinner {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            border: 4px solid rgba(255, 122, 0, 0.1); /* Faded orange track */
-            border-top: 4px solid var(--brand-color); /* Bright orange moving part */
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            z-index: 1;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        @keyframes pulse-logo { 0%, 100% { transform: scale(0.95); } 50% { transform: scale(1.05); } }
-        /* ========================================= */
-
-        /* Bright Background Glow Effect */
-        .bg-glow {
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: var(--brand-color);
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.15;
-            animation: pulse 4s infinite alternate;
-            z-index: 0;
-            top: 10%;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.1; }
-            100% { transform: scale(1.2); opacity: 0.2; }
-        }
-
-        .container {
-            position: relative;
-            z-index: 1;
-            text-align: center;
-            padding: 40px 20px;
-            max-width: 550px;
-            width: 100%;
-        }
-
-        .icon-box {
-            width: 90px;
-            height: 90px;
-            background: rgba(255, 122, 0, 0.1);
-            border: 2px solid rgba(255, 122, 0, 0.2);
-            border-radius: 24px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 40px;
-            color: var(--brand-color);
-            margin: 0 auto 30px;
-            box-shadow: 0 15px 35px rgba(255, 122, 0, 0.15);
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-
-        h1 {
-            font-size: 38px;
-            font-weight: 900;
-            margin-bottom: 15px;
-            letter-spacing: -1px;
-            color: #0f172a;
-        }
-
-        p {
-            font-size: 15px;
-            color: var(--text-muted);
-            line-height: 1.6;
-            margin-bottom: 30px;
-            padding: 0 10px;
-        }
-
+        .hero-title { font-size: 24px; font-weight: 900; color: var(--text-main); margin-bottom: 10px; line-height: 1.2; }
+        .hero-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 30px; }
+        
+        .action-list { display: flex; flex-direction: column; gap: 15px; padding: 0 20px 30px; }
         .action-card {
-            background: var(--surface-light);
-            padding: 25px 20px;
-            border-radius: 20px;
-            border: 1px solid #e2e8f0;
-            display: inline-block;
-            width: 100%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            display: flex; align-items: center; background: white; padding: 20px;
+            border-radius: 20px; border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            text-decoration: none; transition: 0.2s;
+        }
+        .action-card:active { transform: scale(0.96); background: #f8fafc; }
+        
+        .action-icon-box {
+            width: 50px; height: 50px; border-radius: 14px; display: flex;
+            justify-content: center; align-items: center; font-size: 22px; margin-right: 15px; flex-shrink: 0;
+        }
+        .buyer-icon { background: #f1f5f9; color: var(--text-main); }
+        .vendor-icon { background: rgba(255, 122, 0, 0.1); color: var(--brand-color); }
+        
+        .action-text { flex: 1; }
+        .action-title { font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 3px; }
+        .action-subtitle { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+        .action-arrow { color: #cbd5e1; font-size: 14px; }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            60% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
-        .action-card span {
-            display: block;
-            font-size: 13px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #475569;
-            margin-bottom: 20px;
-        }
-
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            text-decoration: none;
-            padding: 15px 24px;
-            border-radius: 14px;
-            font-weight: 800;
-            font-size: 15px;
-            transition: 0.2s;
-            width: 100%;
-        }
-
-        .btn:active { transform: scale(0.97); }
-
-        .btn-download {
-            background: var(--text-main);
-            color: white;
-            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
-            margin-bottom: 25px;
-        }
-
-        .btn-vendor {
-            background: var(--brand-color);
-            color: white;
-            box-shadow: 0 8px 20px rgba(255, 122, 0, 0.25);
-        }
-
-        .btn-whatsapp {
-            background: #f1f5f9;
-            color: #0f172a;
-            border: 1px solid #e2e8f0;
-        }
-
+        body.dark-mode .action-card { background: #1e293b; border-color: #334155; }
+        body.dark-mode .action-card:active { background: #334155; }
+        body.dark-mode .buyer-icon { background: #334155; color: #f1f5f9; }
     </style>
 </head>
 <body>
 
-    <!-- 🚀 NEW: THE LOADING SCREEN HTML -->
+    <!-- Splash Loader -->
     <div id="page-loader" class="loader-overlay">
         <div class="loader-content">
             <div class="loader-spinner"></div>
-            <!-- Using your 192.png logo -->
-            <img src="../192.png" alt="UNICAL Digital Market Logo" class="loader-logo" onerror="this.src='../asset/img/192.png'"> 
+            <img src="../asset/img/192.png" alt="UnicalDGM Logo" class="loader-logo" onerror="this.src='../192.png'">
         </div>
     </div>
-    <!-- 🚀 NEW: THE SCRIPT TO HIDE IT AFTER 1.5 SECONDS -->
+
     <script>
         window.addEventListener('load', () => {
             setTimeout(() => {
-                document.getElementById('page-loader').classList.add('hidden');
-            }, 2500); // 1500 milliseconds = 1.5 seconds
+                const loader = document.getElementById('page-loader');
+                if (loader) loader.classList.add('hidden');
+            }, 1500);
         });
     </script>
 
-
-    <div class="bg-glow"></div>
-
-    <div class="container">
-        <div class="icon-box">
-            <i class="fas fa-rocket"></i>
-        </div>
+    <div class="app-container" style="min-height: 100vh; justify-content: center;">
         
-        <h1>We're Launching Soon</h1>
-        
-        <p>We are currently building the ultimate digital marketplace for the University of Calabar community. Get ready to buy, sell, and connect like never before.</p>
-
-        <a href="../download/" class="btn btn-download">
-            <i class="fas fa-mobile-alt" style="font-size: 18px;"></i> Get the App for Early Access
-        </a>
-
-        <div class="action-card">
-            <span>Are you a student entrepreneur?</span>
-            
-            <div class="btn-group">
-                <a href="../add-product/" class="btn btn-vendor">
-                    <i class="fas fa-store"></i> Register as a Vendor Now
-                </a>
-                
-                <a href="https://wa.me/2349035778034?text=Hi!%20I%20want%20to%20know%20more%20about%20selling%20on%20UNICAL%20Digital%20Market." target="_blank" class="btn btn-whatsapp">
-                    <i class="fab fa-whatsapp" style="font-size: 18px; color: #25D366;"></i> Chat with Admin
-                </a>
-            </div>
+        <div class="hero-section">
+            <div class="hero-icon"><i class="fas fa-rocket"></i></div>
+            <h1 class="hero-title">The Wait is Almost Over</h1>
+            <p class="hero-desc">We are building the ultimate digital marketplace for the University of Calabar. Secure your spot before we officially launch.</p>
         </div>
+
+        <div class="action-list">
+            <!-- 🚀 POINTS TO WAITLIST -->
+            <a href="../waitlist/" class="action-card">
+                <div class="action-icon-box buyer-icon"><i class="fas fa-shopping-bag"></i></div>
+                <div class="action-text">
+                    <div class="action-title">Join as a Student</div>
+                    <div class="action-subtitle">Create a buyer account to join the waitlist and get early access.</div>
+                </div>
+                <i class="fas fa-chevron-right action-arrow"></i>
+            </a>
+
+            <!-- 🚀 POINTS TO ADD PRODUCT (Vendor Route) -->
+            <a href="../add-product/" class="action-card">
+                <div class="action-icon-box vendor-icon"><i class="fas fa-store"></i></div>
+                <div class="action-text">
+                    <div class="action-title">Become a Vendor</div>
+                    <div class="action-subtitle">Register your business today and prepare for thousands of buyers.</div>
+                </div>
+                <i class="fas fa-chevron-right action-arrow"></i>
+            </a>
+        </div>
+
+        <div style="text-align: center; padding-bottom: 30px;">
+            <a href="https://wa.me/2349035778034" target="_blank" style="font-size: 13px; font-weight: 600; color: #10b981; text-decoration: none;">
+                <i class="fab fa-whatsapp" style="font-size: 16px; margin-right: 5px;"></i> Chat with Support
+            </a>
+        </div>
+
     </div>
 
+    <script src="../asset/script.js"></script>
 </body>
 </html>

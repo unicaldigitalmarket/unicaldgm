@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Waitlist Status | UNICAL Digital Market</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Global CSS -->
+    <link rel="stylesheet" href="../asset/style.css">
+    
+    <style>
+        .user-stats-card { background: white; margin: 20px 20px 10px; padding: 25px 20px; border-radius: 20px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.02); border: 1px solid #f1f5f9; }
+        .user-stats-card h2 { font-size: 20px; font-weight: 800; color: var(--text-main); margin-bottom: 5px; }
+        .user-stats-card p { font-size: 13px; color: var(--text-muted); margin-bottom: 20px; }
+
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .stat-box { background: #f8fafc; padding: 15px 10px; border-radius: 16px; border: 1px solid #e2e8f0; }
+        .stat-num { font-size: 24px; font-weight: 900; color: var(--brand-color); line-height: 1; margin-bottom: 5px; }
+        .stat-label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .timer-card { background: var(--text-main); color: white; margin: 10px 20px 20px; padding: 25px 20px; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .timer-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 15px; color: white !important;}
+        
+        .countdown-grid { display: flex; justify-content: center; gap: 10px; }
+        .time-box { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; width: 65px; padding: 12px 0; display: flex; flex-direction: column; align-items: center; }
+        .time-num { font-size: 22px; font-weight: 800; line-height: 1; margin-bottom: 4px; color: var(--brand-color); }
+        .time-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+
+        /* Waitlist Info Items */
+        .info-list { padding: 0 20px 30px; display: flex; flex-direction: column; gap: 12px; }
+        .info-card { background: white; padding: 20px; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .info-header { display: flex; align-items: center; margin-bottom: 12px; }
+        .info-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; justify-content: center; align-items: center; font-size: 18px; margin-right: 12px; flex-shrink: 0;}
+        
+        /* Icon Colors */
+        .icon-orange { background: rgba(255, 122, 0, 0.1); color: var(--brand-color); }
+        .icon-blue { background: rgba(56, 189, 248, 0.1); color: #38bdf8; }
+        .icon-purple { background: rgba(168, 85, 247, 0.1); color: #a855f7; }
+        .icon-green { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+        .icon-red { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+
+        .info-title { font-size: 16px; font-weight: 800; color: var(--text-main); }
+        .info-body p { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 10px; }
+        .info-body ul { list-style: none; margin-bottom: 10px; padding-left: 5px; }
+        .info-body li { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px; display: flex; align-items: flex-start; gap: 8px; }
+        .info-body li i { color: var(--brand-color); font-size: 12px; margin-top: 4px; flex-shrink: 0; }
+
+        /* Terms and Conditions Styling */
+        .toc-card { background: white; padding: 25px 20px; border-radius: 16px; border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.02); margin: 0 20px 40px;}
+        .toc-intro { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #f1f5f9; }
+        .toc-item { margin-bottom: 20px; }
+        .toc-item:last-child { margin-bottom: 0; }
+        .toc-item h4 { font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; display: flex; gap: 8px; align-items: flex-start;}
+        .toc-item h4 span { color: var(--brand-color); }
+        .toc-item p { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 6px; }
+        .toc-item ul { list-style-type: disc; padding-left: 20px; margin-bottom: 6px; }
+        .toc-item li { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 4px; }
+
+        /* Dark mode overrides */
+        body.dark-mode .user-stats-card, body.dark-mode .info-card, body.dark-mode .toc-card { background: #1e293b; border-color: #334155; }
+        body.dark-mode .stat-box { background: #0f172a; border-color: #334155; }
+        body.dark-mode .toc-intro { border-color: #334155; }
+    </style>
+</head>
+<body>
+
+    <!-- Splash Loader -->
+    <div id="page-loader" class="loader-overlay">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <img src="../asset/img/192.png" alt="UnicalDGM Logo" class="loader-logo" onerror="this.src='../192.png'">
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="app-container">
+        
+        <div class="header" style="display: flex; align-items: center; justify-content: space-between; padding: 15px 20px;">
+            <div style="display: flex; align-items: center;">
+                <button onclick="smartBack(event)" style="background:none; border:none; font-size: 20px; color: var(--text-main); cursor: pointer; margin-right: 15px;">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <h1 style="font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0;">Waitlist Status</h1>
+            </div>
+            <button onclick="logoutWaitlist()" style="background: none; border: none; color: #ef4444; font-size: 14px; font-weight: 700; cursor: pointer;">Logout</button>
+        </div>
+
+        <div class="content-area">
+            
+            <div class="user-stats-card">
+                <h2 id="user-greeting">Welcome!</h2>
+                <p>You have successfully secured your spot on the waitlist.</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-num" id="total-buyers">--</div>
+                        <div class="stat-label">Students<br>Waiting</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-num" id="total-vendors">--</div>
+                        <div class="stat-label">Vendors<br>Ready</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timer-card">
+                <h3>Countdown to Launch 🚀</h3>
+                
+                <div class="countdown-grid">
+                    <div class="time-box">
+                        <div class="time-num" id="days">00</div>
+                        <div class="time-label">Days</div>
+                    </div>
+                    <div class="time-box">
+                        <div class="time-num" id="hours">00</div>
+                        <div class="time-label">Hours</div>
+                    </div>
+                    <div class="time-box">
+                        <div class="time-num" id="minutes">00</div>
+                        <div class="time-label">Mins</div>
+                    </div>
+                    <div class="time-box">
+                        <div class="time-num" id="seconds">00</div>
+                        <div class="time-label">Secs</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- =============================== -->
+            <!-- ABOUT US SECTION                -->
+            <!-- =============================== -->
+            <div class="section-header" style="padding: 0 20px; margin-top: 10px; margin-bottom: 10px;">
+                <div class="section-title">About Us</div>
+            </div>
+
+            <div class="info-list">
+                
+                <div class="info-card">
+                    <div class="info-header">
+                        <div class="info-icon icon-orange"><i class="fas fa-info"></i></div>
+                        <div class="info-title">Who We Are</div>
+                    </div>
+                    <div class="info-body">
+                        <p>UnicalDGM (Unical Digital Marketing) is a student-driven digital ecosystem built to empower, promote, and scale businesses within the University of Calabar community and beyond.</p>
+                        <p>We exist to bridge the gap between student entrepreneurs, digital visibility, and real business growth. At UnicalDGM, we understand that many student-owned businesses struggle, not because they lack quality products or services, but because they lack the right exposure, strategy, and digital presence. That’s where we come in.</p>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-header">
+                        <div class="info-icon icon-blue"><i class="fas fa-briefcase"></i></div>
+                        <div class="info-title">What We Do</div>
+                    </div>
+                    <div class="info-body">
+                        <p>We provide a centralised platform where student entrepreneurs can:</p>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> Showcase their products and services to a wider audience</li>
+                            <li><i class="fas fa-check-circle"></i> Build a strong and credible online presence</li>
+                            <li><i class="fas fa-check-circle"></i> Connect with potential customers and collaborators</li>
+                            <li><i class="fas fa-check-circle"></i> Learn practical, result-driven marketing strategies</li>
+                        </ul>
+                        <p>Beyond visibility, we are building a learning and growth community. Through conferences, trainings, and expert-led sessions, we equip students with modern business and digital marketing knowledge that goes beyond the classroom.</p>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-header">
+                        <div class="info-icon icon-purple"><i class="fas fa-eye"></i></div>
+                        <div class="info-title">Our Vision</div>
+                    </div>
+                    <div class="info-body">
+                        <p>To be the platform where businesses are not just listed, but truly seen, trusted, and chosen.</p>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-header">
+                        <div class="info-icon icon-green"><i class="fas fa-bullseye"></i></div>
+                        <div class="info-title">Our Mission</div>
+                    </div>
+                    <div class="info-body">
+                        <p>To help student entrepreneurs grow by providing:</p>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> Strategic digital exposure</li>
+                            <li><i class="fas fa-check-circle"></i> Practical business education</li>
+                            <li><i class="fas fa-check-circle"></i> A supportive and growth-focused community</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <div class="info-header">
+                        <div class="info-icon icon-red"><i class="fas fa-fire"></i></div>
+                        <div class="info-title">Why UnicalDGM?</div>
+                    </div>
+                    <div class="info-body">
+                        <p>Because we’re not just another platform, we are a movement. A movement that believes:</p>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> Students can build profitable businesses while in school</li>
+                            <li><i class="fas fa-check-circle"></i> Visibility is just as important as product quality</li>
+                            <li><i class="fas fa-check-circle"></i> The right knowledge and strategy can change everything</li>
+                        </ul>
+                        <p style="margin-top: 15px; font-weight: 700; color: var(--text-main);">We are here to ensure that no good business stays hidden.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- =============================== -->
+            <!-- TERMS AND CONDITIONS SECTION    -->
+            <!-- =============================== -->
+            <div class="section-header" style="padding: 0 20px; margin-top: 10px; margin-bottom: 10px;">
+                <div class="section-title">Terms & Conditions</div>
+            </div>
+
+            <div class="toc-card">
+                <div class="toc-intro">
+                    Welcome to Unical Digital Marketing (UnicalDGM). These Terms and Conditions govern your access to and use of the UnicalDGM platform. By accessing or using this Platform, you agree to be bound by these Terms. If you do not agree, please do not use the Platform.
+                </div>
+
+                <div class="toc-item">
+                    <h4><span>1.</span> About Unical Digital Marketing</h4>
+                    <p>UnicalDGM is a digital platform designed to help students, small business owners, and service providers promote their businesses, connect with customers, and gain visibility. The Platform operates strictly as a listing and advertising service and does not directly participate in transactions between users.</p>
+                </div>
+
+                <div class="toc-item">
+                    <h4><span>2.</span> Eligibility</h4>
+                    <ul>
+                        <li>You must be at least 18 years old, or have permission from a parent or guardian to use the Platform.</li>
+                        <li>You must provide accurate and up-to-date information at all times.</li>
+                    </ul>
+                </div>
+
+                <div class="toc-item">
+                    <h4><span>3.</span> User Accounts & Listings</h4>
+                    <ul>
+                        <li>Vendors must provide accurate details about their business, products, or services.</li>
+                        <li>You are solely responsible for the content you post, including images, descriptions, and pricing.</li>
+                        <li>UnicalDGM reserves the right to approve, edit, reject, or remove any listing that violates these Terms or applicable laws.</li>
+                    </ul>
+                </div>
+
+                <div class="toc-item">
+                    <h4><span>4.</span> Payments & Fees</h4>
+                    <ul>
+                        <li>UnicalDGM may charge fees for listings, promotions, or advertising services.</li>
+                        <li>All payments made are strictly for visibility and promotional purposes.</li>
+                        <li>UnicalDGM does not process or manage payments between buyers and sellers unless clearly stated.</li>
+                    </ul>
+                </div>
+
+                <div class="toc-item">
+                    <h4><span>5.</span> Transactions</h4>
+                    <ul>
+                        <li>All transactions take place directly between buyers and sellers.</li>
+                        <li>UnicalDGM is not responsible for disputes, fraud, delivery issues, or the quality of goods and services.</li>
+                    </ul>
+                </div>
+
+                <div class="toc-item">
+                    <h4><span>6.</span> Vendor Verification</h4>
+                    <ul>
+                        <li>Any verification badge is based on information provided by the vendor.</li>
+                        <li>Verification does not guarantee the authenticity, quality, or reliability of any business.</li>
+                    </ul>
+                </div>
+
+                <div class="toc-item">
+                    <h4><span>7.</span> Prohibited Activities</h4>
+                    <p>You agree not to:</p>
+                    <ul>
+                        <li>Post false, misleading, or fraudulent information</li>
+                        <li>Advertise illegal goods or services</li>
+                        <li>Impersonate any person or business</li>
+                        <li>Use the Platform for scams or harmful activities</li>
+                        <li>Attempt to hack, disrupt, or misuse the Platform</li>
+                    </ul>
+                    <p>Violation may result in removal of listings or permanent suspension.</p>
+                </div>
+
+                <div class="toc-item">
+                    <h4><span>8.</span> Intellectual Property</h4>
+                    <ul>
+                        <li>All content on UnicalDGM, including logos, design, text, and layout, belongs to UnicalDGM unless stated otherwise.</li>
+                        <li>You may not copy, reproduce, or distribute any content without permission.</li>
+                    </ul>
+                </div>
+
+                <div class="toc-item">
+                    <h4><span>9.</span> Privacy</h4>
+                    <ul>
+                        <li>We respect your privacy. Information you provide is used to manage your listings and improve the Platform.</li>
+                        <li>We do not sell your personal information to third parties.</li>
+                    </ul>
+                </div>
+
+                <div class="toc-item">
+                    <h4><span>10.</span> Disclaimer & Limitation of Liability</h4>
+                    <ul>
+                        <li>UnicalDGM is provided on an “as is” basis.</li>
+                        <li>We do not guarantee the accuracy, safety, or reliability of any listing.</li>
+                        <li>We are not liable for any loss, damage, or disputes arising from the use of the Platform.</li>
+                    </ul>
+                </div>
+
+                <div class="toc-item">
+                    <h4><span>11.</span> Platform Updates & Availability</h4>
+                    <ul>
+                        <li>UnicalDGM may update, modify, or discontinue any part of the Platform at any time.</li>
+                        <li>We do not guarantee uninterrupted or error-free access to the Platform.</li>
+                    </ul>
+                </div>
+
+                <div class="toc-item">
+                    <h4><span>12.</span> Termination</h4>
+                    <ul>
+                        <li>UnicalDGM reserves the right to suspend or terminate access if these Terms are violated.</li>
+                        <li>Users may also stop using the Platform or remove their listings at any time.</li>
+                    </ul>
+                </div>
+
+                <div class="toc-item">
+                    <h4><span>13.</span> Governing Law</h4>
+                    <p>These Terms shall be governed by and interpreted in accordance with the laws of the Federal Republic of Nigeria.</p>
+                </div>
+
+                <div class="toc-item">
+                    <h4><span>14.</span> Changes to These Terms</h4>
+                    <p>We may update these Terms from time to time. Continued use of the Platform means you accept any updated Terms.</p>
+                </div>
+
+                <div class="toc-item">
+                    <h4><span>15.</span> Contact Information</h4>
+                    <p>For questions, complaints, or concerns, please reach out through the official UnicalDGM communication channels.</p>
+                </div>
+
+                <div class="toc-intro" style="margin-top: 25px; margin-bottom: 0; padding-bottom: 0; border-bottom: none; font-style: italic;">
+                    By using Unical Digital Marketing (UnicalDGM), you acknowledge that you have read, understood, and agreed to these Terms and Conditions.
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script src="../asset/script.js"></script>
+    
+    <script>
+        let sbClient = null;
+
+        if (!window.supabase) {
+            console.error("CRITICAL ERROR: Supabase CDN failed to load.");
+            document.getElementById('page-loader').classList.add('hidden');
+            document.getElementById('user-greeting').innerText = "Connection Error";
+        } else {
+            const URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
+            const KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
+            sbClient = window.supabase.createClient(URL, KEY);
+
+        async function verifyAuthAndLoadData() {
+                try {
+                    const { data: { session }, error: sessionError } = await sbClient.auth.getSession();
+                    if (sessionError) throw sessionError;
+
+                    if (!session) {
+                        window.location.replace('../login/');
+                        return; 
+                    }
+
+                    const userId = session.user.id;
+                    const { data: profile, error: profileError } = await sbClient.from('profiles').select('full_name').eq('id', userId).single();
+                    
+                    if (profileError) {
+                        console.warn("Could not fetch profile name.", profileError);
+                    } else if (profile && profile.full_name) {
+                        const firstName = profile.full_name.split(' ')[0];
+                        document.getElementById('user-greeting').innerText = `Welcome, ${firstName}!`;
+                    }
+
+                    // --- REAL BUYER COUNT ---
+                    const { count: buyerCount, error: buyerError } = await sbClient.from('profiles').select('*', { count: 'exact', head: true });
+                    if (buyerError) {
+                        console.warn("Could not fetch buyers.", buyerError);
+                    } else if (buyerCount !== null) {
+                        // Removed the + 14 here
+                        document.getElementById('total-buyers').innerText = buyerCount; 
+                    }
+
+                    // --- REAL VENDOR COUNT ---
+                    const { count: vendorCount, error: vendorError } = await sbClient.from('vendors').select('*', { count: 'exact', head: true });
+                    if (vendorError) {
+                        console.warn("Could not fetch vendors.", vendorError);
+                    } else if (vendorCount !== null) {
+                        // Removed the + 5 here
+                        document.getElementById('total-vendors').innerText = vendorCount; 
+                    }
+                    
+                    document.getElementById('page-loader').classList.add('hidden');
+
+                } catch (err) {
+                    console.error("Waitlist Error:", err);
+                    document.getElementById('page-loader').classList.add('hidden');
+                    document.getElementById('user-greeting').innerText = "Oops, something went wrong!";
+                    setTimeout(() => { window.location.replace('../login/'); }, 2000);
+                }
+            }
+            document.addEventListener('DOMContentLoaded', verifyAuthAndLoadData);
+        }
+
+        // --- GLOBAL LOGOUT FUNCTION ---
+        // Attached to window so the HTML button can always find it
+        window.logoutWaitlist = async function() {
+            if (sbClient) {
+                await sbClient.auth.signOut();
+            }
+            window.location.replace('../coming-soon/');
+        };
+
+        // --- COUNTDOWN TIMER LOGIC (SAFELY PAUSED) ---
+        // INSTRUCTIONS: Change `isTimerActive` to true when you have a launch date.
+        const isTimerActive = false;
+        
+        if (isTimerActive) {
+            const targetLaunchDate = new Date("October 1, 2026 00:00:00").getTime();
+            
+            const runCountdown = setInterval(() => {
+                const timeDifference = targetLaunchDate - new Date().getTime();
+
+                if (timeDifference < 0) {
+                    clearInterval(runCountdown);
+                    document.getElementById("days").innerText = "00";
+                    document.getElementById("hours").innerText = "00";
+                    document.getElementById("minutes").innerText = "00";
+                    document.getElementById("seconds").innerText = "00";
+                    return;
+                }
+
+                document.getElementById("days").innerText = String(Math.floor(timeDifference / (1000 * 60 * 60 * 24))).padStart(2, '0');
+                document.getElementById("hours").innerText = String(Math.floor((timeDifference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+                document.getElementById("minutes").innerText = String(Math.floor((timeDifference % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+                document.getElementById("seconds").innerText = String(Math.floor((timeDifference % (1000 * 60)) / 1000)).padStart(2, '0');
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
