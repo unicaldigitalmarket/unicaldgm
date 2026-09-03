@@ -3,93 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Coming Soon | UNICAL Digital Market</title>
+    <title>Upgrading & Launching Soon | UNICAL Digital Market</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="../asset/style.css">
     
     <style>
-        .hero-section { padding: 40px 20px 20px; text-align: center; }
-        .hero-icon {
-            width: 80px; height: 80px; background: rgba(255, 122, 0, 0.1); color: var(--brand-color);
-            border-radius: 24px; display: flex; justify-content: center; align-items: center;
-            font-size: 36px; margin: 0 auto 20px; animation: bounceIn 1s ease-out;
+        /* 🚀 Reset & Variables */
+        * { box-sizing: border-box; }
+        :root {
+            --brand-color: #FF7A00; 
+            --brand-bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
         }
-        .hero-title { font-size: 24px; font-weight: 900; color: var(--text-main); margin-bottom: 10px; line-height: 1.2; }
-        .hero-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin-bottom: 30px; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #e2e8f0; 
+            margin: 0; padding: 0; 
+            display: flex; justify-content: center; min-height: 100vh;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            background: var(--brand-bg); width: 100%; max-width: 480px; min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1); display: flex; flex-direction: column;
+            position: relative; z-index: 1; overflow-y: auto; overflow-x: hidden;
+        }
+
+        /* 🚀 Hero Section */
+        .hero-section { padding: 40px 20px 25px; text-align: center; }
+        .hero-icon-box {
+            width: 85px; height: 85px; background: rgba(255, 122, 0, 0.1); color: var(--brand-color);
+            border-radius: 24px; display: flex; justify-content: center; align-items: center;
+            font-size: 38px; margin: 0 auto 20px; box-shadow: 0 10px 30px rgba(255, 122, 0, 0.15);
+            animation: pulseGlow 2s infinite ease-in-out;
+        }
+        @keyframes pulseGlow {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 122, 0, 0.4); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(255, 122, 0, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 122, 0, 0); }
+        }
+
+        .hero-title { font-size: 24px; font-weight: 900; color: var(--text-main); margin-bottom: 12px; line-height: 1.2; letter-spacing: -0.5px;}
+        .hero-desc { font-size: 14px; font-weight: 500; color: var(--text-muted); line-height: 1.6; margin-bottom: 0; max-width: 320px; margin: 0 auto;}
         
+        /* 🚀 Main Call to Actions (Students & Vendors) */
         .action-list { display: flex; flex-direction: column; gap: 15px; padding: 0 20px 30px; }
         .action-card {
-            display: flex; align-items: center; background: white; padding: 20px;
-            border-radius: 20px; border: 1px solid #f1f5f9; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            text-decoration: none; transition: 0.2s;
+            display: flex; align-items: center; background: white; padding: 20px 18px;
+            border-radius: 20px; border: 1px solid #f1f5f9; box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+            text-decoration: none; transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .action-card:active { transform: scale(0.96); background: #f8fafc; }
+        .action-card:active { transform: scale(0.97); background: #f8fafc; }
         
         .action-icon-box {
-            width: 50px; height: 50px; border-radius: 14px; display: flex;
-            justify-content: center; align-items: center; font-size: 22px; margin-right: 15px; flex-shrink: 0;
+            width: 55px; height: 55px; border-radius: 16px; display: flex;
+            justify-content: center; align-items: center; font-size: 24px; margin-right: 15px; flex-shrink: 0;
         }
         .buyer-icon { background: #f1f5f9; color: var(--text-main); }
         .vendor-icon { background: rgba(255, 122, 0, 0.1); color: var(--brand-color); }
         
         .action-text { flex: 1; }
-        .action-title { font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 3px; }
-        .action-subtitle { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
-        .action-arrow { color: #cbd5e1; font-size: 14px; }
+        .action-title { font-size: 15px; font-weight: 900; color: var(--text-main); margin-bottom: 4px; letter-spacing: -0.3px;}
+        .action-subtitle { font-size: 12px; font-weight: 500; color: var(--text-muted); line-height: 1.5; }
+        .action-arrow { color: #cbd5e1; font-size: 16px; margin-left: 10px;}
 
-        @keyframes bounceIn {
-            0% { transform: scale(0.5); opacity: 0; }
-            60% { transform: scale(1.1); opacity: 1; }
-            100% { transform: scale(1); opacity: 1; }
+        /* 🚀 Quick Links Grid */
+        .links-container { padding: 0 20px 30px; }
+        .links-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        
+        .link-card {
+            background: white; border: 1px solid #f1f5f9; border-radius: 18px; padding: 18px 12px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-decoration: none; box-shadow: 0 4px 15px rgba(0,0,0,0.02); transition: 0.2s;
         }
+        .link-card:active { transform: scale(0.96); background: #f8fafc; }
+        
+        .link-icon {
+            width: 40px; height: 40px; border-radius: 12px; display: flex; justify-content: center; align-items: center;
+            font-size: 18px; margin-bottom: 10px;
+        }
+        .icon-about { background: rgba(56, 189, 248, 0.1); color: #0284c7; }
+        .icon-terms { background: rgba(168, 85, 247, 0.1); color: #9333ea; }
+        .icon-faq { background: rgba(16, 185, 129, 0.1); color: #059669; }
+        .icon-safety { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
 
-        body.dark-mode .action-card { background: #1e293b; border-color: #334155; }
-        body.dark-mode .action-card:active { background: #334155; }
-        body.dark-mode .buyer-icon { background: #334155; color: #f1f5f9; }
+        .link-text { font-size: 12px; font-weight: 800; color: var(--text-main); letter-spacing: -0.2px;}
+
+        /* 🚀 Support Link */
+        .support-wrapper { text-align: center; padding-bottom: 40px; margin-top: auto; }
+        .support-link {
+            font-size: 14px; font-weight: 700; color: #10b981; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border-radius: 12px;
+            background: rgba(16, 185, 129, 0.1); transition: 0.2s;
+        }
+        .support-link:active { transform: scale(0.95); background: rgba(16, 185, 129, 0.15); }
+
+        /* 🚀 Loader */
+        .loader-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #ffffff; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.3s; }
+        .loader-overlay.hidden { opacity: 0; pointer-events: none; }
+        .loader-spinner { width: 45px; height: 45px; border: 4px solid #e2e8f0; border-top-color: var(--brand-color); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ========================================= */
+        /* 🌙 DARK MODE FIXES                        */
+        /* ========================================= */
+        body.dark-mode { background-color: #020617 !important; }
+        body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;}
+        
+        body.dark-mode .hero-icon-box { background: rgba(255, 122, 0, 0.15) !important; }
+        body.dark-mode .hero-title { color: #f1f5f9 !important; }
+        body.dark-mode .hero-desc { color: #94a3b8 !important; }
+
+        body.dark-mode .action-card { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .action-card:active { background: #334155 !important; }
+        body.dark-mode .buyer-icon { background: #0f172a !important; color: #f1f5f9 !important; border: 1px solid #334155;}
+        body.dark-mode .action-title { color: #f1f5f9 !important; }
+        body.dark-mode .action-subtitle { color: #cbd5e1 !important; }
+        body.dark-mode .action-arrow { color: #475569 !important; }
+
+        body.dark-mode .link-card { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 10px 20px rgba(0,0,0,0.3) !important;}
+        body.dark-mode .link-card:active { background: #334155 !important; }
+        body.dark-mode .link-text { color: #f1f5f9 !important; }
+        
+        body.dark-mode .icon-about { background: rgba(56, 189, 248, 0.15) !important; color: #38bdf8 !important; }
+        body.dark-mode .icon-terms { background: rgba(168, 85, 247, 0.15) !important; color: #c084fc !important; }
+        body.dark-mode .icon-faq { background: rgba(16, 185, 129, 0.15) !important; color: #34d399 !important; }
+        body.dark-mode .icon-safety { background: rgba(239, 68, 68, 0.15) !important; color: #f87171 !important; }
+
+        body.dark-mode .loader-overlay { background: rgba(2, 6, 23, 1) !important; }
     </style>
 </head>
 <body>
 
-    <!-- Splash Loader -->
     <div id="page-loader" class="loader-overlay">
-        <div class="loader-content">
-            <div class="loader-spinner"></div>
-            <img src="../asset/img/192.png" alt="UnicalDGM Logo" class="loader-logo" onerror="this.src='../192.png'">
-        </div>
+        <div class="loader-spinner"></div>
     </div>
 
     <script>
+        // Handle Dark Mode instantly before rendering
+        if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
+
         window.addEventListener('load', () => {
             setTimeout(() => {
                 const loader = document.getElementById('page-loader');
                 if (loader) loader.classList.add('hidden');
-            }, 1500);
+            }, 800); // Fast, smooth fade
         });
     </script>
 
-    <div class="app-container" style="min-height: 100vh; justify-content: center;">
+    <div class="app-container">
         
         <div class="hero-section">
-            <div class="hero-icon"><i class="fas fa-rocket"></i></div>
-            <h1 class="hero-title">The Wait is Almost Over</h1>
-            <p class="hero-desc">We are building the ultimate digital marketplace for the University of Calabar. Secure your spot before we officially launch.</p>
+            <div class="hero-icon-box">
+                <i class="fas fa-rocket"></i>
+            </div>
+            <h1 class="hero-title">System Upgrades &<br>Launch Prep</h1>
+            <p class="hero-desc">We are actively upgrading our systems for the ultimate launch. Secure your spot on the platform before we officially open!</p>
         </div>
 
         <div class="action-list">
-            <!-- 🚀 POINTS TO WAITLIST -->
-            <a href="../waitlist/" class="action-card">
+            <a href="../waitlist/index.html" class="action-card">
                 <div class="action-icon-box buyer-icon"><i class="fas fa-shopping-bag"></i></div>
                 <div class="action-text">
                     <div class="action-title">Join as a Student</div>
-                    <div class="action-subtitle">Create a buyer account to join the waitlist and get early access.</div>
+                    <div class="action-subtitle">Create an account to join the waitlist and get early access.</div>
                 </div>
                 <i class="fas fa-chevron-right action-arrow"></i>
             </a>
 
-            <!-- 🚀 POINTS TO ADD PRODUCT (Vendor Route) -->
-            <a href="../add-product/" class="action-card">
+            <a href="../add-product/index.html" class="action-card">
                 <div class="action-icon-box vendor-icon"><i class="fas fa-store"></i></div>
                 <div class="action-text">
                     <div class="action-title">Become a Vendor</div>
@@ -99,9 +186,33 @@
             </a>
         </div>
 
-        <div style="text-align: center; padding-bottom: 30px;">
-            <a href="https://wa.me/2349035778034" target="_blank" style="font-size: 13px; font-weight: 600; color: #10b981; text-decoration: none;">
-                <i class="fab fa-whatsapp" style="font-size: 16px; margin-right: 5px;"></i> Chat with Support
+        <div class="links-container">
+            <div class="links-grid">
+                <a href="../about/index.html" class="link-card">
+                    <div class="link-icon icon-about"><i class="fas fa-info-circle"></i></div>
+                    <div class="link-text">About Us</div>
+                </a>
+                
+                <a href="../terms/index.html" class="link-card">
+                    <div class="link-icon icon-terms"><i class="fas fa-file-contract"></i></div>
+                    <div class="link-text">Terms & Conditions</div>
+                </a>
+
+                <a href="../faq/index.html" class="link-card">
+                    <div class="link-icon icon-faq"><i class="fas fa-question-circle"></i></div>
+                    <div class="link-text">FAQs</div>
+                </a>
+
+                <a href="../safety/index.html" class="link-card">
+                    <div class="link-icon icon-safety"><i class="fas fa-shield-alt"></i></div>
+                    <div class="link-text">Safety Center</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="support-wrapper">
+            <a href="https://wa.me/2349035778034" target="_blank" class="support-link">
+                <i class="fab fa-whatsapp" style="font-size: 16px;"></i> Chat with Support
             </a>
         </div>
 
