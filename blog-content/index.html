@@ -14,6 +14,8 @@
     <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
         /* 🚀 Reset & Variables */
         * { box-sizing: border-box; }
         :root {
@@ -24,6 +26,7 @@
         }
         
         body { 
+            font-family: 'Inter', sans-serif;
             background: #e2e8f0; 
             margin: 0; padding: 0; 
             display: flex; justify-content: center; min-height: 100vh;
@@ -172,30 +175,13 @@
         body.dark-mode .sk-shimmer { background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%) !important; background-size: 200% 100% !important; }
     </style>
 </head>
-<body>
+
+<!-- 🚀 GATEKEEPER TAG ADDED HERE -->
+<body data-page-id="blog-content">
     <script>
         if (localStorage.getItem('theme') === 'dark') {
             document.body.classList.add('dark-mode');
         }
-    </script>
-    <!-- 🚀 SPLASH SCREEN LOADER -->
-    <div id="page-loader" class="loader-overlay">
-        <div class="loader-content">
-            <div class="loader-spinner"></div>
-            <img src="../asset/img/192.png" alt="UnicalDGM Logo" class="loader-logo" onerror="this.src='../192.png'">
-        </div>
-    </div>
-    
-    <!-- 🚀 THE SCRIPT (Directly in HTML so it never gets blocked by cache) -->
-    <script>
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const loader = document.getElementById('page-loader');
-                if (loader) {
-                    loader.classList.add('hidden');
-                }
-            }, 2000); // Fades out after 1.5 seconds
-        });
     </script>
 
     <div class="app-container">
@@ -219,7 +205,7 @@
             </div>
         </div>
 
-        <div id="real-content" style="display: none; display: flex; flex-direction: column; flex: 1;">
+        <div id="real-content" style="display: none; flex-direction: column; flex: 1;">
             <img src="" id="articleImg" class="article-hero" onerror="this.src='https://placehold.co/600x300?text=No+Image'">
 
             <div class="article-body">

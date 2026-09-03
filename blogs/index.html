@@ -119,10 +119,13 @@
         }
         .share-btn:active { transform: scale(0.9); background: #e2e8f0; }
 
-        /* Skeletons */
+        /* 🚀 Skeletons */
         .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .sk-news-card { background: white; border-radius: 20px; padding: 15px; display: flex; gap: 15px; margin-bottom: 16px; border: 1px solid #e2e8f0; align-items: center;}
         .sk-news-cover { width: 100px; height: 100px; border-radius: 14px; flex-shrink: 0; }
+        .sk-news-content { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 10px;}
+        .sk-line { height: 14px; border-radius: 6px; }
 
         /* ========================================= */
         /* 🌙 DARK MODE FIXES FOR CAMPUS NEWS        */
@@ -142,7 +145,7 @@
         body.dark-mode .chip { background: #1e293b !important; border-color: #334155 !important; color: #94a3b8 !important; }
         body.dark-mode .chip.active { background: var(--brand-gradient) !important; color: white !important; border-color: transparent !important; }
         
-        body.dark-mode .news-card { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 8px 25px rgba(0,0,0,0.5) !important;}
+        body.dark-mode .news-card, body.dark-mode .sk-news-card { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 8px 25px rgba(0,0,0,0.5) !important;}
         body.dark-mode .news-card:active { background: #334155 !important; }
         body.dark-mode .news-cover { background: #0f172a !important; box-shadow: none !important;}
         body.dark-mode .blog-title { color: #f1f5f9 !important; }
@@ -155,7 +158,9 @@
         body.dark-mode .sk-shimmer { background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%) !important; background-size: 200% 100% !important; }
     </style>
 </head>
-<body>
+
+<!-- 🚀 GATEKEEPER TAG -->
+<body data-page-id="blogs">
     <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
 
     <div class="app-container">
@@ -182,42 +187,61 @@
                 <div class="chip" onclick="setCategory('Events', this)">Events</div>
             </div>
 
-            <div id="blog-list" style="margin-top: 20px;">
-                <!-- Skeletons -->
-                <div class="news-card" style="cursor: default;">
+            <!-- 🚀 Premium Skeleton Loader -->
+            <div id="skeleton-loader" style="margin-top: 20px;">
+                <div class="sk-news-card">
                     <div class="sk-shimmer sk-news-cover"></div>
-                    <div class="news-content" style="padding: 0;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom: 12px;">
-                            <div class="sk-shimmer" style="width: 55px; height: 18px; border-radius: 8px;"></div>
-                            <div class="sk-shimmer" style="width: 60px; height: 12px;"></div>
-                        </div>
-                        <div class="sk-shimmer" style="width: 100%; height: 18px; margin-bottom: 8px;"></div>
-                        <div class="sk-shimmer" style="width: 75%; height: 18px; margin-bottom: 12px;"></div>
-                        <div class="sk-shimmer" style="width: 90%; height: 14px; margin-bottom: 15px;"></div>
+                    <div class="sk-news-content">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div class="sk-shimmer" style="width: 110px; height: 14px;"></div>
-                            <div class="sk-shimmer" style="width: 30px; height: 30px; border-radius: 50%;"></div>
+                            <div class="sk-shimmer sk-line" style="width: 50px;"></div>
+                            <div class="sk-shimmer sk-line" style="width: 40px;"></div>
+                        </div>
+                        <div class="sk-shimmer sk-line" style="width: 90%; height: 18px;"></div>
+                        <div class="sk-shimmer sk-line" style="width: 70%; height: 12px;"></div>
+                        <div class="sk-shimmer sk-line" style="width: 50%; height: 12px;"></div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 5px;">
+                            <div class="sk-shimmer sk-line" style="width: 100px;"></div>
+                            <div class="sk-shimmer sk-line" style="width: 25px; height: 25px; border-radius: 50%;"></div>
                         </div>
                     </div>
                 </div>
-
-                <div class="news-card" style="cursor: default;">
+                <div class="sk-news-card">
                     <div class="sk-shimmer sk-news-cover"></div>
-                    <div class="news-content" style="padding: 0;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom: 12px;">
-                            <div class="sk-shimmer" style="width: 65px; height: 18px; border-radius: 8px;"></div>
-                            <div class="sk-shimmer" style="width: 50px; height: 12px;"></div>
-                        </div>
-                        <div class="sk-shimmer" style="width: 90%; height: 18px; margin-bottom: 8px;"></div>
-                        <div class="sk-shimmer" style="width: 60%; height: 18px; margin-bottom: 12px;"></div>
-                        <div class="sk-shimmer" style="width: 95%; height: 14px; margin-bottom: 15px;"></div>
+                    <div class="sk-news-content">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div class="sk-shimmer" style="width: 90px; height: 14px;"></div>
-                            <div class="sk-shimmer" style="width: 30px; height: 30px; border-radius: 50%;"></div>
+                            <div class="sk-shimmer sk-line" style="width: 60px;"></div>
+                            <div class="sk-shimmer sk-line" style="width: 50px;"></div>
+                        </div>
+                        <div class="sk-shimmer sk-line" style="width: 85%; height: 18px;"></div>
+                        <div class="sk-shimmer sk-line" style="width: 75%; height: 12px;"></div>
+                        <div class="sk-shimmer sk-line" style="width: 60%; height: 12px;"></div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 5px;">
+                            <div class="sk-shimmer sk-line" style="width: 110px;"></div>
+                            <div class="sk-shimmer sk-line" style="width: 25px; height: 25px; border-radius: 50%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="sk-news-card">
+                    <div class="sk-shimmer sk-news-cover"></div>
+                    <div class="sk-news-content">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div class="sk-shimmer sk-line" style="width: 45px;"></div>
+                            <div class="sk-shimmer sk-line" style="width: 55px;"></div>
+                        </div>
+                        <div class="sk-shimmer sk-line" style="width: 95%; height: 18px;"></div>
+                        <div class="sk-shimmer sk-line" style="width: 80%; height: 12px;"></div>
+                        <div class="sk-shimmer sk-line" style="width: 50%; height: 12px;"></div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top: 5px;">
+                            <div class="sk-shimmer sk-line" style="width: 90px;"></div>
+                            <div class="sk-shimmer sk-line" style="width: 25px; height: 25px; border-radius: 50%;"></div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- 🚀 Dynamic Content Container -->
+            <div id="blog-list" style="margin-top: 20px; display: none;"></div>
+            
         </div>
 
         <div class="bottom-nav">
@@ -262,6 +286,9 @@
         }
 
         async function fetchBlogs() {
+            document.getElementById('skeleton-loader').style.display = 'block';
+            document.getElementById('blog-list').style.display = 'none';
+
             try {
                 const { data, error } = await supabaseClient
                     .from('blogs')
@@ -269,11 +296,18 @@
                     .order('created_at', { ascending: false });
 
                 if (error) throw error;
+                
                 allBlogs = data;
+                
+                document.getElementById('skeleton-loader').style.display = 'none';
+                document.getElementById('blog-list').style.display = 'block';
+                
                 renderBlogs();
 
             } catch (error) {
                 console.error(error);
+                document.getElementById('skeleton-loader').style.display = 'none';
+                document.getElementById('blog-list').style.display = 'block';
                 document.getElementById('blog-list').innerHTML = `<p style="color:#ef4444; text-align:center; font-weight:600; padding: 20px;">Failed to load news. Check your connection.</p>`;
             }
         }

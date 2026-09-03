@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="refresh" content="0; url=../coming-soon/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Student Reviews | UNICAL Digital Market</title>
@@ -21,7 +20,7 @@
     <link rel="stylesheet" href="../asset/style.css">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
         /* 🚀 Reset & Variables */
         * { box-sizing: border-box; }
@@ -34,7 +33,7 @@
         }
 
         body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
             background: #e2e8f0; 
             margin: 0; padding: 0; 
             display: flex; justify-content: center; min-height: 100vh;
@@ -50,67 +49,68 @@
 
         /* 🚀 Glassmorphic Header */
         .header {
-            background: rgba(255, 255, 255, 0.95); padding: 15px 20px;
+            background: rgba(248, 250, 252, 0.95); padding: 15px 20px;
             display: flex; align-items: center; justify-content: space-between;
             position: sticky; top: 0; z-index: 100;
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
         }
         .header-top-flex { display: flex; align-items: center; gap: 15px; }
         .back-btn { background: white; color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid #e2e8f0; font-size: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
         .back-btn:active { transform: scale(0.9); background: #f1f5f9; }
-        .page-title { font-size: 18px; font-weight: 800; color: var(--text-main); margin: 0; letter-spacing: -0.3px;}
+        .page-title { font-size: 20px; font-weight: 900; color: var(--text-main); margin: 0; letter-spacing: -0.5px;}
 
         /* Write Button in Header */
         .header-write-btn {
             background: var(--brand-gradient); color: white; border: none;
-            padding: 8px 16px; border-radius: 20px; font-weight: 800; font-size: 12px;
+            padding: 10px 18px; border-radius: 20px; font-weight: 800; font-size: 13px;
             cursor: pointer; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.25);
             transition: 0.2s; display: flex; align-items: center; gap: 6px;
         }
-        .header-write-btn:active { transform: scale(0.95); }
+        .header-write-btn:active { transform: scale(0.95); box-shadow: 0 2px 10px rgba(255, 122, 0, 0.2); }
 
         .content-area { padding: 0 0 90px 0; flex: 1; }
 
         /* 🚀 Hero Section */
         .hero-section { padding: 25px 20px 15px; }
-        .page-header-text { font-size: 26px; font-weight: 900; color: var(--text-main); margin: 0 0 5px; letter-spacing: -0.5px;}
-        .page-subtext { color: var(--text-muted); font-size: 14px; font-weight: 500; margin: 0; line-height: 1.4;}
+        .page-header-text { font-size: 28px; font-weight: 900; color: var(--text-main); margin: 0 0 6px; letter-spacing: -0.5px;}
+        .page-subtext { color: var(--text-muted); font-size: 15px; font-weight: 500; margin: 0; line-height: 1.4;}
 
         /* 🚀 Filter Chips */
-        .filter-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 0 20px 15px; scrollbar-width: none; }
+        .filter-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 0 20px 20px; scrollbar-width: none; }
         .filter-scroll::-webkit-scrollbar { display: none; }
         .filter-btn {
-            padding: 10px 18px; border: 1px solid #e2e8f0; background: white;
-            border-radius: 24px; font-size: 13px; font-weight: 700; cursor: pointer;
+            padding: 12px 20px; border: 1px solid #e2e8f0; background: white;
+            border-radius: 24px; font-size: 14px; font-weight: 800; cursor: pointer;
             white-space: nowrap; color: var(--text-muted); transition: 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.01); display: flex; align-items: center; gap: 6px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02); display: flex; align-items: center; gap: 6px;
         }
         .filter-btn.active { background: var(--text-main); color: white; border-color: var(--text-main); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
 
         /* 🚀 Review Cards */
         .reviews-container { padding: 0 20px; }
         .review-card {
-            background: white; border-radius: 20px; padding: 20px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;
-            margin-bottom: 15px; width: 100%; box-sizing: border-box; transition: 0.2s;
+            background: white; border-radius: 24px; padding: 22px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;
+            margin-bottom: 20px; width: 100%; box-sizing: border-box; transition: 0.2s;
             /* BUG FIX: Overriding the global homepage slider width restrictions */
             min-width: 100% !important; max-width: 100% !important;
         }
         
-        .rev-header-flex { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;}
+        .rev-header-flex { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;}
         .rev-user-info { display: flex; align-items: center; gap: 12px; }
-        .rev-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: #e2e8f0; border: 2px solid #f8fafc;}
-        .rev-name { font-size: 15px; font-weight: 800; color: var(--text-main); margin-bottom: 2px;}
-        .rev-date { font-size: 11px; color: #94a3b8; font-weight: 600;}
+        .rev-avatar { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; background: #e2e8f0; border: 2px solid #f8fafc;}
+        .rev-name { font-size: 16px; font-weight: 800; color: var(--text-main); margin-bottom: 2px; letter-spacing: -0.3px;}
+        .rev-date { font-size: 12px; color: #94a3b8; font-weight: 600;}
         
-        .rev-stars { font-size: 12px; color: #f59e0b; margin-bottom: 10px; display: flex; gap: 2px;}
-        .rev-body { font-size: 14px; line-height: 1.6; color: #334155; font-weight: 500;}
+        .rev-stars { font-size: 13px; color: #f59e0b; margin-bottom: 12px; display: flex; gap: 3px;}
+        .rev-body { font-size: 15px; line-height: 1.6; color: #334155; font-weight: 500;}
 
         .pending-badge { background: #fef9c3; color: #d97706; padding: 4px 8px; border-radius: 8px; font-size: 10px; font-weight: 900; margin-left: 6px; vertical-align: middle; border: 1px solid #fde047;}
         
         /* Action Icons (Edit/Delete) */
-        .action-icon { font-size: 14px; color: #cbd5e1; cursor: pointer; margin-left: 12px; transition: 0.2s; padding: 5px;}
+        .action-icon { font-size: 15px; color: #cbd5e1; cursor: pointer; margin-left: 12px; transition: 0.2s; padding: 5px;}
         .action-icon:active { transform: scale(0.9); }
         .action-edit:hover { color: #3b82f6; }
         .action-delete:hover { color: #ef4444; }
@@ -122,18 +122,18 @@
         /* 🚀 Call to Action Box */
         .cta-box { background: linear-gradient(135deg, rgba(255, 122, 0, 0.1), rgba(234, 88, 12, 0.05)); border: 1px solid rgba(255, 122, 0, 0.15); text-align: center; padding: 35px 20px; border-radius: 24px; margin: 30px 0; }
         .cta-box h3 { font-size: 18px; font-weight: 900; color: var(--text-main); margin: 0 0 8px; letter-spacing: -0.3px;}
-        .cta-box p { font-size: 13px; color: var(--text-muted); margin: 0 0 20px; font-weight: 500;}
-        .cta-btn { background: white; color: var(--text-main); border: 1px solid #e2e8f0; padding: 14px 25px; border-radius: 16px; font-weight: 800; font-size: 14px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.2s; }
+        .cta-box p { font-size: 14px; color: var(--text-muted); margin: 0 0 20px; font-weight: 500;}
+        .cta-btn { background: white; color: var(--text-main); border: 1px solid #e2e8f0; padding: 14px 25px; border-radius: 16px; font-weight: 800; font-size: 15px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: 0.2s; }
         .cta-btn:active { transform: scale(0.95); background: #f8fafc;}
 
         /* 🚀 MODERN MODAL */
         .modal-overlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); z-index: 2000;
+            background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 2000;
             justify-content: center; align-items: center; padding: 20px;
         }
         .modal-content {
-            background: white; padding: 30px 25px; border-radius: 30px; width: 100%; max-width: 400px;
+            background: white; padding: 35px 25px; border-radius: 30px; width: 100%; max-width: 400px;
             position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.25); animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         @keyframes slideUp { from { transform: translateY(30px) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
@@ -147,12 +147,12 @@
         
         .modal-textarea {
             width: 100%; height: 130px; padding: 18px; border: 2px solid #e2e8f0; border-radius: 16px;
-            outline: none; font-size: 14px; font-family: inherit; resize: none; margin-bottom: 20px;
+            outline: none; font-size: 15px; font-family: inherit; resize: none; margin-bottom: 20px;
             box-sizing: border-box; background: #f8fafc; font-weight: 500; transition: 0.2s;
         }
         .modal-textarea:focus { border-color: var(--brand-color); background: white; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.1);}
         
-        .modal-submit-btn { background: var(--brand-gradient); color: white; border: none; width: 100%; padding: 16px; border-radius: 16px; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 8px 25px rgba(255, 122, 0, 0.3); transition: 0.2s;}
+        .modal-submit-btn { background: var(--brand-gradient); color: white; border: none; width: 100%; padding: 18px; border-radius: 16px; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 8px 25px rgba(255, 122, 0, 0.3); transition: 0.2s;}
         .modal-submit-btn:active { transform: scale(0.97); }
 
         /* ========================================= */
@@ -172,7 +172,7 @@
         body.dark-mode .filter-btn { background: #1e293b !important; border-color: #334155 !important; color: #94a3b8 !important; }
         body.dark-mode .filter-btn.active { background: #f1f5f9 !important; color: #0f172a !important; border-color: #f1f5f9 !important; box-shadow: 0 4px 15px rgba(255,255,255,0.1) !important;}
         
-        body.dark-mode .review-card { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 8px 25px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .review-card { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important; }
         body.dark-mode .rev-name { color: #f1f5f9 !important; }
         body.dark-mode .rev-date { color: #64748b !important; }
         body.dark-mode .rev-body { color: #cbd5e1 !important; }
@@ -191,30 +191,31 @@
         body.dark-mode .cta-btn:active { background: #334155 !important; }
         
         /* Modal Dark Mode */
-        body.dark-mode .modal-content { background: #0f172a !important; box-shadow: 0 25px 60px rgba(0,0,0,0.8) !important; }
+        body.dark-mode .modal-content { background: #0f172a !important; box-shadow: 0 25px 60px rgba(0,0,0,0.8) !important; border: 1px solid #1e293b;}
         body.dark-mode .close-modal { background: #1e293b !important; border: 1px solid #334155; }
         body.dark-mode #modalTitle { color: #f1f5f9 !important; }
         body.dark-mode .star-selector i { color: #1e293b !important; }
         body.dark-mode .star-selector i.active { color: #f59e0b !important; text-shadow: 0 0 20px rgba(245, 158, 11, 0.5) !important;}
         body.dark-mode .modal-textarea { background: #1e293b !important; border-color: #334155 !important; color: #f1f5f9 !important; }
-        body.dark-mode .modal-textarea:focus { border-color: var(--brand-color) !important; }
+        body.dark-mode .modal-textarea:focus { border-color: var(--brand-color) !important; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.15) !important; }
         
         body.dark-mode .sk-shimmer { background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%) !important; background-size: 200% 100% !important; }
     </style>
 </head>
-<body>
+
+<!-- 🚀 GATEKEEPER TAG -->
+<body data-page-id="reviews">
     <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
 
     <div class="app-container">
         
         <div class="header">
             <div class="header-top-flex">
-                <!-- 🚀 SMART BACK BUTTON -->
                 <button onclick="smartBack(event)" class="back-btn"><i class="fas fa-arrow-left"></i></button>
                 <h1 class="page-title">Reviews</h1>
             </div>
             <button class="header-write-btn" onclick="openReviewModal()">
-                <i class="fas fa-pen" style="font-size: 10px;"></i> Review
+                <i class="fas fa-pen" style="font-size: 11px;"></i> Review
             </button>
         </div>
 
@@ -227,46 +228,46 @@
 
             <div class="filter-scroll">
                 <button class="filter-btn active" onclick="filterReviews('all', this)">All</button>
-                <button class="filter-btn" onclick="filterReviews(5, this)">5 <i class="fas fa-star" style="color:#f59e0b; margin-left: 2px;"></i></button>
-                <button class="filter-btn" onclick="filterReviews(4, this)">4 <i class="fas fa-star" style="color:#f59e0b; margin-left: 2px;"></i></button>
-                <button class="filter-btn" onclick="filterReviews(3, this)">3 <i class="fas fa-star" style="color:#f59e0b; margin-left: 2px;"></i></button>
-                <button class="filter-btn" onclick="filterReviews(2, this)">2 <i class="fas fa-star" style="color:#f59e0b; margin-left: 2px;"></i></button>
-                <button class="filter-btn" onclick="filterReviews(1, this)">1 <i class="fas fa-star" style="color:#f59e0b; margin-left: 2px;"></i></button>
+                <button class="filter-btn" onclick="filterReviews(5, this)">5 <i class="fas fa-star" style="color:#f59e0b; margin-left: 4px;"></i></button>
+                <button class="filter-btn" onclick="filterReviews(4, this)">4 <i class="fas fa-star" style="color:#f59e0b; margin-left: 4px;"></i></button>
+                <button class="filter-btn" onclick="filterReviews(3, this)">3 <i class="fas fa-star" style="color:#f59e0b; margin-left: 4px;"></i></button>
+                <button class="filter-btn" onclick="filterReviews(2, this)">2 <i class="fas fa-star" style="color:#f59e0b; margin-left: 4px;"></i></button>
+                <button class="filter-btn" onclick="filterReviews(1, this)">1 <i class="fas fa-star" style="color:#f59e0b; margin-left: 4px;"></i></button>
             </div>
 
             <div class="reviews-container" id="reviews-container">
                 <!-- Skeletons -->
                 <div class="review-card">
                     <div style="display:flex; gap:12px; margin-bottom:15px;">
-                        <div class="sk-shimmer" style="width:45px; height:45px; border-radius:50%;"></div>
+                        <div class="sk-shimmer" style="width:48px; height:48px; border-radius:50%;"></div>
                         <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
                             <div class="sk-shimmer" style="width:40%; height:14px; margin-bottom:8px;"></div>
                             <div class="sk-shimmer" style="width:25%; height:10px;"></div>
                         </div>
                     </div>
-                    <div class="sk-shimmer" style="width:100%; height:12px; margin-bottom:8px;"></div>
+                    <div class="sk-shimmer" style="width:100%; height:12px; margin-bottom:10px;"></div>
                     <div class="sk-shimmer" style="width:80%; height:12px;"></div>
                 </div>
 
                 <div class="review-card">
                     <div style="display:flex; gap:12px; margin-bottom:15px;">
-                        <div class="sk-shimmer" style="width:45px; height:45px; border-radius:50%;"></div>
+                        <div class="sk-shimmer" style="width:48px; height:48px; border-radius:50%;"></div>
                         <div style="flex:1; display:flex; flex-direction:column; justify-content:center;">
                             <div class="sk-shimmer" style="width:50%; height:14px; margin-bottom:8px;"></div>
                             <div class="sk-shimmer" style="width:30%; height:10px;"></div>
                         </div>
                     </div>
-                    <div class="sk-shimmer" style="width:90%; height:12px; margin-bottom:8px;"></div>
+                    <div class="sk-shimmer" style="width:90%; height:12px; margin-bottom:10px;"></div>
                     <div class="sk-shimmer" style="width:95%; height:12px;"></div>
                 </div>
             </div>
 
             <div class="reviews-container">
                 <div class="cta-box">
-                    <div style="font-size: 45px; margin-bottom: 10px;">💬</div>
+                    <div style="font-size: 45px; margin-bottom: 15px;">💬</div>
                     <h3>Share Your Experience</h3>
                     <p>Help other students make great choices by leaving an honest review of your recent transactions.</p>
-                    <button class="cta-btn" onclick="openReviewModal()"><i class="fas fa-pen" style="margin-right: 5px;"></i> Write a Review</button>
+                    <button class="cta-btn" onclick="openReviewModal()"><i class="fas fa-pen" style="margin-right: 6px;"></i> Write a Review</button>
                 </div>
             </div>
 
@@ -276,8 +277,8 @@
         <div id="reviewModal" class="modal-overlay">
             <div class="modal-content">
                 <button class="close-modal" onclick="closeReviewModal()">&times;</button>
-                <h3 id="modalTitle" style="text-align:center; color: var(--text-main); font-size: 20px; font-weight: 900; margin: 0 0 5px; letter-spacing: -0.5px;">Rate your experience</h3>
-                <p style="text-align:center; font-size: 13px; color: var(--text-muted); margin: 0 0 10px;">Tap a star to rate</p>
+                <h3 id="modalTitle" style="text-align:center; color: var(--text-main); font-size: 22px; font-weight: 900; margin: 0 0 5px; letter-spacing: -0.5px;">Rate your experience</h3>
+                <p style="text-align:center; font-size: 14px; color: var(--text-muted); margin: 0 0 10px;">Tap a star to rate</p>
                 
                 <div class="star-selector" id="starInput">
                     <i class="fas fa-star" data-val="1"></i>

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="refresh" content="0; url=../coming-soon/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>All Categories | UNICAL Digital Market</title>
@@ -28,42 +27,111 @@
     <link rel="stylesheet" href="../asset/style.css">
 
     <style>
-        /* 🚀 NEW: 3D Emoji Drop Shadow for the List View */
-        .list-emoji {
-            font-size: 26px;
-            line-height: 1;
-            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15));
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+        /* 🚀 Reset & Variables */
+        * { box-sizing: border-box; }
+        :root {
+            --brand-color: #FF7A00; 
+            --brand-bg: #f8fafc;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
         }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #e2e8f0; 
+            margin: 0; padding: 0; 
+            display: flex; justify-content: center; min-height: 100vh;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+
+        .app-container {
+            background: var(--brand-bg); width: 100%; max-width: 480px; min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1); display: flex; flex-direction: column;
+            position: relative; z-index: 1;
+        }
+
+        /* 🚀 Glassmorphic Header */
+        .header {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(248, 250, 252, 0.95); 
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            padding: 15px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            display: flex; align-items: center; gap: 15px;
+        }
+        
+        .back-btn { 
+            background: white; color: var(--text-main); width: 40px; height: 40px; 
+            border-radius: 50%; display: flex; justify-content: center; align-items: center; 
+            border: 1px solid #e2e8f0; font-size: 16px; cursor: pointer; transition: 0.2s; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02); text-decoration: none;
+        }
+        .back-btn:active { transform: scale(0.9); background: #f1f5f9; }
+        
+        .page-title { font-size: 20px; font-weight: 900; color: var(--text-main); margin: 0; letter-spacing: -0.5px;}
+
+        .content-area { padding: 20px 20px 110px; }
+
+        /* 🚀 Modern Category List */
+        .full-cat-list { display: flex; flex-direction: column; gap: 15px; }
+        
+        .full-cat-item {
+            display: flex; align-items: center; gap: 18px; background: white;
+            padding: 18px; border-radius: 20px; text-decoration: none;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.03); border: 1px solid #f1f5f9;
+            transition: 0.2s; cursor: pointer;
+        }
+        .full-cat-item:active { transform: scale(0.97); background: #f8fafc; }
+        
+        .full-cat-icon {
+            width: 55px; height: 55px; border-radius: 16px;
+            display: flex; justify-content: center; align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .list-emoji { font-size: 26px; line-height: 1; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.15)); }
+        
+        .full-cat-text { flex: 1; min-width: 0; }
+        .full-cat-title { font-size: 16px; font-weight: 800; color: var(--text-main); margin-bottom: 4px; letter-spacing: -0.3px;}
+        .full-cat-desc { font-size: 13px; color: var(--text-muted); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        
+        .fa-chevron-right { color: #cbd5e1; font-size: 14px; }
 
         /* ========================================= */
         /* 🌙 DARK MODE FIXES FOR CATEGORY PAGE      */
         /* ========================================= */
         body.dark-mode { background-color: #020617 !important; }
         body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;}
-        body.dark-mode .header { background: #1e293b !important; box-shadow: 0 2px 10px rgba(0,0,0,0.5) !important; }
         
-        body.dark-mode .logo, 
-        body.dark-mode .back-btn,
-        body.dark-mode .full-cat-title { color: #f1f5f9 !important; }
+        body.dark-mode .header { background: rgba(15, 23, 42, 0.95) !important; border-bottom-color: #334155 !important; }
+        body.dark-mode .page-title { color: #f1f5f9 !important; }
+        body.dark-mode .back-btn { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important;}
+        body.dark-mode .back-btn:active { background: #334155 !important; }
         
-        body.dark-mode .full-cat-item { background: #1e293b !important; border-color: #334155 !important; box-shadow: none !important; }
+        body.dark-mode .full-cat-item { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important; }
         body.dark-mode .full-cat-item:active { background: #334155 !important; }
+        body.dark-mode .full-cat-title { color: #f1f5f9 !important; }
         body.dark-mode .full-cat-desc { color: #94a3b8 !important; }
         body.dark-mode .fa-chevron-right { color: #475569 !important; }
         body.dark-mode .full-cat-icon { background: #0f172a !important; }
     </style>
 </head>
-<body>
+
+<!-- 🚀 GATEKEEPER TAG -->
+<body data-page-id="category">
+    <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
 
     <div class="app-container">
         
-        <div class="header" style="display: flex; align-items: center; gap: 15px; padding-bottom: 15px;">
-            <a href="../index.html" class="back-btn" style="color: var(--text-main); font-size: 20px;"><i class="fas fa-arrow-left"></i></a>
-            <h1 class="logo" style="margin: 0; font-size: 18px;">All Categories</h1>
+        <div class="header">
+            <a href="../index.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+            <h1 class="page-title">Categories</h1>
         </div>
 
-        <div class="content-area" style="padding: 10px 20px 110px;">
-            
+        <div class="content-area">
             <div class="full-cat-list">
                 
                 <a href="../items/index.html?cat=Gadgets" class="full-cat-item">

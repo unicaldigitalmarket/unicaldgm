@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta http-equiv="refresh" content="0; url=../coming-soon/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Notifications | UNICAL Digital Market</title>
@@ -50,19 +49,20 @@
 
         /* 🚀 Glassmorphic Header */
         .header {
-            background: rgba(255, 255, 255, 0.95); padding: 15px 20px;
-            display: flex; align-items: center; justify-content: space-between;
             position: sticky; top: 0; z-index: 100;
+            background: rgba(248, 250, 252, 0.95); 
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            padding: 15px 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.03);
             border-bottom: 1px solid rgba(226, 232, 240, 0.8);
         }
+        
         .header-top-flex { display: flex; align-items: center; justify-content: space-between; width: 100%; }
         .header-left { display: flex; align-items: center; gap: 15px; }
         .back-btn { background: white; color: var(--text-main); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid #e2e8f0; font-size: 16px; cursor: pointer; transition: 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02);}
         .back-btn:active { transform: scale(0.9); background: #f1f5f9; }
         .page-title { font-size: 20px; font-weight: 900; color: var(--text-main); margin: 0; letter-spacing: -0.5px;}
         
-        .clear-btn { background: rgba(255, 122, 0, 0.1); border: none; color: var(--brand-color); padding: 8px 14px; border-radius: 20px; font-size: 12px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .clear-btn { background: rgba(255, 122, 0, 0.1); border: none; color: var(--brand-color); padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 800; cursor: pointer; transition: 0.2s; }
         .clear-btn:active { transform: scale(0.95); background: rgba(255, 122, 0, 0.2); }
 
         .notif-container { padding: 15px 20px 90px; flex: 1; }
@@ -70,22 +70,22 @@
         /* 🚀 Modern Notification Cards */
         .notif-card {
             background: white; border-radius: 20px; padding: 18px; margin-bottom: 15px;
-            display: flex; gap: 15px; border: 1px solid #f1f5f9; box-shadow: 0 8px 25px rgba(0,0,0,0.02);
+            display: flex; gap: 15px; border: 1px solid #f1f5f9; box-shadow: 0 8px 25px rgba(0,0,0,0.03);
             position: relative; overflow: hidden; transition: 0.2s;
         }
         
-        /* Unread State with Dot */
+        /* Unread State with Glowing Dot */
         .notif-card.unread { background: #fffaf5; border-color: #fed7aa; }
         .notif-card.unread::after { 
             content: ''; position: absolute; right: 18px; top: 22px; 
-            height: 8px; width: 8px; border-radius: 50%; background: var(--brand-color); 
+            height: 10px; width: 10px; border-radius: 50%; background: var(--brand-color); 
             box-shadow: 0 0 10px rgba(255, 122, 0, 0.5);
         }
 
         /* Rounded Square Icons */
         .notif-icon-wrapper { 
-            width: 48px; height: 48px; border-radius: 14px; display: flex; 
-            justify-content: center; align-items: center; font-size: 20px; flex-shrink: 0; 
+            width: 50px; height: 50px; border-radius: 16px; display: flex; 
+            justify-content: center; align-items: center; font-size: 22px; flex-shrink: 0; 
         }
 
         .icon-system { background: #f1f5f9; color: #475569; }
@@ -95,12 +95,12 @@
 
         .notif-content { flex: 1; min-width: 0;}
         .notif-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; padding-right: 15px;}
-        .notif-title { font-size: 15px; font-weight: 800; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.3px;}
-        .notif-time { font-size: 11px; color: var(--text-muted); font-weight: 600; white-space: nowrap; flex-shrink: 0;}
+        .notif-title { font-size: 16px; font-weight: 800; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: -0.3px;}
+        .notif-time { font-size: 11px; color: var(--text-muted); font-weight: 700; white-space: nowrap; flex-shrink: 0;}
         
-        .notif-message { font-size: 13px; color: #475569; line-height: 1.6; font-weight: 500;}
+        .notif-message { font-size: 14px; color: #475569; line-height: 1.6; font-weight: 500;}
         
-        .read-more-btn { color: var(--brand-color); font-weight: 800; cursor: pointer; font-size: 12px; margin-top: 6px; display: inline-block; transition: 0.2s;}
+        .read-more-btn { color: var(--brand-color); font-weight: 800; cursor: pointer; font-size: 13px; margin-top: 6px; display: inline-block; transition: 0.2s;}
         .read-more-btn:active { opacity: 0.7; }
 
         /* 🚀 Friendly Empty State */
@@ -113,9 +113,9 @@
         /* Skeleton Loaders */
         .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-        .sk-card { display: flex; gap: 15px; padding: 20px; background: white; border-radius: 20px; margin-bottom: 15px; border: 1px solid #f1f5f9; }
-        .sk-avatar { width: 48px; height: 48px; border-radius: 14px; flex-shrink: 0; }
-        .sk-lines { flex: 1; }
+        .sk-card { display: flex; gap: 15px; padding: 18px; background: white; border-radius: 20px; margin-bottom: 15px; border: 1px solid #f1f5f9; align-items: center;}
+        .sk-avatar { width: 50px; height: 50px; border-radius: 16px; flex-shrink: 0; }
+        .sk-lines { flex: 1; display: flex; flex-direction: column; justify-content: center;}
         .sk-line-1 { height: 16px; width: 40%; border-radius: 6px; margin-bottom: 12px; }
         .sk-line-2 { height: 14px; width: 90%; border-radius: 6px; margin-bottom: 8px; }
         .sk-line-3 { height: 14px; width: 60%; border-radius: 6px; }
@@ -133,9 +133,9 @@
         
         body.dark-mode .clear-btn { background: rgba(255, 122, 0, 0.15) !important; }
         
-        body.dark-mode .notif-card { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 8px 25px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .notif-card { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important; }
         body.dark-mode .notif-card.unread { background: #0f172a !important; border-color: #334155 !important; }
-        body.dark-mode .notif-card.unread::after { box-shadow: 0 0 10px rgba(255, 122, 0, 0.8) !important; }
+        body.dark-mode .notif-card.unread::after { box-shadow: 0 0 12px rgba(255, 122, 0, 0.8) !important; }
         
         body.dark-mode .notif-title { color: #f1f5f9 !important; }
         body.dark-mode .notif-message { color: #cbd5e1 !important; }
@@ -155,34 +155,16 @@
         body.dark-mode .sk-shimmer { background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%) !important; background-size: 200% 100% !important; }
     </style>
 </head>
-<body>
+
+<!-- 🚀 GATEKEEPER TAG -->
+<body data-page-id="notifications">
     <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
-      <!-- 🚀 SPLASH SCREEN LOADER -->
-    <div id="page-loader" class="loader-overlay">
-        <div class="loader-content">
-            <div class="loader-spinner"></div>
-            <img src="../asset/img/192.png" alt="UnicalDGM Logo" class="loader-logo" onerror="this.src='../192.png'">
-        </div>
-    </div>
-    
-    <!-- 🚀 THE SCRIPT (Directly in HTML so it never gets blocked by cache) -->
-    <script>
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const loader = document.getElementById('page-loader');
-                if (loader) {
-                    loader.classList.add('hidden');
-                }
-            }, 2000); // Fades out after 1.5 seconds
-        });
-    </script>
 
     <div class="app-container">
         
         <div class="header">
             <div class="header-top-flex">
                 <div class="header-left">
-                    <!-- 🚀 SMART BACK BUTTON -->
                     <button onclick="smartBack(event)" class="back-btn"><i class="fas fa-arrow-left"></i></button>
                     <h1 class="page-title">Notifications</h1>
                 </div>

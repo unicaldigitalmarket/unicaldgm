@@ -42,7 +42,7 @@
             overflow-x: hidden;
         }
 
-        /* Immersive Background Glow Effects */
+        /* 🚀 Immersive Background Glow Effects */
         .bg-glow-1 {
             position: absolute; width: 350px; height: 350px; background: var(--brand-color);
             border-radius: 50%; filter: blur(100px); opacity: 0.15; top: -10%; right: -20%; z-index: 0;
@@ -56,19 +56,18 @@
         @keyframes pulse { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
 
         .app-container {
-            background: var(--brand-bg);
+            background: transparent;
             width: 100%; max-width: 480px; min-height: 100vh;
-            box-shadow: 0 0 40px rgba(0,0,0,0.1);
             display: flex; flex-direction: column; justify-content: center;
             padding: 20px; position: relative; z-index: 1;
         }
 
         .auth-card {
-            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
             width: 100%; padding: 40px 30px;
-            border-radius: 30px; box-shadow: 0 15px 50px rgba(0,0,0,0.06);
+            border-radius: 35px; box-shadow: 0 20px 60px rgba(0,0,0,0.06);
             border: 1px solid rgba(255,255,255,0.8);
-            position: relative;
+            position: relative; overflow: hidden;
         }
 
         .floating-back {
@@ -77,25 +76,24 @@
             color: var(--text-muted); text-decoration: none;
             font-size: 16px; z-index: 10; transition: 0.2s; border: 1px solid transparent;
         }
-        .floating-back:hover { color: var(--text-main); }
-        .floating-back:active { transform: scale(0.9); background: #e2e8f0; }
+        .floating-back:active { transform: scale(0.9); background: #e2e8f0; color: var(--text-main); }
 
         .auth-logo {
             width: 85px; height: 85px; object-fit: contain; margin: 0 auto 20px;
-            display: block; border-radius: 20px; background: white;
+            display: block; border-radius: 22px; background: white;
             box-shadow: 0 8px 25px rgba(0,0,0,0.05); border: 2px solid #f8fafc;
         }
 
         .auth-title { text-align: center; font-size: 26px; font-weight: 900; margin: 0 0 5px; letter-spacing: -0.5px; }
         .auth-subtitle { text-align: center; font-size: 14px; font-weight: 500; color: var(--text-muted); margin: 0 0 30px; }
 
-        .form-group { margin-bottom: 18px; width: 100%; display: none; /* Controlled by JS */ }
+        .form-group { margin-bottom: 18px; width: 100%; display: none; }
         .input-wrapper { position: relative; display: flex; align-items: center; width: 100%; }
         .input-icon { position: absolute; left: 16px; color: #94a3b8; font-size: 18px; transition: 0.2s; }
         
         .form-input {
-            width: 100%; padding: 15px 15px 15px 48px; border: 2px solid #e2e8f0;
-            border-radius: 14px; font-size: 14px; font-weight: 500; font-family: 'Inter', sans-serif;
+            width: 100%; padding: 16px 15px 16px 48px; border: 2px solid #e2e8f0;
+            border-radius: 16px; font-size: 14px; font-weight: 500; font-family: 'Inter', sans-serif;
             outline: none; transition: 0.2s; background: #f8fafc; color: var(--text-main);
         }
         .form-input:focus { border-color: var(--brand-color); background: white; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.1); }
@@ -114,7 +112,7 @@
 
         .auth-btn {
             width: 100%; background: var(--brand-gradient); color: white; border: none;
-            padding: 16px; border-radius: 14px; font-size: 16px; font-weight: 800;
+            padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 800;
             cursor: pointer; transition: 0.2s; box-shadow: 0 8px 25px rgba(255, 122, 0, 0.3);
             display: flex; justify-content: center; align-items: center; gap: 8px;
         }
@@ -124,26 +122,54 @@
         .auth-switch { text-align: center; margin-top: 30px; font-size: 14px; font-weight: 500; color: var(--text-muted); display: none; }
         .auth-switch span { color: var(--brand-color); font-weight: 800; cursor: pointer; transition: 0.2s; }
 
-        .message-box { padding: 14px; border-radius: 12px; font-size: 13px; font-weight: 600; text-align: center; margin-bottom: 20px; display: none; }
+        .message-box { padding: 14px; border-radius: 12px; font-size: 13px; font-weight: 600; text-align: center; margin-bottom: 20px; display: none; animation: fadeIn 0.3s ease;}
         .error-msg { color: #ef4444; background: #fef2f2; border: 1px solid #fecaca; }
         .success-msg { color: #059669; background: #d1fae5; border: 1px solid #6ee7b7; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Dark Mode */
+        /* 🚀 Smart Session State Styles */
+        #state-loading { text-align: center; padding: 60px 0; color: #94a3b8; display: flex; flex-direction: column; align-items: center; gap: 15px;}
+        #state-logged-in { display: none; text-align: center; }
+        
+        .user-avatar-lg { 
+            width: 90px; height: 90px; border-radius: 50%; background: #f1f5f9; 
+            margin: 0 auto 20px; display: flex; justify-content: center; align-items: center;
+            font-size: 35px; color: var(--brand-color); border: 3px solid white; box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+        }
+        
+        .logout-btn {
+            width: 100%; background: #fef2f2; color: #ef4444; border: 1px solid #fecaca;
+            padding: 16px; border-radius: 16px; font-size: 16px; font-weight: 800;
+            cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 15px;
+        }
+        .logout-btn:active { transform: scale(0.97); background: #fee2e2; }
+
+        /* 🌙 Dark Mode */
         body.dark-mode { background-color: #020617 !important; }
-        body.dark-mode .app-container { background: #0f172a !important; box-shadow: none; border-left: 1px solid #1e293b; border-right: 1px solid #1e293b;}
-        body.dark-mode .floating-back { background: #0f172a !important; color: #94a3b8 !important; border-color: #334155 !important; }
-        body.dark-mode .auth-card { background: rgba(30, 41, 59, 0.9) !important; border-color: #334155 !important; box-shadow: 0 15px 50px rgba(0,0,0,0.5) !important; }
-        body.dark-mode .auth-logo { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .app-container { background: transparent !important; }
+        body.dark-mode .floating-back { background: #1e293b !important; color: #94a3b8 !important; border-color: #334155 !important; }
+        body.dark-mode .floating-back:active { background: #334155 !important; color: #f1f5f9 !important; }
+        
+        body.dark-mode .auth-card { background: rgba(15, 23, 42, 0.85) !important; border-color: #334155 !important; box-shadow: 0 25px 60px rgba(0,0,0,0.8) !important; }
+        body.dark-mode .auth-logo { background: #0f172a !important; border-color: #1e293b !important; }
         body.dark-mode .auth-title, body.dark-mode .auth-subtitle { color: #f1f5f9 !important; }
+        
         body.dark-mode .form-input { background: #0f172a !important; color: #f1f5f9 !important; border-color: #334155 !important; }
-        body.dark-mode .form-input:focus { border-color: var(--brand-color) !important; }
+        body.dark-mode .form-input:focus { border-color: var(--brand-color) !important; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.15) !important;}
         body.dark-mode .input-icon { color: #64748b !important; }
         body.dark-mode .terms-text, body.dark-mode .auth-switch { color: #94a3b8 !important; }
-        body.dark-mode .error-msg { background: rgba(239, 68, 68, 0.1) !important; border-color: #ef4444 !important; color: #fca5a5 !important; }
-        body.dark-mode .success-msg { background: rgba(16, 185, 129, 0.1) !important; border-color: #10b981 !important; color: #6ee7b7 !important; }
+        
+        body.dark-mode .error-msg { background: rgba(239, 68, 68, 0.1) !important; border-color: rgba(239, 68, 68, 0.3) !important; color: #fca5a5 !important; }
+        body.dark-mode .success-msg { background: rgba(16, 185, 129, 0.1) !important; border-color: rgba(16, 185, 129, 0.3) !important; color: #6ee7b7 !important; }
+
+        body.dark-mode .user-avatar-lg { background: #1e293b !important; border-color: #334155 !important; }
+        body.dark-mode .logout-btn { background: rgba(239, 68, 68, 0.1) !important; border-color: rgba(239, 68, 68, 0.2) !important; color: #fca5a5 !important; }
+        body.dark-mode .logout-btn:active { background: rgba(239, 68, 68, 0.2) !important; }
     </style>
 </head>
-<body>
+
+<!-- 🚀 GATEKEEPER INTEGRATION -->
+<body data-page-id="login">
     <script>
         if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');
     </script>
@@ -156,86 +182,113 @@
         <div class="auth-card">
             <a href="#" onclick="goBackOrHome(event)" class="floating-back"><i class="fas fa-arrow-left"></i></a>
 
-            <img src="../asset/img/logo.png" alt="UNICAL Market" class="auth-logo" onerror="this.src='../192.png';">
-            
-            <h1 class="auth-title" id="page-title">Welcome Back</h1>
-            <p class="auth-subtitle" id="page-subtitle">Sign in to your student account</p>
+            <!-- 🚀 1. Loading State (Checking Session) -->
+            <div id="state-loading">
+                <i class="fas fa-circle-notch fa-spin" style="font-size: 35px; color: var(--brand-color);"></i>
+                <p style="font-weight: 600; margin: 0; font-size: 14px;">Securely checking connection...</p>
+            </div>
 
-            <div class="message-box" id="msg-box"></div>
-
-            <form id="auth-form" onsubmit="processAuth(event)">
+            <!-- 🚀 2. Already Logged In State -->
+            <div id="state-logged-in">
+                <div class="user-avatar-lg" id="logged-in-avatar">
+                    <img src="" id="logged-in-img" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; display: none;">
+                    <i class="fas fa-user" id="logged-in-icon"></i>
+                </div>
+                <h1 class="auth-title">Welcome Back,</h1>
+                <h1 class="auth-title" style="color: var(--brand-color); margin-bottom: 30px;" id="logged-in-name">Student</h1>
                 
-                <div class="form-group" id="group-name">
-                    <div class="input-wrapper">
-                        <input type="text" id="name" class="form-input" placeholder="Full Name">
-                        <i class="far fa-user input-icon"></i>
-                    </div>
-                </div>
-
-                <div class="form-group" id="group-phone">
-                    <div class="input-wrapper">
-                        <input type="tel" id="phone" class="form-input" placeholder="Phone Number">
-                        <i class="fas fa-phone-alt input-icon"></i>
-                    </div>
-                </div>
-
-                <div class="form-group" id="group-email">
-                    <div class="input-wrapper">
-                        <input type="email" id="email" class="form-input" placeholder="example@gmail.com">
-                        <i class="far fa-envelope input-icon"></i>
-                    </div>
-                </div>
-
-                <div class="form-group" id="group-password">
-                    <div class="input-wrapper">
-                        <input type="password" id="password" class="form-input" placeholder="Password">
-                        <i class="fas fa-lock input-icon"></i>
-                        <i class="far fa-eye toggle-password" onclick="toggleVis('password', this)"></i>
-                    </div>
-                </div>
-
-                <div class="form-group" id="group-otp">
-                    <div class="input-wrapper">
-                        <input type="text" id="otp" class="form-input" placeholder="8-Digit OTP" maxlength="8" style="letter-spacing: 5px; text-align: center; font-size: 18px; font-weight: 800;">
-                        <i class="fas fa-key input-icon"></i>
-                    </div>
-                </div>
-
-                <div class="form-group" id="group-new-password">
-                    <div class="input-wrapper">
-                        <input type="password" id="new-password" class="form-input" placeholder="New Password">
-                        <i class="fas fa-lock input-icon"></i>
-                        <i class="far fa-eye toggle-password" onclick="toggleVis('new-password', this)"></i>
-                    </div>
-                </div>
-
-                <div class="form-group" id="group-confirm-password">
-                    <div class="input-wrapper">
-                        <input type="password" id="confirm-password" class="form-input" placeholder="Confirm Password">
-                        <i class="fas fa-check-double input-icon"></i>
-                        <i class="far fa-eye toggle-password" onclick="toggleVis('confirm-password', this)"></i>
-                    </div>
-                </div>
-
-                <div class="terms-group" id="group-terms" style="display: none;">
-                    <input type="checkbox" id="terms-check" class="terms-checkbox">
-                    <span class="terms-text">I agree to the <a href="../terms/index.html" target="_blank">Terms & Conditions</a></span>
-                </div>
-
-                <span class="forgot-password" id="forgot-btn" onclick="setView('FORGOT_EMAIL')">Forgot Password?</span>
-
-                <button type="submit" class="auth-btn" id="submit-btn">Sign In</button>
-            </form>
-
-            <div class="auth-switch" id="switch-login">
-                Don't have an account? <span onclick="setView('SIGNUP')">Create one</span>
+                <button onclick="window.location.href='../index.html'" class="auth-btn" style="margin-bottom: 10px;">
+                    Continue to Market <i class="fas fa-arrow-right"></i>
+                </button>
+                <button onclick="handleLogout()" class="logout-btn" id="logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Logout Securely
+                </button>
             </div>
-            <div class="auth-switch" id="switch-signup">
-                Already have an account? <span onclick="setView('LOGIN')">Sign In</span>
+
+            <!-- 🚀 3. Standard Auth Forms -->
+            <div id="state-auth" style="display: none;">
+                <img src="../asset/img/logo.png" alt="UNICAL Market" class="auth-logo" onerror="this.src='../192.png';">
+                
+                <h1 class="auth-title" id="page-title">Welcome Back</h1>
+                <p class="auth-subtitle" id="page-subtitle">Sign in to your student account</p>
+
+                <div class="message-box" id="msg-box"></div>
+
+                <form id="auth-form" onsubmit="processAuth(event)">
+                    
+                    <div class="form-group" id="group-name">
+                        <div class="input-wrapper">
+                            <input type="text" id="name" class="form-input" placeholder="Full Name">
+                            <i class="far fa-user input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="group-phone">
+                        <div class="input-wrapper">
+                            <input type="tel" id="phone" class="form-input" placeholder="Phone Number">
+                            <i class="fas fa-phone-alt input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="group-email">
+                        <div class="input-wrapper">
+                            <input type="email" id="email" class="form-input" placeholder="example@gmail.com">
+                            <i class="far fa-envelope input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="group-password">
+                        <div class="input-wrapper">
+                            <input type="password" id="password" class="form-input" placeholder="Password">
+                            <i class="fas fa-lock input-icon"></i>
+                            <i class="far fa-eye toggle-password" onclick="toggleVis('password', this)"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="group-otp">
+                        <div class="input-wrapper">
+                            <input type="text" id="otp" class="form-input" placeholder="8-Digit OTP" maxlength="8" style="letter-spacing: 5px; text-align: center; font-size: 18px; font-weight: 800;">
+                            <i class="fas fa-key input-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="group-new-password">
+                        <div class="input-wrapper">
+                            <input type="password" id="new-password" class="form-input" placeholder="New Password">
+                            <i class="fas fa-lock input-icon"></i>
+                            <i class="far fa-eye toggle-password" onclick="toggleVis('new-password', this)"></i>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="group-confirm-password">
+                        <div class="input-wrapper">
+                            <input type="password" id="confirm-password" class="form-input" placeholder="Confirm Password">
+                            <i class="fas fa-check-double input-icon"></i>
+                            <i class="far fa-eye toggle-password" onclick="toggleVis('confirm-password', this)"></i>
+                        </div>
+                    </div>
+
+                    <div class="terms-group" id="group-terms" style="display: none;">
+                        <input type="checkbox" id="terms-check" class="terms-checkbox">
+                        <span class="terms-text">I agree to the <a href="../terms/index.html" target="_blank">Terms & Conditions</a></span>
+                    </div>
+
+                    <span class="forgot-password" id="forgot-btn" onclick="setView('FORGOT_EMAIL')">Forgot Password?</span>
+
+                    <button type="submit" class="auth-btn" id="submit-btn">Sign In</button>
+                </form>
+
+                <div class="auth-switch" id="switch-login">
+                    Don't have an account? <span onclick="setView('SIGNUP')">Create one</span>
+                </div>
+                <div class="auth-switch" id="switch-signup">
+                    Already have an account? <span onclick="setView('LOGIN')">Sign In</span>
+                </div>
+                <div class="auth-switch" id="switch-back-login">
+                    Remember your password? <span onclick="setView('LOGIN')">Back to Login</span>
+                </div>
             </div>
-            <div class="auth-switch" id="switch-back-login">
-                Remember your password? <span onclick="setView('LOGIN')">Back to Login</span>
-            </div>
+
         </div>
     </div>
 
@@ -245,6 +298,55 @@
         let currentView = 'LOGIN';
         let recoveryEmail = '';
 
+        // 🚀 Smart Session Checker
+        document.addEventListener("DOMContentLoaded", async () => {
+            try {
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                
+                if (session) {
+                    // Fetch user details to personalize the logged-in state
+                    const { data: profile } = await supabaseClient.from('profiles').select('full_name, avatar_url').eq('id', session.user.id).single();
+                    
+                    if (profile && profile.full_name) {
+                        const firstName = profile.full_name.split(' ')[0];
+                        document.getElementById('logged-in-name').innerText = escapeHTML(firstName);
+                    }
+
+                    if (profile && profile.avatar_url) {
+                        document.getElementById('logged-in-icon').style.display = 'none';
+                        const img = document.getElementById('logged-in-img');
+                        img.src = escapeHTML(profile.avatar_url);
+                        img.style.display = 'block';
+                    }
+
+                    document.getElementById('state-loading').style.display = 'none';
+                    document.getElementById('state-logged-in').style.display = 'block';
+                } else {
+                    document.getElementById('state-loading').style.display = 'none';
+                    document.getElementById('state-auth').style.display = 'block';
+                    setView('LOGIN');
+                }
+            } catch (err) {
+                // Failsafe: if network error, show login form
+                document.getElementById('state-loading').style.display = 'none';
+                document.getElementById('state-auth').style.display = 'block';
+                setView('LOGIN');
+            }
+        });
+
+        async function handleLogout() {
+            const btn = document.getElementById('logout-btn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging out...';
+            btn.disabled = true;
+
+            await supabaseClient.auth.signOut();
+            
+            document.getElementById('state-logged-in').style.display = 'none';
+            document.getElementById('state-auth').style.display = 'block';
+            setView('LOGIN');
+        }
+
+        // --- Helpers ---
         function escapeHTML(str) {
             if (!str) return '';
             return String(str).replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
@@ -276,7 +378,7 @@
             if (referrer && referrer.startsWith(window.location.origin) && !referrer.includes('/login/')) {
                 return referrer; 
             }
-            return "../waitlist/index.html"; 
+            return "../index.html"; 
         }
 
         window.goBackOrHome = function(event) {
@@ -289,7 +391,6 @@
             currentView = view;
             document.getElementById('msg-box').style.display = 'none';
             
-            // Hide everything first
             document.querySelectorAll('.form-group, .terms-group, .forgot-password, .auth-switch').forEach(el => el.style.display = 'none');
             
             const title = document.getElementById('page-title');
@@ -338,9 +439,6 @@
                 document.getElementById('group-confirm-password').style.display = 'block';
             }
         }
-
-        // Initialize view
-        setView('LOGIN');
 
         // --- Master Form Submission Logic ---
         window.processAuth = async function(event) {

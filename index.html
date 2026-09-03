@@ -1,28 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head> 
-    <meta http-equiv="refresh" content="0; url=coming-soon/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>UNICAL Digital Market | Home</title>
 
     <meta name="description" content="The official digital marketplace for the University of Calabar (UNICAL) community. Buy, sell, and discover student services and products securely.">
     <meta name="keywords" content="UNICAL Digital Market, UNICAL marketplace, buy and sell in UNICAL, University of Calabar market, student vendors UNICAL, UnicalDGM">
-    <meta name="author" content="UnicalDGM">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://unicaldgm.com.ng/">
-
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://unicaldgm.com.ng/">
-    <meta property="og:title" content="UNICAL Digital Market | Buy & Sell on Campus">
-    <meta property="og:description" content="Discover the best deals from verified student entrepreneurs at the University of Calabar.">
-    <meta property="og:image" content="https://unicaldgm.com.ng/512.png">
-
-    <meta name="twitter:card" content="summary">
-    <meta name="twitter:title" content="UNICAL Digital Market">
-    <meta name="twitter:description" content="The official digital marketplace for the University of Calabar community.">
-    <meta name="twitter:image" content="https://unicaldgm.com.ng/512.png">
-
+    
     <meta name="theme-color" content="#FF7A00">
     <link rel="icon" href="favicon.ico" type="image/x-icon">
     <link rel="icon" href="192.png" sizes="192x192" type="image/png">
@@ -31,38 +16,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="asset/style.css">
-
-    <meta http-equiv="Content-Security-Policy" content="
-    default-src 'self' https://unicaldgm.com.ng capacitor://localhost;
-    script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net;
-    style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com;
-    font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com;
-    connect-src 'self' https://tqukdcajpkhbunsxovjf.supabase.co wss://tqukdcajpkhbunsxovjf.supabase.co;
-    img-src 'self' data: https:;
-">
 </head>
-<body>
-<!-- 🚀 SPLASH SCREEN LOADER -->
-    <div id="page-loader" class="loader-overlay">
-        <div class="loader-content">
-            <div class="loader-spinner"></div>
-            <img src="asset/img/192.png" alt="UnicalDGM Logo" class="loader-logo" onerror="this.src='192.png'">
-        </div>
-    </div>
-    
-    <!-- 🚀 THE SCRIPT (Directly in HTML so it never gets blocked by cache) -->
-    <script>
-        window.addEventListener('load', () => {
-            setTimeout(() => {
-                const loader = document.getElementById('page-loader');
-                if (loader) {
-                    loader.classList.add('hidden');
-                }
-            }, 1500); // Fades out after 1.5 seconds
-        });
-    </script>
+<body data-page-id="home">
 
-    <div class="app-container">
+    <!-- MAIN APP CONTAINER -->
+    <div class="app-container" id="main-app-container">
 
         <!-- SMART APP BANNER -->
         <div id="smart-banner" style="display: none; background: var(--text-main); color: var(--brand-bg); padding: 12px 15px; font-size: 13px; justify-content: space-between; align-items: center; z-index: 2000; transition: 0.3s;">
@@ -76,22 +34,8 @@
             <a href="download/" style="background: var(--brand-color); color: white; padding: 6px 14px; border-radius: 20px; text-decoration: none; font-weight: 800; font-size: 12px; margin-right: 10px;">Get App</a>
             <button onclick="document.getElementById('smart-banner').style.display='none'" style="background: none; border: none; color: inherit; font-size: 20px; cursor: pointer; padding: 0 5px;">&times;</button>
         </div>
-
-        <script>
-            // Only show the banner to Android users who are NOT already inside the app
-            document.addEventListener("DOMContentLoaded", () => {
-                const userAgent = navigator.userAgent || navigator.vendor;
-                const isAndroid = /android/i.test(userAgent);
-                const isBrowser = !window.Capacitor;
-
-                if (isAndroid && isBrowser) {
-                    // Use flex display instead of block to keep the layout from breaking
-                    document.getElementById("smart-banner").style.display = "flex"; 
-                }
-            });
-        </script>
-        <!-- END SMART APP BANNER -->
         
+        <!-- HEADER -->
         <div class="header">
             <div class="header-top">
                <a href="/" class="logo-link">
@@ -104,17 +48,28 @@
             </div>
             <div class="search-box">
                 <i class="fas fa-search search-icon" id="search-btn-icon"></i>
-                <input type="text" id="main-search" placeholder="Search for items, vendors, services...">
+                <input type="text" id="main-search" placeholder="Search items, vendors, services...">
             </div>
         </div>
 
         <div class="content-area">
 
-            <div class="section-wrapper" style="padding-top: 15px; margin-bottom: 5px;">
+            <!-- HERO BANNER -->
+            <div class="hero-banner" style="background: linear-gradient(135deg, var(--brand-color), #FFA726); color: white; padding: 22px 20px; border-radius: 20px; margin: 10px 20px 20px; position: relative; overflow: hidden; box-shadow: 0 10px 25px rgba(255, 122, 0, 0.25);">
+                <div style="position: relative; z-index: 2;">
+                    <h2 style="font-size: 19px; font-weight: 800; margin-bottom: 6px; letter-spacing: -0.5px;">Welcome to UnicalDGM! 🚀</h2>
+                    <p style="font-size: 12px; opacity: 0.95; max-width: 80%; line-height: 1.4; font-weight: 400;">Your #1 campus marketplace. Buy, sell, and discover student services with zero stress.</p>
+                </div>
+                <i class="fas fa-shopping-bag" style="position: absolute; right: -15px; bottom: -25px; font-size: 100px; opacity: 0.15; transform: rotate(-15deg); z-index: 1;"></i>
+            </div>
+
+            <!-- RECOMMENDED SLIDER -->
+            <div class="section-wrapper" style="padding-top: 5px; margin-bottom: 5px;">
                 <div class="section-header" style="margin-bottom: 10px;">
                     <div class="section-title" style="font-size: 15px;">Recommended for you</div>
                 </div>
                 <div class="rec-slider" id="rec-slider">
+                    <!-- Premium Skeleton: 4 Cards to show scroll depth -->
                     <div class="rec-card"><div class="sk-shimmer sk-rec-img"></div><div class="sk-shimmer sk-line short"></div></div>
                     <div class="rec-card"><div class="sk-shimmer sk-rec-img"></div><div class="sk-shimmer sk-line short"></div></div>
                     <div class="rec-card"><div class="sk-shimmer sk-rec-img"></div><div class="sk-shimmer sk-line short"></div></div>
@@ -122,63 +77,38 @@
                 </div>
             </div>
 
+            <!-- CATEGORY GRID -->
             <div class="new-category-grid">
-                
-                <a href="requests/" class="new-cat-card">
-                    <span class="cat-emoji">📢</span>
-                    <span class="new-cat-name">Request</span>
-                </a>
-                
-                <a href="items/index.html?cat=Gadgets" class="new-cat-card">
-                    <span class="cat-emoji">💻</span>
-                    <span class="new-cat-name">Gadgets</span>
-                </a>
-                
-                <a href="items/index.html?cat=Fashion" class="new-cat-card">
-                    <span class="cat-emoji">👗</span>
-                    <span class="new-cat-name">Fashion</span>
-                </a>
-                
-                <a href="items/index.html?cat=Food" class="new-cat-card">
-                    <span class="cat-emoji">🍔</span>
-                    <span class="new-cat-name">Food</span>
-                </a>
-                
-                <a href="items/index.html?cat=Transport" class="new-cat-card">
-                    <span class="cat-emoji">🛵</span>
-                    <span class="new-cat-name">Transport</span>
-                </a>
-                
-                <a href="items/index.html?cat=Beauty" class="new-cat-card">
-                    <span class="cat-emoji">💄</span>
-                    <span class="new-cat-name">Beauty</span>
-                </a>
-                
-                <a href="items/index.html?cat=CampusServices" class="new-cat-card">
-                    <span class="cat-emoji">🖨️</span>
-                    <span class="new-cat-name">Services</span>
-                </a>
-                
-                <a href="category/" class="new-cat-card">
-                    <span class="cat-emoji">📦</span>
-                    <span class="new-cat-name">Others</span>
-                </a>
-
+                <a href="requests/" class="new-cat-card"><span class="cat-emoji">📢</span><span class="new-cat-name">Request</span></a>
+                <a href="items/index.html?cat=Gadgets" class="new-cat-card"><span class="cat-emoji">💻</span><span class="new-cat-name">Gadgets</span></a>
+                <a href="items/index.html?cat=Fashion" class="new-cat-card"><span class="cat-emoji">👗</span><span class="new-cat-name">Fashion</span></a>
+                <a href="items/index.html?cat=Food" class="new-cat-card"><span class="cat-emoji">🍔</span><span class="new-cat-name">Food</span></a>
+                <a href="items/index.html?cat=Transport" class="new-cat-card"><span class="cat-emoji">🛵</span><span class="new-cat-name">Transport</span></a>
+                <a href="items/index.html?cat=Beauty" class="new-cat-card"><span class="cat-emoji">💄</span><span class="new-cat-name">Beauty</span></a>
+                <a href="items/index.html?cat=CampusServices" class="new-cat-card"><span class="cat-emoji">🖨️</span><span class="new-cat-name">Services</span></a>
+                <a href="category/" class="new-cat-card"><span class="cat-emoji">📦</span><span class="new-cat-name">Others</span></a>
             </div>
             
+            <!-- REVIEWS -->
             <div class="section-wrapper">
                 <div class="section-header">
                     <div class="section-title">Student Reviews</div>
                     <a href="reviews/" class="see-all">See all</a>
                 </div>
                <div class="reviews-slider" id="reviews-slider">
+                    <!-- Premium Skeleton: 2 Cards -->
                     <div class="review-card">
                         <div class="rev-header">
                             <div class="sk-shimmer sk-avatar"></div>
-                            <div style="flex: 1;">
-                                <div class="sk-shimmer sk-line short"></div>
-                                <div class="sk-shimmer sk-line medium" style="height: 8px;"></div>
-                            </div>
+                            <div style="flex: 1;"><div class="sk-shimmer sk-line short"></div><div class="sk-shimmer sk-line medium" style="height: 8px;"></div></div>
+                        </div>
+                        <div class="sk-shimmer sk-line long"></div>
+                        <div class="sk-shimmer sk-line medium"></div>
+                    </div>
+                    <div class="review-card">
+                        <div class="rev-header">
+                            <div class="sk-shimmer sk-avatar"></div>
+                            <div style="flex: 1;"><div class="sk-shimmer sk-line short"></div><div class="sk-shimmer sk-line medium" style="height: 8px;"></div></div>
                         </div>
                         <div class="sk-shimmer sk-line long"></div>
                         <div class="sk-shimmer sk-line medium"></div>
@@ -186,54 +116,54 @@
                 </div>
             </div>
 
+            <!-- AVAILABLE ITEMS -->
             <div class="section-wrapper">
                 <div class="section-header">
                     <div class="section-title">Available Items</div>
                     <a href="items/" class="see-all">See all</a>
                 </div>
                 <div class="product-grid" id="product-grid">
-                    <div class="sk-card">
-                        <div class="sk-shimmer sk-img"></div>
-                        <div class="sk-shimmer sk-line short"></div>
-                        <div class="sk-shimmer sk-line long"></div>
-                        <div class="sk-shimmer sk-line medium"></div>
-                    </div>
-                    <div class="sk-card">
-                        <div class="sk-shimmer sk-img"></div>
-                        <div class="sk-shimmer sk-line short"></div>
-                        <div class="sk-shimmer sk-line long"></div>
-                        <div class="sk-shimmer sk-line medium"></div>
-                    </div>
+                    <!-- Premium Skeleton: 4 Cards to fill the viewport -->
+                    <div class="sk-card"><div class="sk-shimmer sk-img"></div><div class="sk-shimmer sk-line short"></div><div class="sk-shimmer sk-line long"></div></div>
+                    <div class="sk-card"><div class="sk-shimmer sk-img"></div><div class="sk-shimmer sk-line short"></div><div class="sk-shimmer sk-line long"></div></div>
+                    <div class="sk-card"><div class="sk-shimmer sk-img"></div><div class="sk-shimmer sk-line short"></div><div class="sk-shimmer sk-line long"></div></div>
+                    <div class="sk-card"><div class="sk-shimmer sk-img"></div><div class="sk-shimmer sk-line short"></div><div class="sk-shimmer sk-line long"></div></div>
                 </div>
                 <a href="items/" class="view-all-btn-home">View All Items</a>
             </div>
 
+            <!-- VENDORS -->
             <div class="section-wrapper">
                 <div class="section-header">
                     <div class="section-title">Verified Vendors</div>
                     <a href="vendors/" class="see-all">See all</a>
                 </div>
                <div class="product-grid" id="vendor-grid">
-                    <div class="sk-card" style="align-items: center;">
-                        <div class="sk-shimmer sk-v-avatar"></div>
-                        <div class="sk-shimmer sk-line medium"></div>
-                        <div class="sk-shimmer sk-line short"></div>
-                    </div>
-                    <div class="sk-card" style="align-items: center;">
-                        <div class="sk-shimmer sk-v-avatar"></div>
-                        <div class="sk-shimmer sk-line medium"></div>
-                        <div class="sk-shimmer sk-line short"></div>
-                    </div>
+                    <!-- Premium Skeleton: 4 Cards -->
+                    <div class="sk-card" style="align-items: center;"><div class="sk-shimmer sk-v-avatar"></div><div class="sk-shimmer sk-line medium"></div></div>
+                    <div class="sk-card" style="align-items: center;"><div class="sk-shimmer sk-v-avatar"></div><div class="sk-shimmer sk-line medium"></div></div>
+                    <div class="sk-card" style="align-items: center;"><div class="sk-shimmer sk-v-avatar"></div><div class="sk-shimmer sk-line medium"></div></div>
+                    <div class="sk-card" style="align-items: center;"><div class="sk-shimmer sk-v-avatar"></div><div class="sk-shimmer sk-line medium"></div></div>
                 </div>
                 <a href="vendors/" class="view-all-btn-home">View All Vendors</a>
             </div>
 
+            <!-- BLOGS / NEWS -->
             <div class="section-wrapper" style="margin-top: 10px;">
                 <div class="section-header">
                     <div class="section-title">Campus Gist & News</div>
                     <a href="blogs/" class="see-all">See all</a>
                 </div>
                <div id="blog-list">
+                    <!-- Premium Skeleton for Blogs -->
+                    <div class="blog-card">
+                        <div class="sk-shimmer sk-b-img"></div>
+                        <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
+                            <div class="sk-shimmer sk-line short" style="margin-bottom: 10px;"></div>
+                            <div class="sk-shimmer sk-line long"></div>
+                            <div class="sk-shimmer sk-line medium"></div>
+                        </div>
+                    </div>
                     <div class="blog-card">
                         <div class="sk-shimmer sk-b-img"></div>
                         <div style="flex: 1; display: flex; flex-direction: column; justify-content: center;">
@@ -245,89 +175,46 @@
                 </div>
             </div>
 
+            <!-- FOOTER -->
             <div class="footer collapsed" id="main-app-footer">
                 <div class="footer-toggle" id="footer-expand-btn">
                     <i class="fas fa-chevron-down" id="footer-arrow-icon"></i>
                 </div>
-
-              <div class="footer-top-collapsed">
-    <a href="/" class="logo-link">
-        <img src="asset/img/logo-2.jpg" alt="UNICAL Digital Market Logo" class="header-logo" style="border-radius: 15px; object-fit: cover;">
-    </a>
-    <button class="download-app-btn" onclick="downloadApp()">Download App</button>
-</div>
+                
+                <div class="footer-top-collapsed" style="justify-content: center; margin-top: 15px;">
+                    <h3 style="font-size: 16px; font-weight: 800; color: #1e293b;">UNICAL Digital Market</h3>
+                </div>
 
                 <div class="footer-expanded-links">
                     <div class="footer-links-grid">
                         <a href="about/">About</a>
                         <a href="safety/">Safety</a>
                         <a href="terms/">T&C</a>
-                        <a href="privacy-policy/">Privacy</a>
+                        <a href="#" onclick="downloadApp(); return false;">Download App</a>
                     </div>
-                    <p class="copyright-text">
-                        &copy; 2026 UNICAL Digital Market
-                    </p>
+                    <p class="copyright-text">&copy; 2026 UNICAL Digital Market</p>
                 </div>
             </div>
-
         </div>
 
-        <div class="modal-bg" id="ad-popup" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.7); z-index: 5000; justify-content: center; align-items: center; padding: 20px; backdrop-filter: blur(5px);">
-            <div class="ad-modal-content" style="background: white; width: 100%; max-width: 350px; border-radius: 24px; padding: 25px; position: relative; text-align: center; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: popUp 0.3s ease-out;">
-                <div onclick="document.getElementById('ad-popup').style.display='none'" style="position: absolute; top: 15px; right: 20px; font-size: 24px; color: #94a3b8; cursor: pointer;">&times;</div>
-                <img id="ad-image" src="" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 12px; margin-bottom: 15px; display: none;">
-                <h3 id="ad-title" style="margin: 0 0 10px; font-size: 20px; color: var(--text-main); font-weight: 900;"></h3>
-                <p id="ad-content" style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;"></p>
-                <a id="ad-btn" href="#" target="_blank" style="display: block; background: var(--brand-color); color: white; width: 100%; padding: 14px; border-radius: 14px; font-weight: 800; font-size: 14px; text-decoration: none;">Learn More</a>
-            </div>
-        </div>
-
+        <!-- BOTTOM NAV -->
         <div class="bottom-nav">
-            <a href="index.html" class="nav-item active">
-                <i class="fas fa-home"></i>
-                <span>Home</span>
-            </a>
-            <a href="#" class="nav-item" onclick="requireLogin('messages/')">
-                <i class="fas fa-comment-dots"></i>
-                <span class="red-dot msg-dot"></span>
-                <span>Messages</span>
-            </a>
-            <div class="nav-fab" onclick="requireLogin('add-product/')">
-                <i class="fas fa-plus"></i>
-            </div>
-            <a href="#" class="nav-item" onclick="requireLogin('saved/')">
-                <i class="fas fa-heart"></i>
-                <span>Saved</span>
-            </a>
-            <a href="#" class="nav-item" onclick="requireLogin('account/')">
-                <i class="fas fa-user"></i>
-                <span>Account</span>
-            </a>
+            <a href="index.html" class="nav-item active"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('messages/')"><i class="fas fa-comment-dots"></i><span class="red-dot msg-dot"></span><span>Messages</span></a>
+            <div class="nav-fab" onclick="requireLogin('add-product/')"><i class="fas fa-plus"></i></div>
+            <a href="#" class="nav-item" onclick="requireLogin('saved/')"><i class="fas fa-heart"></i><span>Saved</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('account/')"><i class="fas fa-user"></i><span>Account</span></a>
         </div>
-
     </div>
 
     <script src="asset/script.js"></script>
     <script>
-        async function checkUnreadNotifications() {
-            try {
-                const lastSeenStr = localStorage.getItem('last_notif_seen_time') || '2000-01-01T00:00:00.000Z';
-                const { data, error } = await supabaseClient
-                    .from('notifications')
-                    .select('id')
-                    .gt('created_at', lastSeenStr) 
-                    .limit(1);
-
-                if (!error && data && data.length > 0) {
-                    document.getElementById('red-dot').style.display = 'block';
-                }
-            } catch(err) {
-                console.log("No notifications yet.");
-            }
-        }
-        
+        // Banner logic for Android
         document.addEventListener("DOMContentLoaded", () => {
-            setTimeout(checkUnreadNotifications, 1000);
+            const userAgent = navigator.userAgent || navigator.vendor;
+            if (/android/i.test(userAgent) && !window.Capacitor) {
+                document.getElementById("smart-banner").style.display = "flex"; 
+            }
         });
     </script>
 </body>

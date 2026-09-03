@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>  
-    <meta http-equiv="refresh" content="0; url=../coming-soon/">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>All Vendors | UNICAL Digital Market</title>
@@ -24,7 +23,7 @@
     <link rel="stylesheet" href="../asset/style.css">
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
 
         /* 🚀 Reset & Variables */
         * { box-sizing: border-box; }
@@ -38,7 +37,7 @@
 
         /* 🚀 STRICT RESPONSIVENESS FIX: Kills horizontal scroll on all devices */
         html, body {
-            font-family: 'Poppins', sans-serif;
+            font-family: 'Inter', sans-serif;
             background: #e2e8f0; 
             margin: 0; padding: 0; 
             display: flex; justify-content: center; min-height: 100vh;
@@ -56,7 +55,7 @@
 
         /* 🚀 Glassmorphic Header */
         .header {
-            background: rgba(248, 250, 252, 0.9); padding: 15px 20px 10px;
+            background: rgba(248, 250, 252, 0.95); padding: 15px 20px 15px;
             position: sticky; top: 0; z-index: 100;
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(226, 232, 240, 0.8);
@@ -70,7 +69,11 @@
         .page-title { font-size: 20px; font-weight: 900; color: var(--text-main); margin: 0; letter-spacing: -0.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         
         /* 🚀 Premium Search Container */
-        .search-container { background: white; border-radius: 16px; display: flex; align-items: center; padding: 12px 18px; margin-bottom: 10px; border: 2px solid transparent; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.02); width: 100%;}
+        .search-container { 
+            background: white; border-radius: 24px; display: flex; align-items: center; 
+            padding: 12px 18px; border: 2px solid #e2e8f0; transition: 0.2s; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02); width: 100%;
+        }
         .search-container:focus-within { border-color: var(--brand-color); box-shadow: 0 4px 15px rgba(255, 122, 0, 0.1); }
         .search-container input[type="search"] { border: none; background: transparent; outline: none; width: 100%; font-size: 14px; font-weight: 500; color: var(--text-main); font-family: inherit; -webkit-appearance: none; }
         .search-container input::placeholder { color: #94a3b8; }
@@ -79,13 +82,13 @@
         .content-area { padding: 20px 0 90px 0; width: 100%; }
         
         /* 🚀 RESPONSIVENESS FIX: Tighter padding and gaps for narrow screens */
-        .vendor-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 0 15px; width: 100%;}
+        .vendor-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; padding: 0 20px; width: 100%;}
         
         /* 🚀 Modernized Vendor Card */
         .vendor-card {
-            background: white; border-radius: 20px; padding: 15px 12px; text-align: center;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.03); border: 1px solid #e2e8f0;
-            transition: 0.2s; display: flex; flex-direction: column; align-items: center;
+            background: white; border-radius: 24px; padding: 18px 12px; text-align: center;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.04); border: 1px solid #f1f5f9;
+            transition: 0.3s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; align-items: center;
             height: 100%; justify-content: space-between; position: relative; cursor: pointer;
             width: 100%; min-width: 0; /* Ensures it doesn't break grid */
         }
@@ -94,51 +97,58 @@
         /* Reduced logo size to fit nicely on small phones */
         .vendor-logo {
             width: 65px; height: 65px; border-radius: 50%; object-fit: cover;
-            border: 1px solid #e2e8f0; background: #f8fafc; margin-bottom: 10px; flex-shrink: 0;
+            border: 2px solid #f8fafc; background: #f1f5f9; margin-bottom: 12px; flex-shrink: 0;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
         
         .vendor-info-wrapper { flex-grow: 1; width: 100%; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
         
         .vendor-name { 
-            font-size: 14px; font-weight: 900; color: var(--text-main); margin-bottom: 4px; 
+            font-size: 14px; font-weight: 800; color: var(--text-main); margin-bottom: 4px; 
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%; display: block; letter-spacing: -0.3px;
         }
         
         .vendor-desc { 
             font-size: 12px; color: var(--text-muted); line-height: 1.5; font-weight: 500;
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; 
-            overflow: hidden; margin-bottom: 10px; word-break: break-word;
+            overflow: hidden; margin-bottom: 12px; word-break: break-word;
         }
         
         /* 🚀 Items Count Badge */
         .item-count-badge {
-            background: rgba(15, 23, 42, 0.05); color: var(--text-muted); font-size: 11px;
-            font-weight: 700; padding: 4px 10px; border-radius: 8px; margin-bottom: 12px;
-            display: inline-flex; align-items: center; justify-content: center; gap: 4px;
-            white-space: nowrap; max-width: 100%;
+            background: rgba(15, 23, 42, 0.04); color: var(--text-muted); font-size: 11px;
+            font-weight: 700; padding: 5px 10px; border-radius: 10px; margin-bottom: 15px;
+            display: inline-flex; align-items: center; justify-content: center; gap: 5px;
+            white-space: nowrap; max-width: 100%; border: 1px solid #f1f5f9;
         }
 
         .visit-btn {
             background: rgba(255, 122, 0, 0.1); color: var(--brand-color); border: none;
-            width: 100%; padding: 10px; border-radius: 12px; font-size: 12px; font-weight: 800;
+            width: 100%; padding: 12px; border-radius: 14px; font-size: 13px; font-weight: 800;
             cursor: pointer; transition: 0.2s; margin-top: auto;
         }
-        .vendor-card:active .visit-btn { background: var(--brand-color); color: white; }
+        .vendor-card:active .visit-btn { background: var(--brand-gradient); color: white; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.25);}
+
+        /* 🚀 Premium Empty State */
+        .empty-state { text-align: center; padding: 50px 20px; display: flex; flex-direction: column; align-items: center; background: white; border-radius: 24px; border: 1px solid #e2e8f0; box-shadow: 0 8px 30px rgba(0,0,0,0.03); grid-column: span 2;}
+        .empty-icon-box { background: rgba(239, 68, 68, 0.1); width: 80px; height: 80px; border-radius: 50%; display: flex; justify-content: center; align-items: center; margin-bottom: 20px; }
+        .empty-state i { font-size: 30px; color: #ef4444; }
+        .empty-state h3 { font-size: 18px; font-weight: 900; color: var(--text-main); margin: 0 0 8px; letter-spacing: -0.5px;}
+        .empty-state p { font-size: 14px; font-weight: 500; color: var(--text-muted); margin: 0; line-height: 1.5;}
 
         /* Skeletons */
         .sk-shimmer { background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         
-        .sk-card { background: white; border-radius: 20px; padding: 15px 12px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; width: 100%; min-width: 0;}
-        .sk-avatar { width: 65px; height: 65px; border-radius: 50%; margin-bottom: 10px; flex-shrink: 0; }
-        .sk-line-1 { width: 70%; height: 14px; border-radius: 8px; margin-bottom: 8px; }
+        .sk-card { background: white; border-radius: 24px; padding: 18px 12px; border: 1px solid #f1f5f9; display: flex; flex-direction: column; align-items: center; width: 100%; min-width: 0;}
+        .sk-avatar { width: 65px; height: 65px; border-radius: 50%; margin-bottom: 12px; flex-shrink: 0; }
+        .sk-line-1 { width: 70%; height: 14px; border-radius: 8px; margin-bottom: 10px; }
         .sk-line-2 { width: 90%; height: 10px; border-radius: 6px; margin-bottom: 6px; }
-        .sk-line-3 { width: 50%; height: 16px; border-radius: 8px; margin-bottom: 12px; }
-        .sk-btn { width: 100%; height: 35px; border-radius: 12px; margin-top: auto; }
+        .sk-line-3 { width: 50%; height: 16px; border-radius: 8px; margin-bottom: 15px; }
+        .sk-btn { width: 100%; height: 40px; border-radius: 14px; margin-top: auto; }
 
-        .end-message { text-align: center; padding: 40px 20px; color: #94a3b8; font-size: 14px; font-weight: 600; display: none; }
-        .end-message i { font-size: 28px; color: #e2e8f0; margin-bottom: 10px; display: block; }
+        .end-message { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 14px; font-weight: 600; display: none; }
+        .end-message i { font-size: 28px; color: #cbd5e1; margin-bottom: 10px; display: block; }
 
         /* ========================================= */
         /* 🌙 DARK MODE FIXES                        */
@@ -155,16 +165,21 @@
         body.dark-mode .search-container:focus-within { border-color: var(--brand-color) !important; }
         body.dark-mode .search-container input { color: #f1f5f9 !important; }
 
-        body.dark-mode .vendor-card { background: rgba(30, 41, 59, 0.7) !important; border-color: #334155 !important; box-shadow: 0 8px 25px rgba(0,0,0,0.5) !important; }
+        body.dark-mode .vendor-card { background: rgba(30, 41, 59, 0.7) !important; border-color: #334155 !important; box-shadow: 0 8px 30px rgba(0,0,0,0.5) !important; }
         body.dark-mode .vendor-card:active { background: #1e293b !important; }
         body.dark-mode .vendor-logo { border-color: #334155 !important; background: #0f172a !important; }
         
         body.dark-mode .vendor-name { color: #f1f5f9 !important; }
         body.dark-mode .vendor-desc { color: #cbd5e1 !important; }
-        body.dark-mode .item-count-badge { background: rgba(255,255,255,0.05) !important; color: #94a3b8 !important;}
+        body.dark-mode .item-count-badge { background: rgba(255,255,255,0.05) !important; color: #94a3b8 !important; border-color: rgba(255,255,255,0.1) !important;}
         
         body.dark-mode .visit-btn { background: rgba(255, 122, 0, 0.15) !important; }
         body.dark-mode .vendor-card:active .visit-btn { background: var(--brand-color) !important; color: white !important; }
+
+        body.dark-mode .empty-state { background: #1e293b !important; border-color: #334155 !important; box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;}
+        body.dark-mode .empty-state h3 { color: #f1f5f9 !important; }
+        body.dark-mode .empty-state p { color: #94a3b8 !important; }
+        body.dark-mode .empty-icon-box { background: rgba(239, 68, 68, 0.15) !important; }
 
         body.dark-mode .sk-card { background: #1e293b !important; border-color: #334155 !important; }
         body.dark-mode .sk-shimmer { background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%) !important; background-size: 200% 100% !important; }
@@ -173,14 +188,14 @@
         body.dark-mode .end-message i { color: #334155 !important; }
     </style>
 </head>
-<body>
+<!-- 🚀 GATEKEEPER TAG -->
+<body data-page-id="vendors">
     <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
 
     <div class="app-container">
         
         <div class="header">
             <div class="header-top-flex">
-                <!-- 🚀 SMART BACK BUTTON -->
                 <button onclick="smartBack(event)" class="back-btn"><i class="fas fa-arrow-left"></i></button>
                 <h1 class="page-title">Verified Vendors</h1>
             </div>
@@ -212,15 +227,15 @@
         </div>
 
         <div class="bottom-nav">
-            <a href="../" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
-            <a href="#" class="nav-item" onclick="requireLogin('../messages/')">
+            <a href="../index.html" class="nav-item"><i class="fas fa-home"></i><span>Home</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../messages/index.html')">
                 <i class="fas fa-comment-dots"></i>
                 <span class="red-dot msg-dot"></span>
                 <span>Messages</span>
             </a>
-            <div class="nav-fab" onclick="requireLogin('../add-product/')"><i class="fas fa-plus"></i></div>
-            <a href="#" class="nav-item" onclick="requireLogin('../saved/')"><i class="fas fa-heart"></i><span>Saved</span></a>
-            <a href="#" class="nav-item" onclick="requireLogin('../account/')"><i class="fas fa-user"></i><span>Account</span></a>
+            <div class="nav-fab" onclick="requireLogin('../add-product/index.html')"><i class="fas fa-plus"></i></div>
+            <a href="#" class="nav-item" onclick="requireLogin('../saved/index.html')"><i class="fas fa-heart"></i><span>Saved</span></a>
+            <a href="#" class="nav-item" onclick="requireLogin('../account/index.html')"><i class="fas fa-user"></i><span>Account</span></a>
         </div>
 
     </div>
@@ -364,15 +379,19 @@
                 if (v.subscription_plan === "Influencer") badgeColor = "#fbbf24"; 
                 if (v.subscription_plan === "Icon") badgeColor = "#1e293b"; 
 
-                // 🚀 Pinned Badge (Replaced Featured with Pinned and Thumbtack)
-                const pinBadge = v.is_pinned ? `<div style="position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.8); color: #fbbf24; padding: 3px 8px; border-radius: 8px; font-size: 10px; font-weight: 800; backdrop-filter: blur(4px); z-index: 10;"><i class="fas fa-thumbtack" style="margin-right:3px;"></i> Pinned</div>` : '';
+                // Dark mode override for Icon badge
+                const currentTheme = localStorage.getItem('theme');
+                if (currentTheme === 'dark' && v.subscription_plan === "Icon") badgeColor = "#f1f5f9";
+
+                // 🚀 Premium Pinned Badge 
+                const pinBadge = v.is_pinned ? `<div style="position: absolute; top: 12px; right: 12px; background: rgba(15, 23, 42, 0.85); color: #fbbf24; padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 800; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 10; box-shadow: 0 4px 10px rgba(0,0,0,0.1);"><i class="fas fa-thumbtack" style="margin-right:4px;"></i> Pinned</div>` : '';
 
                 grid.insertAdjacentHTML('beforeend', `
                     <div class="vendor-card" onclick="window.location.href='profile/index.html?id=${safeId}'">
                         ${pinBadge}
                         <img src="${logoUrl}" class="vendor-logo" onerror="this.src='https://via.placeholder.com/150x150?text=Logo'">
                         <div class="vendor-info-wrapper">
-                            <div class="vendor-name">${safeName} <i class="fas fa-check-circle" style="color: ${badgeColor};"></i></div>
+                            <div class="vendor-name">${safeName} <i class="fas fa-check-circle" style="color: ${badgeColor}; font-size: 13px;"></i></div>
                             <div class="vendor-desc">${safeDesc}</div>
                         </div>
                         <div class="item-count-badge">
@@ -393,10 +412,10 @@
             
             if (currentDisplayList.length === 0) {
                 grid.innerHTML = `
-                    <div style="grid-column: span 2; text-align: center; padding: 60px 20px; color: #94a3b8;">
-                        <i class="fas fa-store-slash" style="font-size: 50px; margin-bottom: 15px; color: #cbd5e1;"></i>
-                        <h3 style="font-size: 18px; color: var(--text-main); margin: 0 0 5px; font-weight: 800;">No vendor found</h3>
-                        <p style="font-size: 13px; font-weight:500;">Try adjusting your search or spelling.</p>
+                    <div class="empty-state">
+                        <div class="empty-icon-box"><i class="fas fa-store-slash"></i></div>
+                        <h3>No vendor found</h3>
+                        <p>Try adjusting your search or spelling.</p>
                     </div>`;
                 endMsg.style.display = 'none';
                 skeleton.style.display = 'none';

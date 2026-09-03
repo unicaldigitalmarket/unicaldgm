@@ -1,20 +1,19 @@
-// Version 5: The Bulletproof Failsafe
-const CACHE_NAME = 'unical-market-v1.0.1';
+// Version 6: Network-First for dynamic updates
+const CACHE_NAME = 'unical-market-v1.0.2'; // BUMPED VERSION TO CLEAR OLD CACHE
 const OFFLINE_URL = '/offline.html';
 
-// 1. INSTALL EVENT - ONLY cache the offline page to guarantee 100% success.
+// 1. INSTALL EVENT - Cache the offline page
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            console.log('Failsafe engaged: Caching offline page independently.');
-            // Using a new Request with 'reload' forces the browser to get the freshest copy
+            console.log('Caching offline page independently.');
             return cache.add(new Request(OFFLINE_URL, { cache: 'reload' }));
         })
     );
     self.skipWaiting();
 });
 
-// 2. ACTIVATE EVENT - Clean out all the old, broken caches
+// 2. ACTIVATE EVENT - Clean out old caches (this will delete v1.0.1)
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
@@ -38,7 +37,7 @@ self.addEventListener('fetch', (event) => {
         return; 
     }
 
-    // STRATEGY A: For HTML Pages (If offline, show the game!)
+    // STRATEGY A: For HTML Pages (Network first, fallback to offline.html)
     if (event.request.mode === 'navigate') {
         event.respondWith(
             fetch(event.request).catch(() => {
@@ -49,17 +48,17 @@ self.addEventListener('fetch', (event) => {
         return; 
     }
 
-    // STRATEGY B: For all other files, load from network, but save a copy for later
+    // STRATEGY B: Network First, falling back to cache (Perfect for active development)
     event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-            return cachedResponse || fetch(event.request).then((response) => {
-                return caches.open(CACHE_NAME).then((cache) => {
-                    cache.put(event.request, response.clone());
-                    return response;
-                });
-            }).catch(() => {
-                // Silently fail for assets if offline
+        fetch(event.request).then((response) => {
+            // Network succeeded! Save a fresh copy to the cache for later
+            return caches.open(CACHE_NAME).then((cache) => {
+                cache.put(event.request, response.clone());
+                return response;
             });
+        }).catch(() => {
+            // Network failed! Look for a backup in the cache
+            return caches.match(event.request);
         })
     );
 });

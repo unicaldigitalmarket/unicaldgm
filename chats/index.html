@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     <meta http-equiv="refresh" content="0; url=../coming-soon/">
-
-
-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Chat | UNICAL Digital Market</title>
@@ -19,36 +15,47 @@
     <link rel="apple-touch-icon" href="../apple-touch-icon.png">
 
     <style>
-       /* 🚀 FIX: Using 100dvh (Dynamic Viewport Height) locks it perfectly to the mobile screen */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+        /* 🚀 Reset & Variables */
+        * { box-sizing: border-box; }
+        :root {
+            --brand-color: #FF7A00;
+            --brand-gradient: linear-gradient(135deg, #FF7A00, #ea580c);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+        }
+
         body, html { 
+            font-family: 'Inter', sans-serif;
             height: 100dvh; 
             margin: 0; padding: 0; 
             background: #f8fafc; 
-            overflow: hidden; /* Stops the whole screen from scrolling */
+            overflow: hidden; 
         }
         
         .chat-container { 
             display: flex; 
             flex-direction: column; 
-            height: 100dvh; /* Forces exact fit */
+            height: 100dvh; 
             width: 100%;
             max-width: 480px; 
             margin: 0 auto; 
             background: white; 
-            box-shadow: 0 0 20px rgba(0,0,0,0.05); 
+            box-shadow: 0 0 30px rgba(0,0,0,0.08); 
             position: relative;
-            overflow: hidden; /* Keeps everything inside */
+            overflow: hidden; 
         }
         
         /* Header */
         .chat-header { 
             background: white; padding: 15px 20px; display: flex; align-items: center; 
             border-bottom: 1px solid #e2e8f0; z-index: 10; box-shadow: 0 2px 10px rgba(0,0,0,0.02); 
-            flex-shrink: 0; /* Prevents header from squishing */
+            flex-shrink: 0; 
         }
         .chat-title-area { margin-left: 15px; flex: 1; }
-        .chat-title { font-size: 16px; font-weight: 800; color: #1e293b; margin: 0 0 2px; }
-        .chat-subtitle { font-size: 12px; color: #2d8eff; font-weight: 600; }
+        .chat-title { font-size: 16px; font-weight: 800; color: var(--text-main); margin: 0 0 2px; letter-spacing: -0.3px;}
+        .chat-subtitle { font-size: 12px; color: var(--brand-color); font-weight: 700; }
 
         /* Messages Area */
         .chat-area { 
@@ -61,23 +68,22 @@
             gap: 15px; 
         }
         
-        .disclaimer-box { background: #fffbeb; border: 1px solid #fde68a; color: #b45309; padding: 10px 15px; border-radius: 12px; font-size: 11px; text-align: center; margin-bottom: 10px; line-height: 1.5; }
+        .disclaimer-box { background: #fffbeb; border: 1px solid #fde68a; color: #b45309; padding: 12px 15px; border-radius: 14px; font-size: 12px; text-align: center; margin-bottom: 10px; line-height: 1.5; font-weight: 500;}
 
         /* Bubbles */
         .msg-row { display: flex; flex-direction: column; max-width: 85%; }
         .msg-row.me { align-self: flex-end; align-items: flex-end; }
         .msg-row.them { align-self: flex-start; align-items: flex-start; }
         
-        .bubble { padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.5; word-wrap: break-word; position: relative; }
-        .me .bubble { background: #2d8eff; color: white; border-bottom-right-radius: 4px; }
-        .them .bubble { background: white; color: #1e293b; border-bottom-left-radius: 4px; border: 1px solid #e2e8f0; }
+        .bubble { padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.5; word-wrap: break-word; position: relative; font-weight: 500;}
+        .me .bubble { background: var(--brand-color); color: white; border-bottom-right-radius: 4px; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.2); }
+        .them .bubble { background: white; color: var(--text-main); border-bottom-left-radius: 4px; border: 1px solid #e2e8f0; }
         .auto-msg .bubble { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; font-size: 13px; font-style: italic; border-bottom-right-radius: 4px; }
         
         .msg-img { max-width: 100%; border-radius: 12px; margin-bottom: 8px; cursor: pointer; }
-        .msg-time { font-size: 10px; color: #94a3b8; margin-top: 4px; }
+        .msg-time { font-size: 10px; color: #94a3b8; margin-top: 4px; font-weight: 600;}
         .me .msg-time { color: #cbd5e1; text-align: right; }
 
-        /* 🚀 FIX: Added flex-shrink: 0 and safe-area padding for iPhone/Android screens */
         .input-area { 
             background: white; 
             padding: 12px 15px; 
@@ -89,14 +95,18 @@
             flex-shrink: 0; 
         }
         
-        .attach-btn { background: #f1f5f9; color: #64748b; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 18px; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; }
-        .msg-input { flex: 1; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 20px; padding: 12px 15px; font-size: 14px; outline: none; max-height: 100px; resize: none; font-family: inherit; }
-        .send-btn { background: #2d8eff; color: white; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 16px; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; transition: 0.2s; }
+        .attach-btn { background: #f1f5f9; color: #64748b; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 18px; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; transition: 0.2s;}
+        .attach-btn:active { transform: scale(0.9); background: #e2e8f0; }
+        
+        .msg-input { flex: 1; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 20px; padding: 12px 15px; font-size: 14px; outline: none; max-height: 100px; resize: none; font-family: inherit; color: var(--text-main); font-weight: 500; transition: 0.2s;}
+        .msg-input:focus { border-color: var(--brand-color); background: white; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.1); }
+        
+        .send-btn { background: var(--brand-color); color: white; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 16px; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0; transition: 0.2s; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.3); }
         .send-btn:active { transform: scale(0.9); }
-        .send-btn:disabled { background: #cbd5e1; }
+        .send-btn:disabled { background: #cbd5e1; box-shadow: none; }
 
         .img-preview-bar { display: none; padding: 10px 20px; background: #eff6ff; border-top: 1px solid #bfdbfe; align-items: center; justify-content: space-between; flex-shrink: 0; }
-        .img-preview-bar img { height: 40px; border-radius: 6px; }
+        .img-preview-bar img { height: 40px; border-radius: 6px; object-fit: cover; }
 
         /* ========================================= */
         /* 🌙 DARK MODE FIXES FOR CHAT ROOM          */
@@ -114,7 +124,7 @@
         body.dark-mode .disclaimer-box { background: rgba(245, 158, 11, 0.1) !important; border-color: rgba(245, 158, 11, 0.3) !important; color: #fbbf24 !important; }
         
         body.dark-mode .them .bubble { background: #1e293b !important; color: #f1f5f9 !important; border-color: #334155 !important; }
-        body.dark-mode .me .bubble { background: var(--brand-color, #FF7A00) !important; color: white !important; }
+        body.dark-mode .me .bubble { background: var(--brand-color) !important; color: white !important; }
         body.dark-mode .auto-msg .bubble { background: rgba(16, 185, 129, 0.1) !important; color: #34d399 !important; border-color: #10b981 !important; }
         
         body.dark-mode .msg-time { color: #64748b !important; }
@@ -122,22 +132,26 @@
 
         body.dark-mode .input-area { background: #1e293b !important; border-top-color: #334155 !important; }
         body.dark-mode .msg-input { background: #0f172a !important; border-color: #334155 !important; color: #f1f5f9 !important; }
+        body.dark-mode .msg-input:focus { border-color: var(--brand-color) !important; }
         body.dark-mode .msg-input::placeholder { color: #64748b !important; }
         
         body.dark-mode .attach-btn { background: #0f172a !important; color: #94a3b8 !important; }
-        body.dark-mode .send-btn { background: var(--brand-color, #FF7A00) !important; }
+        body.dark-mode .send-btn { background: var(--brand-color) !important; }
         body.dark-mode .send-btn:disabled { background: #334155 !important; color: #64748b !important; }
 
         body.dark-mode .img-preview-bar { background: #1e293b !important; border-top-color: #334155 !important; }
         body.dark-mode .img-preview-bar span { color: #f1f5f9 !important; }
     </style>
 </head>
-<body>
+
+<!-- 🚀 ADMIN GATEKEEPER TAG -->
+<body data-page-id="chat">
+    <script>if (localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-mode');</script>
 
     <div class="chat-container">
         
         <div class="chat-header">
-            <button onclick="window.history.back()" style="background:none; border:none; font-size:20px; color:#1e293b; cursor:pointer;"><i class="fas fa-arrow-left"></i></button>
+            <button onclick="window.history.back()" style="background:none; border:none; font-size:20px; color:var(--text-main); cursor:pointer;"><i class="fas fa-arrow-left"></i></button>
             <div class="chat-title-area">
                 <div class="chat-title" id="head-name">Loading...</div>
                 <div class="chat-subtitle" id="head-product">...</div>
@@ -153,7 +167,7 @@
         <div class="img-preview-bar" id="img-preview-bar">
             <div style="display: flex; align-items: center; gap: 10px;">
                 <img id="preview-img" src="">
-                <span style="font-size: 12px; color: #1e293b; font-weight: bold;">Image attached</span>
+                <span style="font-size: 12px; font-weight: bold;">Image attached</span>
             </div>
             <button onclick="clearImage()" style="background:none; border:none; color:#ef4444; font-size:16px; cursor:pointer;"><i class="fas fa-times-circle"></i></button>
         </div>
@@ -422,7 +436,7 @@
                         last_message_text: text || "Sent an image", 
                         last_message_time: new Date(),
                         unread_by_customer: amIVendor ? true : false, 
-                        unread_by_vendor: !amIVendor ? true : false   
+                        unread_by_vendor: !amIVendor ? true : false    
                     }).eq('id', activeChatId);
 
                     if (amIVendor && currentChat.vendor_has_replied === false) {
@@ -450,7 +464,7 @@
             const msgData = {
                 chat_id: activeChatId,
                 sender_id: currentUser.id,
-                text: text, // Raw text saved to DB (Escaped when rendering!)
+                text: text, 
                 image_url: imgUrl,
                 is_auto_message: isAuto
             };

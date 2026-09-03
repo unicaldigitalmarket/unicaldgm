@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UNICAL Digital Market | Admin Panel</title>
+    
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --brand-color: #FF7A00;
+            --brand-bg: #f0f4f8;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --danger: #ef4444;
+            --success: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        
+        body { background: var(--brand-bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        
+        .container { background: white; width: 100%; max-width: 450px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.05); padding: 30px; position: relative; overflow: hidden; }
+        
+        .header { text-align: center; margin-bottom: 30px; }
+        .header h1 { font-size: 22px; font-weight: 800; color: var(--text-main); }
+        .header p { font-size: 13px; color: var(--text-muted); }
+
+        /* Auth Form */
+        #auth-section { display: block; animation: fadeIn 0.4s ease; }
+        .input-group { margin-bottom: 15px; }
+        .input-group input { width: 100%; padding: 14px 15px; border: 1px solid #e2e8f0; border-radius: 12px; font-size: 14px; outline: none; transition: 0.2s; }
+        .input-group input:focus { border-color: var(--brand-color); box-shadow: 0 0 0 3px rgba(255, 122, 0, 0.1); }
+        .btn { width: 100%; padding: 14px; background: var(--text-main); color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .btn:active { transform: scale(0.98); }
+        
+        /* Dashboard */
+        #dashboard-section { display: none; animation: fadeIn 0.4s ease; }
+        .page-list { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; }
+        
+        .page-card { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 16px; transition: 0.3s; }
+        .page-card.is-offline { border-color: rgba(239, 68, 68, 0.3); background: #fef2f2; }
+        
+        .page-info h3 { font-size: 15px; font-weight: 600; color: var(--text-main); text-transform: capitalize; }
+        .page-info span { font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 6px; }
+        .status-online { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .status-offline { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+
+        /* The Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--success); transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        input:checked + .slider { background-color: var(--danger); }
+        input:checked + .slider:before { transform: translateX(24px); }
+
+        .logout-btn { background: #f1f5f9; color: var(--danger); width: 100%; padding: 12px; border: none; border-radius: 12px; font-weight: 800; cursor: pointer; }
+        #error-msg { color: var(--danger); font-size: 13px; text-align: center; margin-bottom: 10px; display: none; font-weight: 600; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <div style="width: 60px; height: 60px; background: var(--brand-color); border-radius: 16px; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h1>Admin Gateway</h1>
+            <p>Control website access and maintenance</p>
+        </div>
+
+        <div id="error-msg"></div>
+
+        <!-- AUTH SECTION -->
+        <div id="auth-section">
+            <div class="input-group">
+                <input type="email" id="admin-email" placeholder="Admin Email" required>
+            </div>
+            <div class="input-group">
+                <input type="password" id="admin-pass" placeholder="Password" required>
+            </div>
+            <button class="btn" id="login-btn" onclick="handleLogin()">Secure Login <i class="fas fa-arrow-right" style="margin-left: 5px;"></i></button>
+        </div>
+
+        <!-- DASHBOARD SECTION -->
+        <div id="dashboard-section">
+            <div class="page-list" id="page-list">
+                <!-- Switches will load here dynamically via JS -->
+            </div>
+            <button class="logout-btn" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </div>
+
+    <script>
+        // Renamed variable to supabaseAdmin to avoid collision with window.supabase
+        const ADMIN_SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
+        const ADMIN_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
+        const supabaseAdmin = window.supabase.createClient(ADMIN_SUPABASE_URL, ADMIN_SUPABASE_ANON_KEY);
+
+        const authSection = document.getElementById('auth-section');
+        const dashSection = document.getElementById('dashboard-section');
+        const errorMsg = document.getElementById('error-msg');
+        const pageList = document.getElementById('page-list');
+
+        // Check Session AND Admin Status
+        async function checkSession() {
+            const { data: { session } } = await supabaseAdmin.auth.getSession();
+            
+            if (session) {
+                const userEmail = session.user.email;
+                
+                // BOUNCER CHECK: Is this email in the admin_users table?
+                const { data: adminData, error: adminError } = await supabaseAdmin
+                    .from('admin_users')
+                    .select('*')
+                    .eq('email', userEmail)
+                    .single();
+
+                if (adminData) {
+                    // VIP Access Granted!
+                    authSection.style.display = 'none';
+                    dashSection.style.display = 'block';
+                    loadSettings();
+                } else {
+                    // Access Denied: Log them out immediately
+                    await supabaseAdmin.auth.signOut();
+                    showError("Access Denied: Your email is not registered as an Admin.");
+                    authSection.style.display = 'block';
+                    dashSection.style.display = 'none';
+                    document.getElementById('login-btn').innerHTML = 'Secure Login <i class="fas fa-arrow-right"></i>';
+                }
+            } else {
+                authSection.style.display = 'block';
+                dashSection.style.display = 'none';
+            }
+        }
+
+        // Handle Login
+        async function handleLogin() {
+            const email = document.getElementById('admin-email').value;
+            const password = document.getElementById('admin-pass').value;
+            const btn = document.getElementById('login-btn');
+            
+            if (!email || !password) return showError("Please enter credentials");
+
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Authenticating...';
+            errorMsg.style.display = 'none';
+            
+            const { data, error } = await supabaseAdmin.auth.signInWithPassword({ email, password });
+            
+            if (error) {
+                showError(error.message);
+                btn.innerHTML = 'Secure Login <i class="fas fa-arrow-right"></i>';
+            } else {
+                checkSession();
+            }
+        }
+
+        // Handle Logout
+        async function handleLogout() {
+            await supabaseAdmin.auth.signOut();
+            checkSession();
+        }
+
+        // Show Error Message
+        function showError(msg) {
+            errorMsg.innerText = msg;
+            errorMsg.style.display = 'block';
+        }
+
+        // Fetch Pages and Create Switches
+        async function loadSettings() {
+            pageList.innerHTML = '<div style="text-align:center; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> Loading switches...</div>';
+            
+            const { data, error } = await supabaseAdmin.from('page_settings').select('*').order('page_name', { ascending: true });
+            
+            if (error) {
+                pageList.innerHTML = `<p style="color:red; text-align:center;">Error loading settings: ${error.message}</p>`;
+                return;
+            }
+
+            pageList.innerHTML = '';
+            data.forEach(page => {
+                const isChecked = page.is_maintenance ? 'checked' : '';
+                const statusClass = page.is_maintenance ? 'status-offline' : 'status-online';
+                const statusText = page.is_maintenance ? 'Under Maintenance' : 'Live & Active';
+                const cardClass = page.is_maintenance ? 'page-card is-offline' : 'page-card';
+
+                pageList.insertAdjacentHTML('beforeend', `
+                    <div class="${cardClass}" id="card-${page.id}">
+                        <div class="page-info">
+                            <h3>${page.page_name} Page</h3>
+                            <span class="${statusClass}" id="status-${page.id}">${statusText}</span>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" ${isChecked} onchange="toggleMaintenance(${page.id}, '${page.page_name}', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                `);
+            });
+        }
+
+        // Update Supabase when a switch is clicked
+        async function toggleMaintenance(id, pageName, newStatus) {
+            const statusBadge = document.getElementById(`status-${id}`);
+            const card = document.getElementById(`card-${id}`);
+            
+            statusBadge.innerText = 'Updating...';
+            statusBadge.style.color = '#FF7A00';
+
+            const { error } = await supabaseAdmin
+                .from('page_settings')
+                .update({ is_maintenance: newStatus })
+                .eq('id', id);
+
+            if (error) {
+                alert(`Failed to update ${pageName}. Error: ` + error.message);
+                loadSettings();
+            } else {
+                if (newStatus) {
+                    statusBadge.className = 'status-offline';
+                    statusBadge.innerText = 'Under Maintenance';
+                    card.classList.add('is-offline');
+                } else {
+                    statusBadge.className = 'status-online';
+                    statusBadge.innerText = 'Live & Active';
+                    card.classList.remove('is-offline');
+                }
+            }
+        }
+
+        // Run on load
+        document.addEventListener('DOMContentLoaded', checkSession);
+    </script>
+</body>
+</html>

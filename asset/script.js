@@ -5,6 +5,41 @@ const SUPABASE_URL = 'https://tqukdcajpkhbunsxovjf.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRxdWtkY2FqcGtoYnVuc3hvdmpmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2MzgyNDcsImV4cCI6MjA5MDIxNDI0N30.0a4luZi00muORofzbrg5eWgvZSU28ghQ2yYcBU-XL3I';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+// 🚀 GATEKEEPER: Check if the page is under maintenance
+async function checkMaintenanceMode(pageIdentifier) {
+    if (!pageIdentifier) return false; // If no ID is set, allow the page to load
+
+    try {
+        const { data, error } = await supabaseClient
+            .from('page_settings')
+            .select('is_maintenance')
+            .eq('page_name', pageIdentifier)
+            .single();
+
+        if (data && data.is_maintenance === true) {
+            // Replace the entire page body with your custom maintenance UI
+            // Notice the "/" before asset and coming-soon to ensure paths work from any sub-folder!
+            document.body.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: var(--brand-bg); text-align: center; padding: 20px; font-family: 'Poppins', sans-serif;">
+                    <img src="/asset/img/192.png" alt="UNICAL Digital Market Logo" style="width: 80px; margin-bottom: 20px; border-radius: 15px;" onerror="this.src='/192.png'">
+                    <h1 style="color: var(--text-main); font-size: 22px; font-weight: 800; margin-bottom: 10px;">🚧 Page Building in Progress 🚧</h1>
+                    <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 25px; line-height: 1.5; max-width: 300px;">
+                        The Admin is currently updating this section to serve you better. Please check back shortly!
+                    </p>
+                    <button onclick="window.location.href='/coming-soon/'" style="background: var(--brand-color); color: white; border: none; padding: 14px 28px; border-radius: 12px; font-size: 14px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 122, 0, 0.3);">
+                        Go to Coming Soon Page
+                    </button>
+                </div>
+            `;
+            return true; // Returns true meaning "Yes, it's under maintenance"
+        }
+        return false; 
+    } catch (err) {
+        console.error("Maintenance check failed:", err);
+        return false;
+    }
+}
+
 // 🛡️ SECURITY & UTILS
 function escapeHTML(str) {
     if (!str) return '';
@@ -55,24 +90,37 @@ async function requireLogin(targetUrl) {
     if (session) {
         window.location.href = targetUrl;
     } else {
-        window.location.href = "login/index.html";
+        window.location.href = "/login/index.html"; // Added root slash here too
     }
 }
 
 // 🚀 4. LOAD DATA ON PAGE LOAD
 document.addEventListener("DOMContentLoaded", async () => {
+    // 🛑 Automatically detect which page we are on from the HTML body tag
+    const currentPageId = document.body.getAttribute('data-page-id');
+    
+    // Run the Gatekeeper
+    const isMaintenance = await checkMaintenanceMode(currentPageId);
+    
+    // If it is in maintenance mode, STOP loading the rest of the page.
+    if (isMaintenance) return; 
+
+    // Otherwise, load the page normally:
     setupSearch();
     setupExpandableFooter(); 
     checkGlobalBadges();
     fetchAdPopup(); 
 
-    await Promise.all([
-        fetchRecommendedItems(), // 🚀 NEW FUNCTION CALL
-        fetchItems(),
-        fetchVendors(),
-        fetchReviews(),
-        fetchBlogs()
-    ]);
+    // Only run these fetches if we are on the home page
+    if (currentPageId === 'home') {
+        await Promise.all([
+            fetchRecommendedItems(),
+            fetchItems(),
+            fetchVendors(),
+            fetchReviews(),
+            fetchBlogs()
+        ]);
+    }
     
     restorePageScroll();
 });
@@ -119,7 +167,7 @@ function setupSearch() {
 
     function executeSearch() {
         const query = searchInput.value.trim();
-        if (query) window.location.href = `search/index.html?q=${encodeURIComponent(query)}`;
+        if (query) window.location.href = `/search/index.html?q=${encodeURIComponent(query)}`;
     }
 
     searchInput.addEventListener('keypress', function(e) {
@@ -170,7 +218,7 @@ async function fetchRecommendedItems() {
         const fPrice = new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN', maximumFractionDigits: 0 }).format(p.price);
         
         slider.insertAdjacentHTML('beforeend', `
-            <a href="product/index.html?id=${escapeJS(p.id)}" class="rec-card">
+            <a href="/product/index.html?id=${escapeJS(p.id)}" class="rec-card">
                 <img src="${imgUrl}" class="rec-img" onerror="this.src='https://via.placeholder.com/150'">
                 <div class="rec-title">${escapeHTML(p.name)}</div>
                 <div class="rec-price">${fPrice}</div>
@@ -222,7 +270,7 @@ async function fetchItems() {
         const pinBadge = p.is_pinned ? `<div style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.7); color: white; padding: 3px 8px; border-radius: 8px; font-size: 10px; font-weight: 800; backdrop-filter: blur(4px);">Featured</div>` : '';
 
         grid.insertAdjacentHTML('beforeend', `
-            <div class="card" style="position: relative;" onclick="window.location.href='product/index.html?id=${escapeJS(p.id)}'">
+            <div class="card" style="position: relative;" onclick="window.location.href='/product/index.html?id=${escapeJS(p.id)}'">
                 ${pinBadge}
                 <img src="${imgUrl}" class="card-img" onerror="this.src='https://via.placeholder.com/300'">
                 <div class="card-price">${formattedPrice}</div>
@@ -273,7 +321,7 @@ async function fetchVendors() {
         if (v.subscription_plan === "Icon") badgeColor = "#1e293b"; 
 
         grid.insertAdjacentHTML('beforeend', `
-            <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center; height: 100%; position: relative;" onclick="window.location.href='vendors/profile/index.html?id=${escapeJS(v.id)}'">
+            <div class="card" style="text-align: center; display: flex; flex-direction: column; align-items: center; height: 100%; position: relative;" onclick="window.location.href='/vendors/profile/index.html?id=${escapeJS(v.id)}'">
                 ${pinBadge}
                 <img src="${logo}" style="width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 10px; flex-shrink: 0; object-fit: cover;" onerror="this.src='https://via.placeholder.com/100'">
                 <div style="width: 100%; overflow: hidden;">
@@ -317,13 +365,13 @@ async function fetchReviews() {
     slider.innerHTML = "";
     displayReviews.forEach(r => {
         const name = escapeHTML(r.profiles?.full_name || "Student");
-        const avatar = escapeHTML(r.profiles?.avatar_url || "img/person.png");
+        const avatar = escapeHTML(r.profiles?.avatar_url || "/img/person.png");
         const safeText = escapeHTML(r.review_text);
         
         slider.insertAdjacentHTML('beforeend', `
             <div class="review-card">
                 <div class="rev-header">
-                    <img src="${avatar}" class="rev-img" onerror="this.src='img/person.png'">
+                    <img src="${avatar}" class="rev-img" onerror="this.src='/img/person.png'">
                     <div>
                         <div class="rev-name">${name} <i class="fas fa-check-circle" style="color: #10b981; font-size:10px;"></i></div>
                         <div class="rev-stars">${'<i class="fas fa-star"></i>'.repeat(r.rating)}</div>
@@ -379,7 +427,7 @@ async function fetchBlogs() {
         const postDate = new Date(b.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 
        list.insertAdjacentHTML('beforeend', `
-            <div class="blog-card" onclick="window.location.href='blog-content/index.html?id=${escapeJS(b.id)}'">
+            <div class="blog-card" onclick="window.location.href='/blog-content/index.html?id=${escapeJS(b.id)}'">
                 <img src="${imgUrl}" class="blog-img" onerror="this.src='https://via.placeholder.com/100'">
                 <div class="blog-info">
                     <div class="blog-cat-row">
@@ -494,7 +542,7 @@ document.addEventListener("DOMContentLoaded", () => {
 // =========================================
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
+        navigator.serviceWorker.register('/sw.js')
             .then(reg => console.log('Service Worker Registered successfully!', reg.scope))
             .catch(err => console.error('Service Worker Registration Failed!', err));
     });
@@ -509,20 +557,16 @@ window.smartBack = function(event) {
     const referrer = document.referrer;
     const currentWebsite = window.location.origin;
 
-    // 1. If direct link (no history) OR coming from an external app like WhatsApp
     if (!referrer || !referrer.startsWith(currentWebsite)) {
-        window.location.href = '/'; // Send to the main homepage
+        window.location.href = '/'; 
         return;
     }
 
-    // 2. If coming from a login page, don't trap them there, send them home
     if (referrer.includes('/login/') || referrer.includes('/reset-password/')) {
         window.location.href = '/';
         return;
     }
 
-    // 3. Normal navigation: Use the browser's true history!
-    // This perfectly solves the infinite loop between product pages.
     window.history.back();
 };
 
